@@ -97,7 +97,7 @@
       --ease-in-out:cubic-bezier(.77,0,.175,1);
     }
     *, *::before, *::after { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
+    html { scroll-behavior:smooth; overflow-x:hidden; }
     body {
       margin:0;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -418,6 +418,10 @@
       .trust-grid { grid-template-columns:1fr !important; }
       /* Resources grid */
       .resources-grid { grid-template-columns:1fr !important; }
+      /* Payment methods grid */
+      .pay-grid { grid-template-columns:1fr !important; }
+      /* Reviews grid */
+      .reviews-grid { grid-template-columns:1fr !important; }
       /* FAQ font */
       .faq-item button { font-size:14px; padding:18px; }
       /* CTA */
@@ -467,6 +471,8 @@
       display: flex;
       position: fixed;
       inset: 0;
+      width: 100%;
+      max-width: 100vw;
       z-index: 90;
       background: rgba(8,8,8,.97);
       backdrop-filter: blur(20px);
@@ -670,34 +676,6 @@
       📲 WhatsApp
     </a>
   </div>
-
-
-    
-
-  
-  <!-- ══ MOBILE MENU ══ -->
-  <nav class="mobile-menu" id="mobileMenu" aria-label="Menú móvil">
-    <button class="menu-close" onclick="toggleMenu()" aria-label="Cerrar menú">×</button>
-    <a href="#calidad" onclick="toggleMenu()">Calidad</a>
-    <a href="#diferenciales" onclick="toggleMenu()">Diferenciales</a>
-    <a href="#hero-products" onclick="toggleMenu()">Compuestos</a>
-    <a href="#catalogo" onclick="toggleMenu()">Catálogo</a>
-    <a href="#carrito" onclick="toggleMenu()">Carrito</a>
-    <a href="#reviews" onclick="toggleMenu()">Reviews</a>
-    <a href="#recursos" onclick="toggleMenu()">Recursos</a>
-    <a href="#pagos" onclick="toggleMenu()">Pagos</a>
-    <a href="#faq" onclick="toggleMenu()">FAQ</a>
-    <a href="#contacto" onclick="toggleMenu()">Soporte</a>
-    <div class="menu-lang">
-      <button id="menu-btn-es" onclick="switchLang('es')" style="background:var(--gold);color:#0a0807;">ES</button>
-      <button id="menu-btn-en" onclick="switchLang('en')" style="background:transparent;color:var(--gold);">EN</button>
-    </div>
-    <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20péptidos" 
-       target="_blank" rel="noopener"
-       style="background:linear-gradient(135deg,var(--gold),#a07840);color:#120e06;border-color:transparent;margin-top:8px;">
-      📲 WhatsApp
-    </a>
-  </nav>
 
   <main>
 
