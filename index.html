@@ -83,6 +83,12 @@ header.nav.scrolled{background:rgba(9,8,6,.8);backdrop-filter:blur(18px);border-
 .nav-links a:hover{color:var(--txt)}
 .nav-links a:hover::after{width:100%}
 .nav-actions{display:flex;align-items:center;gap:14px}
+.lang-toggle{display:flex;border:1px solid var(--line-2);border-radius:100px;overflow:hidden}
+.lang-toggle button{background:transparent;color:var(--accent);border:none;padding:8px 13px;font-family:var(--display);font-size:.74rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .25s,color .25s}
+.lang-toggle button.active{background:var(--gold-grad);color:#1c1508}
+.mobile-menu-lang{display:flex;justify-content:center;border:1px solid var(--line-2);border-radius:100px;overflow:hidden;margin-top:16px;width:fit-content}
+.mobile-menu-lang button{background:transparent;color:var(--accent);border:none;padding:9px 20px;font-family:var(--display);font-size:.8rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .25s,color .25s}
+.mobile-menu-lang button.active{background:var(--gold-grad);color:#1c1508}
 .cart-btn{position:relative;background:var(--panel);border:1px solid var(--line-2);color:var(--txt);width:46px;height:46px;border-radius:12px;display:grid;place-items:center;cursor:pointer;transition:.35s var(--ease);font-size:1.25rem}
 .cart-btn:hover{border-color:var(--accent);color:var(--accent-hi);transform:translateY(-2px)}
 .cart-count{position:absolute;top:-7px;right:-7px;background:var(--gold-grad);color:#1c1508;font-size:.68rem;font-weight:700;min-width:20px;height:20px;border-radius:10px;display:grid;place-items:center;padding:0 5px;font-family:var(--display)}
@@ -439,30 +445,38 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
   <div class="wrap nav-inner">
     <a href="#" class="brand" aria-label="Ascent Compounds"><img src="assets/logo-mark.png" alt="" class="brand-mark"><img src="assets/logo-wordmark.png" class="brand-word" alt="Ascent Compounds"></a>
     <nav class="nav-links">
-      <a href="#calidad">Calidad</a>
-      <a href="#diferenciales">Diferenciales</a>
-      <a href="#compuestos">Compuestos</a>
-      <a href="#catalogo">Catálogo</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contacto">Soporte</a>
+      <a href="#calidad" data-i18n="nav.calidad">Calidad</a>
+      <a href="#diferenciales" data-i18n="nav.diferenciales">Diferenciales</a>
+      <a href="#compuestos" data-i18n="nav.compuestos">Compuestos</a>
+      <a href="#catalogo" data-i18n="nav.catalogo">Catálogo</a>
+      <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      <a href="#contacto" data-i18n="nav.contacto">Soporte</a>
     </nav>
     <div class="nav-actions">
-      <button class="cart-btn" id="cartBtn" aria-label="Carrito">
+      <div class="lang-toggle" id="langToggle" role="group" aria-label="Language">
+        <button id="btn-es" onclick="setLang('es')">ES</button>
+        <button id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="cart-btn" id="cartBtn" aria-label="Carrito" data-i18n-aria="aria.cart">
         <svg class="ic"><use href="#i-cart"/></svg><span class="cart-count" id="cartCount" style="display:none">0</span>
       </button>
-      <button class="hamb" id="hamb" aria-label="Menú"><span></span><span></span><span></span></button>
+      <button class="hamb" id="hamb" aria-label="Menú" data-i18n-aria="aria.menu"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#calidad">Calidad</a>
-  <a href="#diferenciales">Diferenciales</a>
-  <a href="#compuestos">Compuestos</a>
-  <a href="#catalogo">Catálogo</a>
-  <a href="#reviews">Reviews</a>
-  <a href="#faq">FAQ</a>
-  <a href="#contacto">Soporte</a>
+  <a href="#calidad" data-i18n="nav.calidad">Calidad</a>
+  <a href="#diferenciales" data-i18n="nav.diferenciales">Diferenciales</a>
+  <a href="#compuestos" data-i18n="nav.compuestos">Compuestos</a>
+  <a href="#catalogo" data-i18n="nav.catalogo">Catálogo</a>
+  <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
+  <a href="#faq" data-i18n="nav.faq">FAQ</a>
+  <a href="#contacto" data-i18n="nav.contacto">Soporte</a>
+  <div class="mobile-menu-lang">
+    <button id="btn-es-m" onclick="setLang('es')">ES</button>
+    <button id="btn-en-m" onclick="setLang('en')">EN</button>
+  </div>
 </div>
 
 <!-- HERO -->
@@ -470,15 +484,15 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
   <div class="wrap hero-grid">
     <div class="hero-content">
       <div class="eyebrow">Research · Precision · Potential</div>
-      <h1>La referencia técnica de péptidos en <span class="goldtext">Colombia, México y USA.</span></h1>
-      <p class="lead">Catálogo de referencia profesional de péptidos de investigación. Información técnica rigurosa, perfiles químicos completos, pureza 99%+ HPLC verificada por lote y soporte especializado bilingüe ES/EN.</p>
-      <p class="ship">Más de 60 compuestos documentados. Entrega en <b>1-3 días hábiles</b> en Colombia. Envío incluido.</p>
+      <h1 data-i18n="hero.title">La referencia técnica de péptidos en <span class="goldtext">Colombia, México y USA.</span></h1>
+      <p class="lead" data-i18n="hero.lead">Catálogo de referencia profesional de péptidos de investigación. Información técnica rigurosa, perfiles químicos completos, pureza 99%+ HPLC verificada por lote y soporte especializado bilingüe ES/EN.</p>
+      <p class="ship" data-i18n="hero.ship">Más de 60 compuestos documentados. Entrega en <b>1-3 días hábiles</b> en Colombia. Envío incluido.</p>
       <div class="hero-cta">
-        <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20el%20catálogo%20de%20péptidos" class="btn btn-primary" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>¿No sabes cuál elegir? Escríbenos</a>
-        <a href="#calidad" class="btn btn-ghost">Ver estándares de calidad</a>
+        <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20el%20catálogo%20de%20péptidos" class="btn btn-primary" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="hero.cta1">¿No sabes cuál elegir? Escríbenos</span></a>
+        <a href="#calidad" class="btn btn-ghost" data-i18n="hero.cta2">Ver estándares de calidad</a>
       </div>
       <div class="hero-badges">
-        <span>Pureza 99%+ HPLC</span><span>Colombia · México · USA</span><span>Soporte ES/EN</span>
+        <span data-i18n="hero.badge1">Pureza 99%+ HPLC</span><span>Colombia · México · USA</span><span data-i18n="hero.badge3">Soporte ES/EN</span>
       </div>
     </div>
     <div class="vial-stage">
@@ -494,10 +508,10 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <!-- STATS -->
 <section class="stats">
   <div class="wrap stats-grid">
-    <div class="stat"><div class="num goldtext" data-count="63">0</div><div class="lbl">Referencias en CO · MX · USA</div></div>
-    <div class="stat"><div class="num goldtext">99%+</div><div class="lbl">Pureza verificada por HPLC</div></div>
-    <div class="stat"><div class="num goldtext" data-count="7">0</div><div class="lbl">Categorías de investigación</div></div>
-    <div class="stat"><div class="num goldtext">ES·EN</div><div class="lbl">Catálogo y soporte bilingüe</div></div>
+    <div class="stat"><div class="num goldtext" data-count="63">0</div><div class="lbl" data-i18n="stats.l1">Referencias en CO · MX · USA</div></div>
+    <div class="stat"><div class="num goldtext">99%+</div><div class="lbl" data-i18n="stats.l2">Pureza verificada por HPLC</div></div>
+    <div class="stat"><div class="num goldtext" data-count="7">0</div><div class="lbl" data-i18n="stats.l3">Categorías de investigación</div></div>
+    <div class="stat"><div class="num goldtext">ES·EN</div><div class="lbl" data-i18n="stats.l4">Catálogo y soporte bilingüe</div></div>
   </div>
 </section>
 
@@ -505,19 +519,19 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="calidad">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Estándares de calidad</div>
-      <h2>¿Cómo sabes que lo que recibes es lo que dice la etiqueta?</h2>
-      <p>La pregunta correcta no es qué laboratorio fabrica, sino <b>cómo se verifica la calidad</b>. Así opera Ascent Compounds en cada lote que distribuye.</p>
+      <div class="eyebrow" data-i18n="quality.eyebrow">Estándares de calidad</div>
+      <h2 data-i18n="quality.h2">¿Cómo sabes que lo que recibes es lo que dice la etiqueta?</h2>
+      <p data-i18n="quality.p">La pregunta correcta no es qué laboratorio fabrica, sino <b>cómo se verifica la calidad</b>. Así opera Ascent Compounds en cada lote que distribuye.</p>
     </div>
     <div class="steps">
-      <div class="step surf reveal"><div class="n">Paso 01</div><h4>Selección de lote</h4><p>Trabajamos exclusivamente con fabricantes de síntesis peptídica que documentan su proceso bajo estándares de grado investigación.</p></div>
-      <div class="step surf reveal"><div class="n">Paso 02</div><h4>Verificación 99%+</h4><p>Cada lote es verificado bajo estándares de pureza 99%+ por HPLC antes de su distribución. Sin cumplir ese estándar, el lote no se distribuye.</p></div>
-      <div class="step surf reveal"><div class="n">Paso 03</div><h4>Cadena de frío</h4><p>Los péptidos liofilizados se manejan bajo cadena de frío documentada desde origen hasta entrega para preservar la integridad del compuesto.</p></div>
-      <div class="step surf reveal"><div class="n">Paso 04</div><h4>Soporte antes de comprar</h4><p>Nuestro equipo técnico puede orientarte sobre especificaciones, mecanismos y compatibilidad de cualquier compuesto. Sin presión comercial.</p></div>
+      <div class="step surf reveal"><div class="n" data-i18n="quality.s1n">Paso 01</div><h4 data-i18n="quality.s1h">Selección de lote</h4><p data-i18n="quality.s1p">Trabajamos exclusivamente con fabricantes de síntesis peptídica que documentan su proceso bajo estándares de grado investigación.</p></div>
+      <div class="step surf reveal"><div class="n" data-i18n="quality.s2n">Paso 02</div><h4 data-i18n="quality.s2h">Verificación 99%+</h4><p data-i18n="quality.s2p">Cada lote es verificado bajo estándares de pureza 99%+ por HPLC antes de su distribución. Sin cumplir ese estándar, el lote no se distribuye.</p></div>
+      <div class="step surf reveal"><div class="n" data-i18n="quality.s3n">Paso 03</div><h4 data-i18n="quality.s3h">Cadena de frío</h4><p data-i18n="quality.s3p">Los péptidos liofilizados se manejan bajo cadena de frío documentada desde origen hasta entrega para preservar la integridad del compuesto.</p></div>
+      <div class="step surf reveal"><div class="n" data-i18n="quality.s4n">Paso 04</div><h4 data-i18n="quality.s4h">Soporte antes de comprar</h4><p data-i18n="quality.s4p">Nuestro equipo técnico puede orientarte sobre especificaciones, mecanismos y compatibilidad de cualquier compuesto. Sin presión comercial.</p></div>
     </div>
     <div class="quality-note reveal">
-      <div class="q">«¿De qué laboratorio son sus péptidos?»</div>
-      <p>Trabajamos con fabricantes especializados en síntesis peptídica de grado investigación con procesos documentados. Por política estándar de confidencialidad de cadena de suministro, igual que cualquier distribuidor técnico serio, no divulgamos nombres de proveedores. Lo que sí hacemos: <b style="color:var(--txt)">verificar la pureza de cada lote bajo estándares 99%+ HPLC antes de distribuirlo</b> y orientar técnicamente a cada cliente antes de su compra. La calidad se demuestra con el estándar del proceso, no con el nombre del fabricante.</p>
+      <div class="q" data-i18n="quality.q">«¿De qué laboratorio son sus péptidos?»</div>
+      <p data-i18n="quality.a">Trabajamos con fabricantes especializados en síntesis peptídica de grado investigación con procesos documentados. Por política estándar de confidencialidad de cadena de suministro, igual que cualquier distribuidor técnico serio, no divulgamos nombres de proveedores. Lo que sí hacemos: <b style="color:var(--txt)">verificar la pureza de cada lote bajo estándares 99%+ HPLC antes de distribuirlo</b> y orientar técnicamente a cada cliente antes de su compra. La calidad se demuestra con el estándar del proceso, no con el nombre del fabricante.</p>
     </div>
   </div>
 </section>
@@ -526,17 +540,17 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="diferenciales" style="background:var(--bg-2)">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Diferenciadores</div>
-      <h2>Por qué Ascent es la referencia técnica.</h2>
-      <p>Atributos operativos que sostienen cada referencia del catálogo en Colombia, México y USA.</p>
+      <div class="eyebrow" data-i18n="diff.eyebrow">Diferenciadores</div>
+      <h2 data-i18n="diff.h2">Por qué Ascent es la referencia técnica.</h2>
+      <p data-i18n="diff.p">Atributos operativos que sostienen cada referencia del catálogo en Colombia, México y USA.</p>
     </div>
     <div class="diff-grid">
-      <div class="diff surf reveal"><div class="n">01</div><h4>Pureza 99%+ HPLC verificada</h4><p>Cada lote es verificado bajo estándares de pureza 99%+ HPLC antes de su distribución. Sin ese estándar, el lote no entra al catálogo.</p></div>
-      <div class="diff surf reveal"><div class="n">02</div><h4>Envío incluido en CO, MX y USA</h4><p>Todas las compras incluyen envío gratuito, con logística de cadena de frío para preservar la integridad del compuesto en tránsito.</p></div>
-      <div class="diff surf reveal"><div class="n">03</div><h4>Catálogo técnico de 63 referencias</h4><p>Más de 60 compuestos organizados por área: regeneración, metabolismo, hormona de crecimiento, longevidad, cognición y estética.</p></div>
-      <div class="diff surf reveal"><div class="n">04</div><h4>Soporte técnico bilingüe</h4><p>Equipo especializado en español e inglés para resolver consultas sobre mecanismos, presentaciones y compatibilidad de compuestos.</p></div>
-      <div class="diff surf reveal"><div class="n">05</div><h4>KLOWUP, stack propietario</h4><p>BPC-157 + GHK-Cu + TB-500 + KPV en una sola formulación de 80mg. Cuatro vías complementarias de reparación en un único compuesto.</p></div>
-      <div class="diff surf reveal"><div class="n">06</div><h4>Referencia profesional</h4><p>Fichas técnicas con perfil químico completo, fórmula molecular, CAS, secuencia y literatura documentada. No solo vendemos, te damos la información.</p></div>
+      <div class="diff surf reveal"><div class="n">01</div><h4 data-i18n="diff.d1h">Pureza 99%+ HPLC verificada</h4><p data-i18n="diff.d1p">Cada lote es verificado bajo estándares de pureza 99%+ HPLC antes de su distribución. Sin ese estándar, el lote no entra al catálogo.</p></div>
+      <div class="diff surf reveal"><div class="n">02</div><h4 data-i18n="diff.d2h">Envío incluido en CO, MX y USA</h4><p data-i18n="diff.d2p">Todas las compras incluyen envío gratuito, con logística de cadena de frío para preservar la integridad del compuesto en tránsito.</p></div>
+      <div class="diff surf reveal"><div class="n">03</div><h4 data-i18n="diff.d3h">Catálogo técnico de 63 referencias</h4><p data-i18n="diff.d3p">Más de 60 compuestos organizados por área: regeneración, metabolismo, hormona de crecimiento, longevidad, cognición y estética.</p></div>
+      <div class="diff surf reveal"><div class="n">04</div><h4 data-i18n="diff.d4h">Soporte técnico bilingüe</h4><p data-i18n="diff.d4p">Equipo especializado en español e inglés para resolver consultas sobre mecanismos, presentaciones y compatibilidad de compuestos.</p></div>
+      <div class="diff surf reveal"><div class="n">05</div><h4 data-i18n="diff.d5h">KLOWUP, stack propietario</h4><p data-i18n="diff.d5p">BPC-157 + GHK-Cu + TB-500 + KPV en una sola formulación de 80mg. Cuatro vías complementarias de reparación en un único compuesto.</p></div>
+      <div class="diff surf reveal"><div class="n">06</div><h4 data-i18n="diff.d6h">Referencia profesional</h4><p data-i18n="diff.d6p">Fichas técnicas con perfil químico completo, fórmula molecular, CAS, secuencia y literatura documentada. No solo vendemos, te damos la información.</p></div>
     </div>
   </div>
 </section>
@@ -545,9 +559,9 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="compuestos">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Compuestos principales</div>
-      <h2>Fichas técnicas de los compuestos más investigados.</h2>
-      <p>Información técnica detallada sobre mecanismo molecular, vías de señalización y perfil químico de cada referencia.</p>
+      <div class="eyebrow" data-i18n="feat.eyebrow">Compuestos principales</div>
+      <h2 data-i18n="feat.h2">Fichas técnicas de los compuestos más investigados.</h2>
+      <p data-i18n="feat.p">Información técnica detallada sobre mecanismo molecular, vías de señalización y perfil químico de cada referencia.</p>
     </div>
     <div class="feat-grid" id="featGrid"></div>
   </div>
@@ -560,12 +574,12 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
       <div class="bglow"></div>
       <div class="stack-inner">
         <div class="eyebrow">CJC-1295 + Ipamorelin · Stack GH</div>
-        <h2 style="font-size:clamp(1.6rem,3.4vw,2.3rem);margin:8px 0 14px">Combinación sinérgica sobre el eje somatotrópico.</h2>
-        <p class="muted" style="max-width:760px">CJC-1295 noDAC actúa como análogo de GHRH con alta afinidad hipofisaria. Ipamorelin actúa como agonista selectivo GHSR-1a con mínimo impacto en cortisol. Combinados, activan simultáneamente dos vías distintas del eje GH, generando un perfil de liberación más robusto que cualquiera de los dos por separado. También disponible como referencia combinada: <b style="color:var(--txt)">Synergy II</b>.</p>
+        <h2 style="font-size:clamp(1.6rem,3.4vw,2.3rem);margin:8px 0 14px" data-i18n="stack.h2">Combinación sinérgica sobre el eje somatotrópico.</h2>
+        <p class="muted" style="max-width:760px" data-i18n="stack.p">CJC-1295 noDAC actúa como análogo de GHRH con alta afinidad hipofisaria. Ipamorelin actúa como agonista selectivo GHSR-1a con mínimo impacto en cortisol. Combinados, activan simultáneamente dos vías distintas del eje GH, generando un perfil de liberación más robusto que cualquiera de los dos por separado. También disponible como referencia combinada: <b style="color:var(--txt)">Synergy II</b>.</p>
         <div class="stack-prods">
-          <div class="stack-prod surf"><div class="nm">CJC-1295 noDAC</div><div class="sub">10mg · Análogo GHRH</div><div class="pr">$180.00 USD</div></div>
-          <div class="stack-prod surf"><div class="nm">Ipamorelin</div><div class="sub">10mg · Agonista GHSR-1a</div><div class="pr">$174.42 USD</div></div>
-          <div class="stack-prod surf"><div class="nm">Synergy II</div><div class="sub">10mg/10mg · Stack combinado</div><div class="pr">$224.95 USD</div></div>
+          <div class="stack-prod surf"><div class="nm">CJC-1295 noDAC</div><div class="sub" data-i18n="stack.sub1">10mg · Análogo GHRH</div><div class="pr">$180.00 USD</div></div>
+          <div class="stack-prod surf"><div class="nm">Ipamorelin</div><div class="sub" data-i18n="stack.sub2">10mg · Agonista GHSR-1a</div><div class="pr">$174.42 USD</div></div>
+          <div class="stack-prod surf"><div class="nm">Synergy II</div><div class="sub" data-i18n="stack.sub3">10mg/10mg · Stack combinado</div><div class="pr">$224.95 USD</div></div>
         </div>
       </div>
     </div>
@@ -576,14 +590,14 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="catalogo">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Catálogo extendido, 63 referencias</div>
-      <h2>Catálogo de referencia, 63 compuestos documentados.</h2>
-      <p>Información técnica por compuesto: mecanismo, perfil químico y áreas de investigación. Filtra por objetivo o busca por nombre.</p>
+      <div class="eyebrow" data-i18n="cat.eyebrow">Catálogo extendido, 63 referencias</div>
+      <h2 data-i18n="cat.h2">Catálogo de referencia, 63 compuestos documentados.</h2>
+      <p data-i18n="cat.p">Información técnica por compuesto: mecanismo, perfil químico y áreas de investigación. Filtra por objetivo o busca por nombre.</p>
     </div>
     <div class="filters reveal" id="filters"></div>
     <div class="search-box reveal">
       <svg class="ic"><use href="#i-search"/></svg>
-      <input type="text" id="search" placeholder="Buscar compuesto…">
+      <input type="text" id="search" placeholder="Buscar compuesto…" data-i18n-placeholder="cat.search">
     </div>
     <div class="cat-grid" id="catGrid"></div>
   </div>
@@ -593,15 +607,15 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="cobertura" style="background:var(--bg-2)">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Cobertura operativa</div>
-      <h2>Colombia · México · USA, distribución activa.</h2>
-      <p>Tres mercados, un mismo estándar: pureza 99%+ HPLC, cadena de frío, envío incluido y soporte técnico bilingüe en cada pedido.</p>
+      <div class="eyebrow" data-i18n="cov.eyebrow">Cobertura operativa</div>
+      <h2 data-i18n="cov.h2">Colombia · México · USA, distribución activa.</h2>
+      <p data-i18n="cov.p">Tres mercados, un mismo estándar: pureza 99%+ HPLC, cadena de frío, envío incluido y soporte técnico bilingüe en cada pedido.</p>
     </div>
     <div class="cov-grid">
-      <div class="cov surf reveal"><span class="badge">CO</span><h4>Colombia · 1-3 días hábiles</h4><ul><li><svg class="ic"><use href="#i-check"/></svg>Entrega 1-3 días hábiles</li><li><svg class="ic"><use href="#i-check"/></svg>Bancolombia · Nequi · Wompi</li><li><svg class="ic"><use href="#i-check"/></svg>Pureza 99%+ por lote</li><li><svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN</li></ul></div>
-      <div class="cov surf reveal"><span class="badge">MX</span><h4>México · 2-4 días hábiles</h4><ul><li><svg class="ic"><use href="#i-check"/></svg>Entrega 2-4 días hábiles</li><li><svg class="ic"><use href="#i-check"/></svg>BBVA · OXXO · Link de pago</li><li><svg class="ic"><use href="#i-check"/></svg>Precios en USD</li><li><svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN</li></ul></div>
+      <div class="cov surf reveal"><span class="badge">CO</span><h4 data-i18n="cov.coh">Colombia · 1-3 días hábiles</h4><ul><li data-i18n="cov.co1"><svg class="ic"><use href="#i-check"/></svg>Entrega 1-3 días hábiles</li><li data-i18n="cov.co2"><svg class="ic"><use href="#i-check"/></svg>Bancolombia · Nequi · Wompi</li><li data-i18n="cov.co3"><svg class="ic"><use href="#i-check"/></svg>Pureza 99%+ por lote</li><li data-i18n="cov.co4"><svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN</li></ul></div>
+      <div class="cov surf reveal"><span class="badge">MX</span><h4 data-i18n="cov.mxh">México · 2-4 días hábiles</h4><ul><li data-i18n="cov.mx1"><svg class="ic"><use href="#i-check"/></svg>Entrega 2-4 días hábiles</li><li data-i18n="cov.mx2"><svg class="ic"><use href="#i-check"/></svg>BBVA · OXXO · Link de pago</li><li data-i18n="cov.mx3"><svg class="ic"><use href="#i-check"/></svg>Precios en USD</li><li data-i18n="cov.mx4"><svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN</li></ul></div>
       <div class="cov surf reveal"><span class="badge">US</span><h4>USA · 2-4 business days</h4><ul><li><svg class="ic"><use href="#i-check"/></svg>2-4 business days delivery</li><li><svg class="ic"><use href="#i-check"/></svg>Zelle · USDT · Payment link</li><li><svg class="ic"><use href="#i-check"/></svg>All prices in USD</li><li><svg class="ic"><use href="#i-check"/></svg>English technical support</li></ul></div>
-      <div class="cov surf reveal"><span class="ic-chip" style="margin-bottom:0;width:34px;height:34px;border-radius:9px"><svg class="ic"><use href="#i-support"/></svg></span><h4>Soporte técnico</h4><ul><li><svg class="ic"><use href="#i-check"/></svg>Orientación antes de comprar</li><li><svg class="ic"><use href="#i-check"/></svg>Asesoría bilingüe ES/EN</li><li><svg class="ic"><use href="#i-check"/></svg>Orientación sobre stacks</li><li><svg class="ic"><use href="#i-check"/></svg>Seguimiento de pedido</li></ul></div>
+      <div class="cov surf reveal"><span class="ic-chip" style="margin-bottom:0;width:34px;height:34px;border-radius:9px"><svg class="ic"><use href="#i-support"/></svg></span><h4 data-i18n="cov.suph">Soporte técnico</h4><ul><li data-i18n="cov.sup1"><svg class="ic"><use href="#i-check"/></svg>Orientación antes de comprar</li><li data-i18n="cov.sup2"><svg class="ic"><use href="#i-check"/></svg>Asesoría bilingüe ES/EN</li><li data-i18n="cov.sup3"><svg class="ic"><use href="#i-check"/></svg>Orientación sobre stacks</li><li data-i18n="cov.sup4"><svg class="ic"><use href="#i-check"/></svg>Seguimiento de pedido</li></ul></div>
     </div>
   </div>
 </section>
@@ -610,16 +624,16 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="recursos">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Recursos de investigación</div>
-      <h2>Entiende lo que estás investigando.</h2>
-      <p>Guías técnicas sobre los compuestos más investigados en biohacking y longevidad. Información basada en literatura científica disponible en PubMed.</p>
+      <div class="eyebrow" data-i18n="res.eyebrow">Recursos de investigación</div>
+      <h2 data-i18n="res.h2">Entiende lo que estás investigando.</h2>
+      <p data-i18n="res.p">Guías técnicas sobre los compuestos más investigados en biohacking y longevidad. Información basada en literatura científica disponible en PubMed.</p>
     </div>
     <div class="res-grid">
-      <div class="res surf reveal"><div class="rt">Comparativa · GLP-1</div><h4>Retatrutide vs Tirzepatide: ¿cuál es más avanzado?</h4><p>Tirzepatide actúa sobre GLP-1R y GIPR. Retatrutide va un paso más allá activando también el receptor de glucagón (GCGR), añadiendo un componente termogénico. En Fase II (Eli Lilly, 2023) mostró reducciones de peso superiores en periodos equivalentes.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20más%20información%20sobre%20Retatrutide%20y%20Tirzepatide" target="_blank" rel="noopener">Consultar con soporte <svg class="ic"><use href="#i-arrow"/></svg></a></div>
-      <div class="res surf reveal"><div class="rt">Guía técnica · Stack</div><h4>BPC-157 + TB-500: la lógica del stack de recuperación</h4><p>BPC-157 trabaja sobre FAK-paxilina y VEGFR2-NO (reparación local); TB-500 actúa sobre la actina y la migración celular sistémica. La literatura preclínica documenta efectos sobre remodelación de matriz con ambos compuestos activos.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20BPC-157%20y%20TB-500" target="_blank" rel="noopener">Consultar con soporte <svg class="ic"><use href="#i-arrow"/></svg></a></div>
-      <div class="res surf reveal"><div class="rt">Guía técnica · Longevidad</div><h4>GHK-Cu: el tripéptido de cobre en longevidad</h4><p>Complejo de cobre del tripéptido glycyl-L-histidyl-L-lysine. Modula MMP/TIMP regulando síntesis de colágeno I y III, e interactúa con TGF-β/Smad y HO-1/Nrf2. Uno de los más citados en longevidad cutánea y ECM.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20GHK-Cu" target="_blank" rel="noopener">Consultar con soporte <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+      <div class="res surf reveal"><div class="rt" data-i18n="res.r1t">Comparativa · GLP-1</div><h4 data-i18n="res.r1h">Retatrutide vs Tirzepatide: ¿cuál es más avanzado?</h4><p data-i18n="res.r1p">Tirzepatide actúa sobre GLP-1R y GIPR. Retatrutide va un paso más allá activando también el receptor de glucagón (GCGR), añadiendo un componente termogénico. En Fase II (Eli Lilly, 2023) mostró reducciones de peso superiores en periodos equivalentes.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20más%20información%20sobre%20Retatrutide%20y%20Tirzepatide" target="_blank" rel="noopener"><span data-i18n="res.link">Consultar con soporte</span> <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+      <div class="res surf reveal"><div class="rt" data-i18n="res.r2t">Guía técnica · Stack</div><h4 data-i18n="res.r2h">BPC-157 + TB-500: la lógica del stack de recuperación</h4><p data-i18n="res.r2p">BPC-157 trabaja sobre FAK-paxilina y VEGFR2-NO (reparación local); TB-500 actúa sobre la actina y la migración celular sistémica. La literatura preclínica documenta efectos sobre remodelación de matriz con ambos compuestos activos.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20BPC-157%20y%20TB-500" target="_blank" rel="noopener"><span data-i18n="res.link">Consultar con soporte</span> <svg class="ic"><use href="#i-arrow"/></svg></a></div>
+      <div class="res surf reveal"><div class="rt" data-i18n="res.r3t">Guía técnica · Longevidad</div><h4 data-i18n="res.r3h">GHK-Cu: el tripéptido de cobre en longevidad</h4><p data-i18n="res.r3p">Complejo de cobre del tripéptido glycyl-L-histidyl-L-lysine. Modula MMP/TIMP regulando síntesis de colágeno I y III, e interactúa con TGF-β/Smad y HO-1/Nrf2. Uno de los más citados en longevidad cutánea y ECM.</p><a class="link" href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20GHK-Cu" target="_blank" rel="noopener"><span data-i18n="res.link">Consultar con soporte</span> <svg class="ic"><use href="#i-arrow"/></svg></a></div>
     </div>
-    <p class="muted center" style="font-size:.8rem;margin-top:26px">Contenido basado en literatura científica disponible en PubMed · No constituye asesoramiento médico · For research purposes only</p>
+    <p class="muted center" style="font-size:.8rem;margin-top:26px" data-i18n="res.foot">Contenido basado en literatura científica disponible en PubMed · No constituye asesoramiento médico · For research purposes only</p>
   </div>
 </section>
 
@@ -627,15 +641,15 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="reviews" style="background:var(--bg-2)">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="eyebrow">Comunidad Ascent</div>
-      <h2>Lo que dice la comunidad.</h2>
+      <div class="eyebrow" data-i18n="rev.eyebrow">Comunidad Ascent</div>
+      <h2 data-i18n="rev.h2">Lo que dice la comunidad.</h2>
     </div>
     <div class="rev-head reveal">
       <div class="rev-score goldtext">4.9</div>
-      <div><div class="stars" id="headStars"></div><div class="muted" style="font-size:.86rem">Basado en 87 reseñas verificadas</div></div>
+      <div><div class="stars" id="headStars"></div><div class="muted" style="font-size:.86rem" data-i18n="rev.based">Basado en 87 reseñas verificadas</div></div>
     </div>
     <div class="rev-grid" id="revGrid"></div>
-    <p class="muted center" style="font-size:.8rem;margin-top:24px">For research purposes only · Todos los testimonios provienen de investigadores independientes</p>
+    <p class="muted center" style="font-size:.8rem;margin-top:24px" data-i18n="rev.foot">For research purposes only · Todos los testimonios provienen de investigadores independientes</p>
   </div>
 </section>
 
@@ -643,8 +657,8 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="faq">
   <div class="wrap" style="max-width:840px">
     <div class="sec-head c reveal">
-      <div class="eyebrow">Preguntas frecuentes</div>
-      <h2>Las preguntas que más recibimos, respondidas.</h2>
+      <div class="eyebrow" data-i18n="faq.eyebrow">Preguntas frecuentes</div>
+      <h2 data-i18n="faq.h2">Las preguntas que más recibimos, respondidas.</h2>
     </div>
     <div id="faqList"></div>
   </div>
@@ -654,20 +668,20 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 <section class="sec" id="pagos" style="background:var(--bg-2)">
   <div class="wrap">
     <div class="sec-head c reveal">
-      <div class="eyebrow">Métodos de pago · 3 mercados</div>
-      <h2>Paga como prefieras, desde donde estés.</h2>
-      <p>Métodos locales en Colombia, México y USA. Sin plataformas complicadas: directo, rápido y seguro.</p>
+      <div class="eyebrow" data-i18n="pay.eyebrow">Métodos de pago · 3 mercados</div>
+      <h2 data-i18n="pay.h2">Paga como prefieras, desde donde estés.</h2>
+      <p data-i18n="pay.p">Métodos locales en Colombia, México y USA. Sin plataformas complicadas: directo, rápido y seguro.</p>
     </div>
     <div class="pay-grid">
       <div class="pay-col surf reveal"><h4><span class="badge">CO</span> Colombia</h4>
-        <div class="pay-m"><svg class="ic"><use href="#i-bank"/></svg><div><b>Bancolombia</b><small>Transferencia directa</small></div></div>
-        <div class="pay-m"><svg class="ic"><use href="#i-phone"/></svg><div><b>Nequi</b><small>Transferencia inmediata</small></div></div>
-        <div class="pay-m"><svg class="ic"><use href="#i-link"/></svg><div><b>Wompi</b><small>Link de pago seguro</small></div></div>
+        <div class="pay-m"><svg class="ic"><use href="#i-bank"/></svg><div><b>Bancolombia</b><small data-i18n="pay.co1">Transferencia directa</small></div></div>
+        <div class="pay-m"><svg class="ic"><use href="#i-phone"/></svg><div><b>Nequi</b><small data-i18n="pay.co2">Transferencia inmediata</small></div></div>
+        <div class="pay-m"><svg class="ic"><use href="#i-link"/></svg><div><b>Wompi</b><small data-i18n="pay.co3">Link de pago seguro</small></div></div>
       </div>
-      <div class="pay-col surf reveal"><h4><span class="badge">MX</span> México</h4>
-        <div class="pay-m"><svg class="ic"><use href="#i-bank"/></svg><div><b>BBVA</b><small>Transferencia bancaria</small></div></div>
-        <div class="pay-m"><svg class="ic"><use href="#i-cash"/></svg><div><b>OXXO</b><small>Depósito en efectivo</small></div></div>
-        <div class="pay-m"><svg class="ic"><use href="#i-link"/></svg><div><b>Link de pago</b><small>Pago seguro en línea</small></div></div>
+      <div class="pay-col surf reveal"><h4><span class="badge">MX</span> <span data-i18n="pay.mxlabel">México</span></h4>
+        <div class="pay-m"><svg class="ic"><use href="#i-bank"/></svg><div><b>BBVA</b><small data-i18n="pay.mx1">Transferencia bancaria</small></div></div>
+        <div class="pay-m"><svg class="ic"><use href="#i-cash"/></svg><div><b>OXXO</b><small data-i18n="pay.mx2">Depósito en efectivo</small></div></div>
+        <div class="pay-m"><svg class="ic"><use href="#i-link"/></svg><div><b data-i18n="pay.mx3b">Link de pago</b><small data-i18n="pay.mx3">Pago seguro en línea</small></div></div>
       </div>
       <div class="pay-col surf reveal"><h4><span class="badge">US</span> USA</h4>
         <div class="pay-m"><svg class="ic"><use href="#i-bank"/></svg><div><b>Zelle</b><small>Direct bank transfer</small></div></div>
@@ -675,7 +689,7 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
         <div class="pay-m"><svg class="ic"><use href="#i-link"/></svg><div><b>Payment link</b><small>Secure online payment</small></div></div>
       </div>
     </div>
-    <p class="pay-note"><svg class="ic"><use href="#i-bolt"/></svg>Confirmación de pago en minutos. Tu pedido sale el mismo día hábil si pagas antes de las 2PM.</p>
+    <p class="pay-note"><svg class="ic"><use href="#i-bolt"/></svg><span data-i18n="pay.note">Confirmación de pago en minutos. Tu pedido sale el mismo día hábil si pagas antes de las 2PM.</span></p>
   </div>
 </section>
 
@@ -685,12 +699,12 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
     <div class="cta reveal">
       <div class="bglow"></div>
       <div class="cta-inner">
-        <div class="eyebrow">Soporte técnico</div>
-        <h2>¿No sabes por dónde empezar?</h2>
-        <p>Nuestro equipo especializado te ayuda a entender qué compuesto se ajusta mejor a tu investigación, qué presentación tiene más sentido y qué combinaciones documenta la literatura científica. Sin presión comercial, solo orientación técnica. En español o en inglés.</p>
+        <div class="eyebrow" data-i18n="cta.eyebrow">Soporte técnico</div>
+        <h2 data-i18n="cta.h2">¿No sabes por dónde empezar?</h2>
+        <p data-i18n="cta.p">Nuestro equipo especializado te ayuda a entender qué compuesto se ajusta mejor a tu investigación, qué presentación tiene más sentido y qué combinaciones documenta la literatura científica. Sin presión comercial, solo orientación técnica. En español o en inglés.</p>
         <div class="cta-btns">
-          <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20péptidos%20de%20investigación" class="btn btn-primary" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg>Escríbenos por WhatsApp</a>
-          <a href="#catalogo" class="btn btn-ghost">Explorar el catálogo</a>
+          <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20péptidos%20de%20investigación" class="btn btn-primary" target="_blank" rel="noopener"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="cta.btn1">Escríbenos por WhatsApp</span></a>
+          <a href="#catalogo" class="btn btn-ghost" data-i18n="cta.btn2">Explorar el catálogo</a>
         </div>
       </div>
     </div>
@@ -703,25 +717,25 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
     <div class="foot-top">
       <div class="foot-brand">
         <a href="#" class="brand" aria-label="Ascent Compounds"><img src="assets/logo-mark.png" alt="" class="brand-mark"><img src="assets/logo-wordmark.png" class="brand-word" alt="Ascent Compounds"></a>
-        <p>Ascent Compounds es el proveedor especializado de péptidos de investigación en Colombia, México y USA. Catálogo con BPC-157, TB-500, GHK-Cu, Retatrutide, CJC-1295, Ipamorelin, Tirzepatide, Epithalon, FOX-04, NAD+, MOTS-c y más de 60 referencias con pureza 99%+ HPLC verificada por lote. Entrega en 1-3 días hábiles. Todos los productos son exclusivamente para investigación científica. For research purposes only. Los productos listados no son medicamentos y no están aprobados para uso terapéutico en humanos.</p>
+        <p data-i18n="foot.brand">Ascent Compounds es el proveedor especializado de péptidos de investigación en Colombia, México y USA. Catálogo con BPC-157, TB-500, GHK-Cu, Retatrutide, CJC-1295, Ipamorelin, Tirzepatide, Epithalon, FOX-04, NAD+, MOTS-c y más de 60 referencias con pureza 99%+ HPLC verificada por lote. Entrega en 1-3 días hábiles. Todos los productos son exclusivamente para investigación científica. For research purposes only. Los productos listados no son medicamentos y no están aprobados para uso terapéutico en humanos.</p>
       </div>
       <div>
-        <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20péptidos%20de%20investigación" class="btn btn-ghost" target="_blank" rel="noopener">¿No sabes cuál elegir? <svg class="ic"><use href="#i-arrow"/></svg></a>
+        <a href="https://wa.me/573164114411?text=Hola,%20quiero%20información%20sobre%20péptidos%20de%20investigación" class="btn btn-ghost" target="_blank" rel="noopener"><span data-i18n="foot.cta">¿No sabes cuál elegir?</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
       </div>
     </div>
-    <div class="foot-bottom">Péptidos de investigación · Colombia · México · USA · Pureza 99%+ · Envío incluido · For research purposes only · @ascentcompounds</div>
+    <div class="foot-bottom" data-i18n="foot.bottom">Péptidos de investigación · Colombia · México · USA · Pureza 99%+ · Envío incluido · For research purposes only · @ascentcompounds</div>
   </div>
 </footer>
 
 <!-- CART -->
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer">
-  <div class="drawer-head"><h3>Mi pedido</h3><button class="drawer-close" id="drawerClose" aria-label="Cerrar"><svg class="ic"><use href="#i-close"/></svg></button></div>
-  <div class="drawer-body" id="cartBody"><div class="cart-empty">Tu carrito está vacío.<br>Agrega compuestos del catálogo.</div></div>
+  <div class="drawer-head"><h3 data-i18n="cart.title">Mi pedido</h3><button class="drawer-close" id="drawerClose" aria-label="Cerrar" data-i18n-aria="aria.close"><svg class="ic"><use href="#i-close"/></svg></button></div>
+  <div class="drawer-body" id="cartBody"><div class="cart-empty" data-i18n="cart.empty">Tu carrito está vacío.<br>Agrega compuestos del catálogo.</div></div>
   <div class="drawer-foot">
-    <div class="drawer-total"><span class="muted">Total estimado</span><b id="cartTotal" class="goldtext">$0.00</b></div>
-    <div class="meta"><svg class="ic"><use href="#i-check"/></svg>Envío incluido · Solo confirmaremos método de pago · For research purposes only</div>
-    <button class="btn btn-primary" id="checkoutBtn"><svg class="ic"><use href="#i-chat"/></svg>Enviar pedido por WhatsApp</button>
+    <div class="drawer-total"><span class="muted" data-i18n="cart.total">Total estimado</span><b id="cartTotal" class="goldtext">$0.00</b></div>
+    <div class="meta"><svg class="ic"><use href="#i-check"/></svg><span data-i18n="cart.meta">Envío incluido · Solo confirmaremos método de pago · For research purposes only</span></div>
+    <button class="btn btn-primary" id="checkoutBtn"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="cart.checkout">Enviar pedido por WhatsApp</span></button>
   </div>
 </aside>
 
@@ -729,120 +743,297 @@ footer{border-top:1px solid var(--line);padding:58px 0 30px;background:var(--bg-
 
 <script>
 const WA="573164114411";
-const CATS=[["todo","Todo"],["regeneracion","Regeneración"],["metabolismo","Metabolismo"],["gh","Hormona GH"],["longevidad","Longevidad"],["cognicion","Cognición"],["estetica","Estética"],["rendimiento","Rendimiento"],["accesorios","Accesorios"]];
+let LANG=localStorage.getItem("ascent_lang")||"es";
+
+const I18N={
+  es:{
+    "nav.calidad":"Calidad","nav.diferenciales":"Diferenciales","nav.compuestos":"Compuestos","nav.catalogo":"Catálogo","nav.reviews":"Reviews","nav.faq":"FAQ","nav.contacto":"Soporte",
+    "aria.cart":"Carrito","aria.menu":"Menú","aria.close":"Cerrar",
+    "hero.title":'La referencia técnica de péptidos en <span class="goldtext">Colombia, México y USA.</span>',
+    "hero.lead":"Catálogo de referencia profesional de péptidos de investigación. Información técnica rigurosa, perfiles químicos completos, pureza 99%+ HPLC verificada por lote y soporte especializado bilingüe ES/EN.",
+    "hero.ship":"Más de 60 compuestos documentados. Entrega en <b>1-3 días hábiles</b> en Colombia. Envío incluido.",
+    "hero.cta1":"¿No sabes cuál elegir? Escríbenos","hero.cta2":"Ver estándares de calidad",
+    "hero.badge1":"Pureza 99%+ HPLC","hero.badge3":"Soporte ES/EN",
+    "stats.l1":"Referencias en CO · MX · USA","stats.l2":"Pureza verificada por HPLC","stats.l3":"Categorías de investigación","stats.l4":"Catálogo y soporte bilingüe",
+    "quality.eyebrow":"Estándares de calidad","quality.h2":"¿Cómo sabes que lo que recibes es lo que dice la etiqueta?",
+    "quality.p":"La pregunta correcta no es qué laboratorio fabrica, sino <b>cómo se verifica la calidad</b>. Así opera Ascent Compounds en cada lote que distribuye.",
+    "quality.s1n":"Paso 01","quality.s1h":"Selección de lote","quality.s1p":"Trabajamos exclusivamente con fabricantes de síntesis peptídica que documentan su proceso bajo estándares de grado investigación.",
+    "quality.s2n":"Paso 02","quality.s2h":"Verificación 99%+","quality.s2p":"Cada lote es verificado bajo estándares de pureza 99%+ por HPLC antes de su distribución. Sin cumplir ese estándar, el lote no se distribuye.",
+    "quality.s3n":"Paso 03","quality.s3h":"Cadena de frío","quality.s3p":"Los péptidos liofilizados se manejan bajo cadena de frío documentada desde origen hasta entrega para preservar la integridad del compuesto.",
+    "quality.s4n":"Paso 04","quality.s4h":"Soporte antes de comprar","quality.s4p":"Nuestro equipo técnico puede orientarte sobre especificaciones, mecanismos y compatibilidad de cualquier compuesto. Sin presión comercial.",
+    "quality.q":"«¿De qué laboratorio son sus péptidos?»",
+    "quality.a":'Trabajamos con fabricantes especializados en síntesis peptídica de grado investigación con procesos documentados. Por política estándar de confidencialidad de cadena de suministro, igual que cualquier distribuidor técnico serio, no divulgamos nombres de proveedores. Lo que sí hacemos: <b style="color:var(--txt)">verificar la pureza de cada lote bajo estándares 99%+ HPLC antes de distribuirlo</b> y orientar técnicamente a cada cliente antes de su compra. La calidad se demuestra con el estándar del proceso, no con el nombre del fabricante.',
+    "diff.eyebrow":"Diferenciadores","diff.h2":"Por qué Ascent es la referencia técnica.","diff.p":"Atributos operativos que sostienen cada referencia del catálogo en Colombia, México y USA.",
+    "diff.d1h":"Pureza 99%+ HPLC verificada","diff.d1p":"Cada lote es verificado bajo estándares de pureza 99%+ HPLC antes de su distribución. Sin ese estándar, el lote no entra al catálogo.",
+    "diff.d2h":"Envío incluido en CO, MX y USA","diff.d2p":"Todas las compras incluyen envío gratuito, con logística de cadena de frío para preservar la integridad del compuesto en tránsito.",
+    "diff.d3h":"Catálogo técnico de 63 referencias","diff.d3p":"Más de 60 compuestos organizados por área: regeneración, metabolismo, hormona de crecimiento, longevidad, cognición y estética.",
+    "diff.d4h":"Soporte técnico bilingüe","diff.d4p":"Equipo especializado en español e inglés para resolver consultas sobre mecanismos, presentaciones y compatibilidad de compuestos.",
+    "diff.d5h":"KLOWUP, stack propietario","diff.d5p":"BPC-157 + GHK-Cu + TB-500 + KPV en una sola formulación de 80mg. Cuatro vías complementarias de reparación en un único compuesto.",
+    "diff.d6h":"Referencia profesional","diff.d6p":"Fichas técnicas con perfil químico completo, fórmula molecular, CAS, secuencia y literatura documentada. No solo vendemos, te damos la información.",
+    "feat.eyebrow":"Compuestos principales","feat.h2":"Fichas técnicas de los compuestos más investigados.","feat.p":"Información técnica detallada sobre mecanismo molecular, vías de señalización y perfil químico de cada referencia.",
+    "stack.h2":"Combinación sinérgica sobre el eje somatotrópico.",
+    "stack.p":'CJC-1295 noDAC actúa como análogo de GHRH con alta afinidad hipofisaria. Ipamorelin actúa como agonista selectivo GHSR-1a con mínimo impacto en cortisol. Combinados, activan simultáneamente dos vías distintas del eje GH, generando un perfil de liberación más robusto que cualquiera de los dos por separado. También disponible como referencia combinada: <b style="color:var(--txt)">Synergy II</b>.',
+    "stack.sub1":"10mg · Análogo GHRH","stack.sub2":"10mg · Agonista GHSR-1a","stack.sub3":"10mg/10mg · Stack combinado",
+    "cat.eyebrow":"Catálogo extendido, 63 referencias","cat.h2":"Catálogo de referencia, 63 compuestos documentados.","cat.p":"Información técnica por compuesto: mecanismo, perfil químico y áreas de investigación. Filtra por objetivo o busca por nombre.",
+    "cat.search":"Buscar compuesto…",
+    "cov.eyebrow":"Cobertura operativa","cov.h2":"Colombia · México · USA, distribución activa.","cov.p":"Tres mercados, un mismo estándar: pureza 99%+ HPLC, cadena de frío, envío incluido y soporte técnico bilingüe en cada pedido.",
+    "cov.coh":"Colombia · 1-3 días hábiles",
+    "cov.co1":'<svg class="ic"><use href="#i-check"/></svg>Entrega 1-3 días hábiles',
+    "cov.co2":'<svg class="ic"><use href="#i-check"/></svg>Bancolombia · Nequi · Wompi',
+    "cov.co3":'<svg class="ic"><use href="#i-check"/></svg>Pureza 99%+ por lote',
+    "cov.co4":'<svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN',
+    "cov.mxh":"México · 2-4 días hábiles",
+    "cov.mx1":'<svg class="ic"><use href="#i-check"/></svg>Entrega 2-4 días hábiles',
+    "cov.mx2":'<svg class="ic"><use href="#i-check"/></svg>BBVA · OXXO · Link de pago',
+    "cov.mx3":'<svg class="ic"><use href="#i-check"/></svg>Precios en USD',
+    "cov.mx4":'<svg class="ic"><use href="#i-check"/></svg>Soporte técnico ES/EN',
+    "cov.suph":"Soporte técnico",
+    "cov.sup1":'<svg class="ic"><use href="#i-check"/></svg>Orientación antes de comprar',
+    "cov.sup2":'<svg class="ic"><use href="#i-check"/></svg>Asesoría bilingüe ES/EN',
+    "cov.sup3":'<svg class="ic"><use href="#i-check"/></svg>Orientación sobre stacks',
+    "cov.sup4":'<svg class="ic"><use href="#i-check"/></svg>Seguimiento de pedido',
+    "res.eyebrow":"Recursos de investigación","res.h2":"Entiende lo que estás investigando.","res.p":"Guías técnicas sobre los compuestos más investigados en biohacking y longevidad. Información basada en literatura científica disponible en PubMed.",
+    "res.r1t":"Comparativa · GLP-1","res.r1h":"Retatrutide vs Tirzepatide: ¿cuál es más avanzado?",
+    "res.r1p":"Tirzepatide actúa sobre GLP-1R y GIPR. Retatrutide va un paso más allá activando también el receptor de glucagón (GCGR), añadiendo un componente termogénico. En Fase II (Eli Lilly, 2023) mostró reducciones de peso superiores en periodos equivalentes.",
+    "res.r2t":"Guía técnica · Stack","res.r2h":"BPC-157 + TB-500: la lógica del stack de recuperación",
+    "res.r2p":"BPC-157 trabaja sobre FAK-paxilina y VEGFR2-NO (reparación local); TB-500 actúa sobre la actina y la migración celular sistémica. La literatura preclínica documenta efectos sobre remodelación de matriz con ambos compuestos activos.",
+    "res.r3t":"Guía técnica · Longevidad","res.r3h":"GHK-Cu: el tripéptido de cobre en longevidad",
+    "res.r3p":"Complejo de cobre del tripéptido glycyl-L-histidyl-L-lysine. Modula MMP/TIMP regulando síntesis de colágeno I y III, e interactúa con TGF-β/Smad y HO-1/Nrf2. Uno de los más citados en longevidad cutánea y ECM.",
+    "res.link":"Consultar con soporte",
+    "res.foot":"Contenido basado en literatura científica disponible en PubMed · No constituye asesoramiento médico · For research purposes only",
+    "rev.eyebrow":"Comunidad Ascent","rev.h2":"Lo que dice la comunidad.","rev.based":"Basado en 87 reseñas verificadas",
+    "rev.foot":"For research purposes only · Todos los testimonios provienen de investigadores independientes",
+    "faq.eyebrow":"Preguntas frecuentes","faq.h2":"Las preguntas que más recibimos, respondidas.",
+    "pay.eyebrow":"Métodos de pago · 3 mercados","pay.h2":"Paga como prefieras, desde donde estés.","pay.p":"Métodos locales en Colombia, México y USA. Sin plataformas complicadas: directo, rápido y seguro.",
+    "pay.co1":"Transferencia directa","pay.co2":"Transferencia inmediata","pay.co3":"Link de pago seguro",
+    "pay.mxlabel":"México","pay.mx1":"Transferencia bancaria","pay.mx2":"Depósito en efectivo","pay.mx3b":"Link de pago","pay.mx3":"Pago seguro en línea",
+    "pay.note":"Confirmación de pago en minutos. Tu pedido sale el mismo día hábil si pagas antes de las 2PM.",
+    "cta.eyebrow":"Soporte técnico","cta.h2":"¿No sabes por dónde empezar?",
+    "cta.p":"Nuestro equipo especializado te ayuda a entender qué compuesto se ajusta mejor a tu investigación, qué presentación tiene más sentido y qué combinaciones documenta la literatura científica. Sin presión comercial, solo orientación técnica. En español o en inglés.",
+    "cta.btn1":"Escríbenos por WhatsApp","cta.btn2":"Explorar el catálogo",
+    "foot.brand":"Ascent Compounds es el proveedor especializado de péptidos de investigación en Colombia, México y USA. Catálogo con BPC-157, TB-500, GHK-Cu, Retatrutide, CJC-1295, Ipamorelin, Tirzepatide, Epithalon, FOX-04, NAD+, MOTS-c y más de 60 referencias con pureza 99%+ HPLC verificada por lote. Entrega en 1-3 días hábiles. Todos los productos son exclusivamente para investigación científica. For research purposes only. Los productos listados no son medicamentos y no están aprobados para uso terapéutico en humanos.",
+    "foot.cta":"¿No sabes cuál elegir?",
+    "foot.bottom":"Péptidos de investigación · Colombia · México · USA · Pureza 99%+ · Envío incluido · For research purposes only · @ascentcompounds",
+    "cart.title":"Mi pedido","cart.empty":"Tu carrito está vacío.<br>Agrega compuestos del catálogo.","cart.total":"Total estimado",
+    "cart.meta":"Envío incluido · Solo confirmaremos método de pago · For research purposes only","cart.checkout":"Enviar pedido por WhatsApp",
+    "cat.noresults":"No se encontraron compuestos para tu búsqueda.","cat.stackbadge":"Stack propietario Ascent","cat.add":"Agregar","feat.areas":"Áreas de investigación documentadas",
+    "cart.alertEmpty":"Tu carrito está vacío. Agrega compuestos del catálogo.","cart.msgIntro":"Hola, quiero realizar un pedido:","cart.msgTotal":"Total estimado"
+  },
+  en:{
+    "nav.calidad":"Quality","nav.diferenciales":"Differentiators","nav.compuestos":"Compounds","nav.catalogo":"Catalog","nav.reviews":"Reviews","nav.faq":"FAQ","nav.contacto":"Support",
+    "aria.cart":"Cart","aria.menu":"Menu","aria.close":"Close",
+    "hero.title":'The technical reference for research peptides in <span class="goldtext">Colombia, Mexico, and the USA.</span>',
+    "hero.lead":"A professional reference catalog for research peptides. Rigorous technical information, complete chemical profiles, batch-verified 99%+ HPLC purity, and specialized bilingual ES/EN support.",
+    "hero.ship":"Over 60 documented compounds. Delivery in <b>1-3 business days</b> in Colombia. Shipping included.",
+    "hero.cta1":"Not sure which one to choose? Message us","hero.cta2":"See our quality standards",
+    "hero.badge1":"99%+ HPLC purity","hero.badge3":"ES/EN support",
+    "stats.l1":"References in CO · MX · USA","stats.l2":"HPLC-verified purity","stats.l3":"Research categories","stats.l4":"Bilingual catalog and support",
+    "quality.eyebrow":"Quality standards","quality.h2":"How do you know what you receive is what the label says?",
+    "quality.p":"The right question isn't which lab manufactures it, but <b>how quality is verified</b>. That's how Ascent Compounds operates on every batch it distributes.",
+    "quality.s1n":"Step 01","quality.s1h":"Batch selection","quality.s1p":"We work exclusively with peptide synthesis manufacturers who document their process under research-grade standards.",
+    "quality.s2n":"Step 02","quality.s2h":"99%+ verification","quality.s2p":"Every batch is verified under 99%+ HPLC purity standards before distribution. If it doesn't meet that standard, the batch isn't distributed.",
+    "quality.s3n":"Step 03","quality.s3h":"Cold chain","quality.s3p":"Lyophilized peptides are handled under documented cold chain from origin to delivery to preserve compound integrity.",
+    "quality.s4n":"Step 04","quality.s4h":"Support before you buy","quality.s4p":"Our technical team can guide you on specifications, mechanisms, and compatibility of any compound. No sales pressure.",
+    "quality.q":"“Which lab do your peptides come from?”",
+    "quality.a":'We work with manufacturers specialized in research-grade peptide synthesis with documented processes. As standard supply-chain confidentiality policy, like any serious technical distributor, we don\'t disclose supplier names. What we do: <b style="color:var(--txt)">verify the purity of every batch under 99%+ HPLC standards before distributing it</b>, and provide technical guidance to every client before purchase. Quality is proven by the standard of the process, not the manufacturer\'s name.',
+    "diff.eyebrow":"Differentiators","diff.h2":"Why Ascent is the technical reference.","diff.p":"Operational attributes that back every reference in the catalog in Colombia, Mexico, and the USA.",
+    "diff.d1h":"Verified 99%+ HPLC purity","diff.d1p":"Every batch is verified under 99%+ HPLC purity standards before distribution. Without that standard, the batch doesn't enter the catalog.",
+    "diff.d2h":"Shipping included in CO, MX, and USA","diff.d2p":"All purchases include free shipping, with cold-chain logistics to preserve compound integrity in transit.",
+    "diff.d3h":"Technical catalog of 63 references","diff.d3p":"Over 60 compounds organized by area: regeneration, metabolism, growth hormone, longevity, cognition, and aesthetics.",
+    "diff.d4h":"Bilingual technical support","diff.d4p":"A team specialized in Spanish and English to resolve questions about mechanisms, presentations, and compound compatibility.",
+    "diff.d5h":"KLOWUP, proprietary stack","diff.d5p":"BPC-157 + GHK-Cu + TB-500 + KPV in a single 80mg formulation. Four complementary repair pathways in one compound.",
+    "diff.d6h":"Professional reference","diff.d6p":"Technical sheets with complete chemical profile, molecular formula, CAS number, sequence, and documented literature. We don't just sell, we give you the information.",
+    "feat.eyebrow":"Featured compounds","feat.h2":"Technical sheets for the most researched compounds.","feat.p":"Detailed technical information on molecular mechanism, signaling pathways, and chemical profile for each reference.",
+    "stack.h2":"Synergistic combination on the somatotropic axis.",
+    "stack.p":'CJC-1295 noDAC acts as a GHRH analog with high pituitary affinity. Ipamorelin acts as a selective GHSR-1a agonist with minimal cortisol impact. Combined, they simultaneously activate two distinct pathways of the GH axis, producing a more robust release profile than either alone. Also available as a combined reference: <b style="color:var(--txt)">Synergy II</b>.',
+    "stack.sub1":"10mg · GHRH analog","stack.sub2":"10mg · GHSR-1a agonist","stack.sub3":"10mg/10mg · Combined stack",
+    "cat.eyebrow":"Extended catalog, 63 references","cat.h2":"Reference catalog, 63 documented compounds.","cat.p":"Technical information per compound: mechanism, chemical profile, and research areas. Filter by target or search by name.",
+    "cat.search":"Search compound…",
+    "cov.eyebrow":"Operational coverage","cov.h2":"Colombia · Mexico · USA, active distribution.","cov.p":"Three markets, one standard: 99%+ HPLC purity, cold chain, shipping included, and bilingual technical support on every order.",
+    "cov.coh":"Colombia · 1-3 business days",
+    "cov.co1":'<svg class="ic"><use href="#i-check"/></svg>1-3 business days delivery',
+    "cov.co2":'<svg class="ic"><use href="#i-check"/></svg>Bancolombia · Nequi · Wompi',
+    "cov.co3":'<svg class="ic"><use href="#i-check"/></svg>99%+ purity per batch',
+    "cov.co4":'<svg class="ic"><use href="#i-check"/></svg>ES/EN technical support',
+    "cov.mxh":"Mexico · 2-4 business days",
+    "cov.mx1":'<svg class="ic"><use href="#i-check"/></svg>2-4 business days delivery',
+    "cov.mx2":'<svg class="ic"><use href="#i-check"/></svg>BBVA · OXXO · Payment link',
+    "cov.mx3":'<svg class="ic"><use href="#i-check"/></svg>Prices in USD',
+    "cov.mx4":'<svg class="ic"><use href="#i-check"/></svg>ES/EN technical support',
+    "cov.suph":"Technical support",
+    "cov.sup1":'<svg class="ic"><use href="#i-check"/></svg>Guidance before you buy',
+    "cov.sup2":'<svg class="ic"><use href="#i-check"/></svg>Bilingual ES/EN advice',
+    "cov.sup3":'<svg class="ic"><use href="#i-check"/></svg>Guidance on compound stacks',
+    "cov.sup4":'<svg class="ic"><use href="#i-check"/></svg>Order tracking',
+    "res.eyebrow":"Research resources","res.h2":"Understand what you're researching.","res.p":"Technical guides on the most researched compounds in biohacking and longevity. Information based on scientific literature available on PubMed.",
+    "res.r1t":"Comparison · GLP-1","res.r1h":"Retatrutide vs Tirzepatide: which is more advanced?",
+    "res.r1p":"Tirzepatide acts on GLP-1R and GIPR. Retatrutide goes a step further by also activating the glucagon receptor (GCGR), adding a thermogenic component. In Phase II (Eli Lilly, 2023) it showed superior weight reductions over equivalent periods.",
+    "res.r2t":"Technical guide · Stack","res.r2h":"BPC-157 + TB-500: the logic behind the recovery stack",
+    "res.r2p":"BPC-157 works on FAK-paxillin and VEGFR2-NO (local repair); TB-500 acts on actin and systemic cell migration. Preclinical literature documents matrix remodeling effects with both compounds active.",
+    "res.r3t":"Technical guide · Longevity","res.r3h":"GHK-Cu: the copper tripeptide in longevity",
+    "res.r3p":"A copper complex of the tripeptide glycyl-L-histidyl-L-lysine. Modulates MMP/TIMP, regulating collagen I and III synthesis, and interacts with TGF-β/Smad and HO-1/Nrf2. One of the most cited in skin longevity and ECM research.",
+    "res.link":"Consult with support",
+    "res.foot":"Content based on scientific literature available on PubMed · Does not constitute medical advice · For research purposes only",
+    "rev.eyebrow":"Ascent community","rev.h2":"What the community is saying.","rev.based":"Based on 87 verified reviews",
+    "rev.foot":"For research purposes only · All testimonials come from independent researchers",
+    "faq.eyebrow":"Frequently asked questions","faq.h2":"The questions we get most, answered.",
+    "pay.eyebrow":"Payment methods · 3 markets","pay.h2":"Pay however you prefer, from wherever you are.","pay.p":"Local payment methods in Colombia, Mexico, and the USA. No complicated platforms: direct, fast, and secure.",
+    "pay.co1":"Direct transfer","pay.co2":"Instant transfer","pay.co3":"Secure payment link",
+    "pay.mxlabel":"Mexico","pay.mx1":"Bank transfer","pay.mx2":"Cash deposit","pay.mx3b":"Payment link","pay.mx3":"Secure online payment",
+    "pay.note":"Payment confirmation within minutes. Your order ships the same business day if you pay before 2PM.",
+    "cta.eyebrow":"Technical support","cta.h2":"Not sure where to start?",
+    "cta.p":"Our specialized team helps you understand which compound best fits your research, which presentation makes the most sense, and which combinations the scientific literature documents. No sales pressure, just technical guidance. In Spanish or English.",
+    "cta.btn1":"Message us on WhatsApp","cta.btn2":"Explore the catalog",
+    "foot.brand":"Ascent Compounds is the specialized supplier of research peptides in Colombia, Mexico, and the USA. Catalog featuring BPC-157, TB-500, GHK-Cu, Retatrutide, CJC-1295, Ipamorelin, Tirzepatide, Epithalon, FOX-04, NAD+, MOTS-c, and over 60 references with batch-verified 99%+ HPLC purity. Delivery in 1-3 business days. All products are exclusively for scientific research. For research purposes only. The products listed are not medications and are not approved for therapeutic use in humans.",
+    "foot.cta":"Not sure which one to choose?",
+    "foot.bottom":"Research peptides · Colombia · Mexico · USA · 99%+ purity · Shipping included · For research purposes only · @ascentcompounds",
+    "cart.title":"My order","cart.empty":"Your cart is empty.<br>Add compounds from the catalog.","cart.total":"Estimated total",
+    "cart.meta":"Shipping included · We'll only confirm the payment method · For research purposes only","cart.checkout":"Send order via WhatsApp",
+    "cat.noresults":"No compounds found for your search.","cat.stackbadge":"Ascent proprietary stack","cat.add":"Add","feat.areas":"Documented research areas",
+    "cart.alertEmpty":"Your cart is empty. Add compounds from the catalog.","cart.msgIntro":"Hi! I would like to place the following order:","cart.msgTotal":"Estimated total"
+  }
+};
+
+const CATS=[["todo","Todo","All"],["regeneracion","Regeneración","Regeneration"],["metabolismo","Metabolismo","Metabolism"],["gh","Hormona GH","GH Hormone"],["longevidad","Longevidad","Longevity"],["cognicion","Cognición","Cognition"],["estetica","Estética","Aesthetics"],["rendimiento","Rendimiento","Performance"],["accesorios","Accesorios","Accessories"]];
 const CATLABEL={regeneracion:"Regeneración y Reparación",metabolismo:"Metabolismo",gh:"Hormona de Crecimiento",longevidad:"Longevidad y Bienestar",cognicion:"Salud Cognitiva",estetica:"Estética y Pigmentación",accesorios:"Accesorios"};
+const CATLABEL_EN={regeneracion:"Regeneration & Repair",metabolismo:"Metabolism",gh:"Growth Hormone",longevidad:"Longevity & Wellness",cognicion:"Cognitive Health",estetica:"Aesthetics & Pigmentation",accesorios:"Accessories"};
 const CATICON={regeneracion:"i-shield",metabolismo:"i-bolt",gh:"i-flask",longevidad:"i-star",cognicion:"i-brain",estetica:"i-drop",accesorios:"i-vial"};
 
 const PRODUCTS=[
-  {n:"BPC-157",s:"10mg",p:181.82,c:"regeneracion",t:["rendimiento"],d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones."},
-  {n:"BPC-157",s:"20mg",p:180.00,c:"regeneracion",d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones."},
-  {n:"BPC-157",s:"40mg",p:279.76,c:"regeneracion",d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones."},
-  {n:"Cartalax",s:"20mg",p:184.00,c:"regeneracion",d:"Péptido bioregulador investigado en modelos de cartílago articular, tejido conectivo y reparación de superficie articular."},
-  {n:"GHK-Cu",s:"100mg",p:194.08,c:"regeneracion",d:"Tripéptido de cobre en plasma humano. Modula MMP/TIMP, síntesis de colágeno I/III y expresión de +4000 genes en piel y ECM."},
-  {n:"KLOWUP",s:"80mg",p:247.33,c:"regeneracion",t:["rendimiento"],stack:true,d:"Stack propietario Ascent: cuatro vías moleculares complementarias (angiogénesis, ECM, migración celular, antiinflamatorio) en un vial de 80mg."},
-  {n:"KPV",s:"10mg",p:150.00,c:"regeneracion",d:"Tripéptido α-MSH investigado en señalización antiinflamatoria experimental vía receptor MC1R. Componente del stack KLOWUP."},
-  {n:"KPV",s:"30mg",p:262.50,c:"regeneracion",d:"Tripéptido α-MSH investigado en señalización antiinflamatoria experimental vía receptor MC1R. Componente del stack KLOWUP."},
-  {n:"TB-500",s:"10mg",p:216.98,c:"regeneracion",t:["rendimiento"],d:"Fragmento de Thymosin β-4 con distribución sistémica. Investigado en dinámica de actina, migración celular y recuperación."},
-  {n:"5-Amino-1mq",s:"50mg",p:140.00,c:"metabolismo",d:"Inhibidor de NNMT. Investigado en adipogénesis, sensibilidad a insulina y metabolismo energético mitocondrial."},
-  {n:"AICAR",s:"50mg",p:130.00,c:"metabolismo",d:"Activador de AMPK. Investigado en resistencia muscular, biogénesis mitocondrial y señalización metabólica."},
-  {n:"AOD-9604",s:"5mg",p:188.12,c:"metabolismo",d:"Fragmento 177-191 de GH sin actividad anabólica. Investigado en lipólisis, adiposidad visceral y metabolismo de ácidos grasos."},
-  {n:"Eloratlintide",s:"10mg",p:300.00,c:"metabolismo",d:"Análogo de amilina de 2ª generación. Investigado en saciedad, vaciamiento gástrico y control glucémico avanzado."},
-  {n:"MOTS-c",s:"40mg",p:231.82,c:"metabolismo",t:["rendimiento"],d:"Péptido mitocondrial producido durante el ejercicio. Investigado en homeostasis energética, sensibilidad a insulina y longevidad."},
-  {n:"Retatrutide",s:"10mg",p:170.21,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada."},
-  {n:"Retatrutide",s:"30mg",p:243.33,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada."},
-  {n:"Retatrutide",s:"50mg",p:318.00,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada."},
-  {n:"SLU-PP-332",s:"5mg",p:187.06,c:"metabolismo",d:"Agonista de receptores ERRα/β/γ. Investigado en oxidación de ácidos grasos, biogénesis mitocondrial y resistencia metabólica."},
-  {n:"Tensity I",s:"20mg",p:246.67,c:"metabolismo",stack:true,d:"Formulación combinada para investigación metabólica integral con señalización simultánea en múltiples vías energéticas."},
-  {n:"Tesamorelin",s:"10mg",p:172.33,c:"metabolismo",d:"Análogo GHRH aprobado FDA (Egrifta). Investigado en reducción de adiposidad visceral, señalización GH/IGF-1 y composición corporal."},
-  {n:"Tesamorelin",s:"20mg",p:227.59,c:"metabolismo",d:"Análogo GHRH aprobado FDA (Egrifta). Investigado en reducción de adiposidad visceral, señalización GH/IGF-1 y composición corporal."},
-  {n:"Tirzepatide",s:"5mg",p:161.76,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal."},
-  {n:"Tirzepatide",s:"10mg",p:186.90,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal."},
-  {n:"Tirzepatide",s:"30mg",p:258.00,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal."},
-  {n:"CJC-1295 noDAC",s:"10mg",p:180.00,c:"gh",t:["rendimiento"],d:"Análogo GHRH sin DAC. Liberación pulsátil de GH más fisiológica. Investigado en señalización hipofisaria y eje GH/IGF-1."},
-  {n:"GHRP-2",s:"5mg",p:156.63,c:"gh",t:["rendimiento"],d:"Secretagogo de GH de 1ª generación. Agonista GHSR-1a con fuerte señal de liberación de GH. Investigado en pulsos somatotrópicos."},
-  {n:"HCG",s:"5000IU",p:187.50,c:"gh",d:"Gonadotropina coriónica humana. Investigada en eje hipotálamo-hipófisis-gónada, esteroidogénesis y modelos de fertilidad."},
-  {n:"HCG",s:"10000IU",p:228.16,c:"gh",d:"Gonadotropina coriónica humana. Investigada en eje hipotálamo-hipófisis-gónada, esteroidogénesis y modelos de fertilidad."},
-  {n:"HGH",s:"30IU",p:165.81,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético."},
-  {n:"HGH",s:"36IU",p:287.36,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético."},
-  {n:"HGH",s:"50IU",p:172.50,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético."},
-  {n:"IGF1-LR3",s:"1mg",p:207.50,c:"gh",t:["rendimiento"],d:"IGF-1 con extensión LR3 que prolonga la vida media. Investigado en señalización anabólica, diferenciación muscular y proliferación."},
-  {n:"Ipamorelin",s:"10mg",p:174.42,c:"gh",t:["rendimiento"],d:"Agonista selectivo GHSR-1a con mínimo impacto en cortisol y prolactina. El secretagogo más limpio investigado."},
-  {n:"Kisspeptin",s:"10mg",p:168.49,c:"gh",d:"Neuropéptido regulador del eje HPG. Investigado en señalización de GnRH, LH y FSH. Clave en fertilidad y función reproductiva."},
-  {n:"Synergy II",s:"10mg/10mg",p:224.95,c:"gh",stack:true,d:"CJC-1295 + Ipamorelin en un solo vial. Activa GHRH y GHSR-1a para una señalización somatotrópica más robusta."},
-  {n:"ARA-290",s:"10mg",p:174.00,c:"longevidad",d:"Análogo no eritropoyético de EPO. Investigado en neuroprotección, señalización antiinflamatoria y neuropatía periférica."},
-  {n:"Cardiogen",s:"20mg",p:177.06,c:"longevidad",d:"Péptido bioregulador tetrámero cardíaco. Investigado en función cardiomiocítica y protección cardiovascular."},
-  {n:"Coherence",s:"50mg",p:214.86,c:"longevidad",stack:true,d:"Formulación combinada para investigación integral de longevidad con señalización en múltiples vías de envejecimiento celular."},
-  {n:"Cortagen",s:"20mg",p:193.01,c:"longevidad",d:"Péptido bioregulador de tejido pulmonar. Investigado en función respiratoria, epitelio bronquial y regeneración pulmonar."},
-  {n:"Epithalon",s:"50mg",p:177.76,c:"longevidad",d:"Tetrapéptido pineal (AEDG). Investigado en regulación telomérica, expresión de telomerasa y longevidad celular. Muy citado en aging."},
-  {n:"FOX-04",s:"10mg",p:333.17,c:"longevidad",d:"Péptido senolítico experimental. Investigado en apoptosis selectiva de células senescentes. De los más avanzados en longevidad."},
-  {n:"Glutathione",s:"1500mg",p:206.35,c:"longevidad",d:"Tripéptido endógeno (Glu-Cys-Gly). Principal antioxidante intracelular. Investigado en estrés oxidativo y detoxificación hepática."},
-  {n:"NAD+",s:"1000mg",p:210.00,c:"longevidad",d:"Coenzima NAD+. Investigada en metabolismo mitocondrial, sirtuinas (SIRT1-7), reparación de ADN y longevidad celular."},
-  {n:"Oxytocin",s:"10mg",p:125.00,c:"longevidad",d:"Neuropéptido hipotalámico. Investigado en confianza, comportamiento prosocial, ansiedad social y recuperación del estrés."},
-  {n:"Pinealon",s:"20mg",p:179.19,c:"longevidad",d:"Péptido bioregulador tritámero cerebral. Investigado en neuroprotección, función cognitiva y señalización neuronal en aging."},
-  {n:"Prostamax",s:"20mg",p:250.00,c:"longevidad",d:"Péptido bioregulador de tejido prostático. Investigado en función glandular y tejido reproductivo masculino."},
-  {n:"PT-141",s:"10mg",p:186.67,c:"longevidad",d:"Análogo de α-MSH (Bremelanotide). Agonista MC3R/MC4R. Investigado en señalización central de deseo sexual."},
-  {n:"SS-31",s:"50mg",p:303.28,c:"longevidad",d:"Péptido mitocondrial Szeto-Schiller 31. Investigado en protección de membrana mitocondrial, cardioprotección y estrés oxidativo."},
-  {n:"Thymosin A",s:"10mg",p:225.95,c:"longevidad",d:"Fracción 5 de timosina alfa. Investigada en modulación de linfocitos T e inmunomodulación en modelos de infección viral."},
-  {n:"Thymulin",s:"20mg",p:261.19,c:"longevidad",d:"Péptido tímico nonapéptido inmunomodulador. Investigado en señalización zinc-tímico y modulación de linfocitos T."},
-  {n:"Vesugen",s:"20mg",p:242.50,c:"longevidad",d:"Péptido bioregulador tritámero vascular. Investigado en integridad endotelial y función de células vasculares en aging."},
-  {n:"Vilon",s:"20mg",p:244.19,c:"longevidad",d:"Dipéptido bioregulador (Lys-Glu). Investigado en sistema inmune, producción de citoquinas y modulación de linfocitos."},
-  {n:"VIP",s:"10mg",p:236.20,c:"longevidad",d:"Neuropéptido vasoactivo de 28 aminoácidos. Investigado en neuroprotección, inmunomodulación e inflamación intestinal."},
-  {n:"DSIP",s:"15mg",p:150.33,c:"cognicion",d:"Nonapéptido delta. Investigado en inducción del sueño delta, regulación circadiana y respuesta al estrés."},
-  {n:"Selank",s:"30mg",p:154.75,c:"cognicion",d:"Análogo de tuftsin. Investigado en ansiedad, función cognitiva y señalización nootrópica sin efecto sedante documentado."},
-  {n:"Semax",s:"30mg",p:150.75,c:"cognicion",d:"Fragmento ACTH(4-7) con extensión Pro-Gly-Pro. Investigado en neuroplasticidad, protección neuronal y rendimiento cognitivo."},
-  {n:"Melanotan I",s:"10mg",p:133.75,c:"estetica",d:"Análogo lineal de α-MSH (Afamelanotide). Investigado en melanogénesis, síntesis de melanina y fotoprotección."},
-  {n:"Melanotan II",s:"10mg",p:131.25,c:"estetica",d:"Análogo cíclico de α-MSH. Agonista MC1R/MC4R. Investigado en melanogénesis y función sexual. Requiere precaución en uso."},
-  {n:"Bacteriostatic Water",s:"3ml",p:5.00,c:"accesorios",d:"Agua estéril con 0.9% de alcohol bencílico. Estándar para reconstitución de péptidos liofilizados en laboratorio."},
-  {n:"Pfizer · Hospira Water",s:"30mL",p:30.00,c:"accesorios",d:"Agua para inyección de grado farmacéutico. Para reconstitución que requiere máxima pureza del solvente."},
-  {n:"Cartridge",s:"1 unidad",p:1.50,c:"accesorios",d:"Cartucho de repuesto compatible con Insulin Pen I y II. Permite reutilización precisa para protocolos de laboratorio."},
-  {n:"Insulin Pen I",s:"1 unidad",p:35.00,c:"accesorios",d:"Pluma de dosificación reutilizable con incrementos de 1 unidad. Facilita la precisión en protocolos de investigación."},
-  {n:"Insulin Pen II · Savvio",s:"1 unidad",p:120.00,c:"accesorios",d:"Pluma Savvio de alta precisión con dosis ajustables. Para protocolos que requieren dosificación exacta y reproducible."}
+  {n:"BPC-157",s:"10mg",p:181.82,c:"regeneracion",t:["rendimiento"],d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones.",dEn:"Investigated for musculoskeletal repair, GI integrity, and angiogenic signaling. The most cited peptide in tendon recovery research."},
+  {n:"BPC-157",s:"20mg",p:180.00,c:"regeneracion",d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones.",dEn:"Investigated for musculoskeletal repair, GI integrity, and angiogenic signaling. The most cited peptide in tendon recovery research."},
+  {n:"BPC-157",s:"40mg",p:279.76,c:"regeneracion",d:"Investigado en reparación musculoesquelética, integridad GI y señalización angiogénica. El más citado en recuperación de tendones.",dEn:"Investigated for musculoskeletal repair, GI integrity, and angiogenic signaling. The most cited peptide in tendon recovery research."},
+  {n:"Cartalax",s:"20mg",p:184.00,c:"regeneracion",d:"Péptido bioregulador investigado en modelos de cartílago articular, tejido conectivo y reparación de superficie articular.",dEn:"Bioregulator peptide investigated in models of articular cartilage, connective tissue, and joint surface repair."},
+  {n:"GHK-Cu",s:"100mg",p:194.08,c:"regeneracion",d:"Tripéptido de cobre en plasma humano. Modula MMP/TIMP, síntesis de colágeno I/III y expresión de +4000 genes en piel y ECM.",dEn:"Copper tripeptide found in human plasma. Modulates MMP/TIMP, collagen I/III synthesis, and expression of 4,000+ genes in skin and ECM."},
+  {n:"KLOWUP",s:"80mg",p:247.33,c:"regeneracion",t:["rendimiento"],stack:true,d:"Stack propietario Ascent: cuatro vías moleculares complementarias (angiogénesis, ECM, migración celular, antiinflamatorio) en un vial de 80mg.",dEn:"Ascent's proprietary stack: four complementary molecular pathways (angiogenesis, ECM, cell migration, anti-inflammatory) in a single 80mg vial."},
+  {n:"KPV",s:"10mg",p:150.00,c:"regeneracion",d:"Tripéptido α-MSH investigado en señalización antiinflamatoria experimental vía receptor MC1R. Componente del stack KLOWUP.",dEn:"α-MSH tripeptide investigated in experimental anti-inflammatory signaling via the MC1R receptor. A component of the KLOWUP stack."},
+  {n:"KPV",s:"30mg",p:262.50,c:"regeneracion",d:"Tripéptido α-MSH investigado en señalización antiinflamatoria experimental vía receptor MC1R. Componente del stack KLOWUP.",dEn:"α-MSH tripeptide investigated in experimental anti-inflammatory signaling via the MC1R receptor. A component of the KLOWUP stack."},
+  {n:"TB-500",s:"10mg",p:216.98,c:"regeneracion",t:["rendimiento"],d:"Fragmento de Thymosin β-4 con distribución sistémica. Investigado en dinámica de actina, migración celular y recuperación.",dEn:"Thymosin β-4 fragment with systemic distribution. Investigated in actin dynamics, cell migration, and recovery."},
+  {n:"5-Amino-1mq",s:"50mg",p:140.00,c:"metabolismo",d:"Inhibidor de NNMT. Investigado en adipogénesis, sensibilidad a insulina y metabolismo energético mitocondrial.",dEn:"NNMT inhibitor. Investigated in adipogenesis, insulin sensitivity, and mitochondrial energy metabolism."},
+  {n:"AICAR",s:"50mg",p:130.00,c:"metabolismo",d:"Activador de AMPK. Investigado en resistencia muscular, biogénesis mitocondrial y señalización metabólica.",dEn:"AMPK activator. Investigated in muscular endurance, mitochondrial biogenesis, and metabolic signaling."},
+  {n:"AOD-9604",s:"5mg",p:188.12,c:"metabolismo",d:"Fragmento 177-191 de GH sin actividad anabólica. Investigado en lipólisis, adiposidad visceral y metabolismo de ácidos grasos.",dEn:"GH fragment 177-191 without anabolic activity. Investigated in lipolysis, visceral adiposity, and fatty acid metabolism."},
+  {n:"Eloratlintide",s:"10mg",p:300.00,c:"metabolismo",d:"Análogo de amilina de 2ª generación. Investigado en saciedad, vaciamiento gástrico y control glucémico avanzado.",dEn:"2nd-generation amylin analog. Investigated in satiety, gastric emptying, and advanced glycemic control."},
+  {n:"MOTS-c",s:"40mg",p:231.82,c:"metabolismo",t:["rendimiento"],d:"Péptido mitocondrial producido durante el ejercicio. Investigado en homeostasis energética, sensibilidad a insulina y longevidad.",dEn:"Mitochondrial-derived peptide produced during exercise. Investigated in energy homeostasis, insulin sensitivity, and longevity."},
+  {n:"Retatrutide",s:"10mg",p:170.21,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada.",dEn:"Triple GLP-1R/GIPR/GCGR agonist. Phase II (NEJM 2023): 24.2% body weight reduction at 48 weeks. The most advanced metabolic molecule in research."},
+  {n:"Retatrutide",s:"30mg",p:243.33,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada.",dEn:"Triple GLP-1R/GIPR/GCGR agonist. Phase II (NEJM 2023): 24.2% body weight reduction at 48 weeks. The most advanced metabolic molecule in research."},
+  {n:"Retatrutide",s:"50mg",p:318.00,c:"metabolismo",d:"Triple agonista GLP-1R/GIPR/GCGR. Fase II (NEJM 2023): 24.2% menos peso corporal a 48 semanas. La molécula metabólica más avanzada.",dEn:"Triple GLP-1R/GIPR/GCGR agonist. Phase II (NEJM 2023): 24.2% body weight reduction at 48 weeks. The most advanced metabolic molecule in research."},
+  {n:"SLU-PP-332",s:"5mg",p:187.06,c:"metabolismo",d:"Agonista de receptores ERRα/β/γ. Investigado en oxidación de ácidos grasos, biogénesis mitocondrial y resistencia metabólica.",dEn:"ERRα/β/γ receptor agonist. Investigated in fatty acid oxidation, mitochondrial biogenesis, and metabolic endurance."},
+  {n:"Tensity I",s:"20mg",p:246.67,c:"metabolismo",stack:true,d:"Formulación combinada para investigación metabólica integral con señalización simultánea en múltiples vías energéticas.",dEn:"Combined formulation for integral metabolic research with simultaneous signaling across multiple energy pathways."},
+  {n:"Tesamorelin",s:"10mg",p:172.33,c:"metabolismo",d:"Análogo GHRH aprobado FDA (Egrifta). Investigado en reducción de adiposidad visceral, señalización GH/IGF-1 y composición corporal.",dEn:"FDA-approved GHRH analog (Egrifta). Investigated in visceral adiposity reduction, GH/IGF-1 signaling, and body composition."},
+  {n:"Tesamorelin",s:"20mg",p:227.59,c:"metabolismo",d:"Análogo GHRH aprobado FDA (Egrifta). Investigado en reducción de adiposidad visceral, señalización GH/IGF-1 y composición corporal.",dEn:"FDA-approved GHRH analog (Egrifta). Investigated in visceral adiposity reduction, GH/IGF-1 signaling, and body composition."},
+  {n:"Tirzepatide",s:"5mg",p:161.76,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal.",dEn:"Dual GLP-1R/GIPR agonist (Mounjaro/Zepbound). Investigated in glycemic control, satiety, and body composition."},
+  {n:"Tirzepatide",s:"10mg",p:186.90,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal.",dEn:"Dual GLP-1R/GIPR agonist (Mounjaro/Zepbound). Investigated in glycemic control, satiety, and body composition."},
+  {n:"Tirzepatide",s:"30mg",p:258.00,c:"metabolismo",d:"Doble agonista GLP-1R/GIPR (Mounjaro/Zepbound). Investigado en control glucémico, saciedad y composición corporal.",dEn:"Dual GLP-1R/GIPR agonist (Mounjaro/Zepbound). Investigated in glycemic control, satiety, and body composition."},
+  {n:"CJC-1295 noDAC",s:"10mg",p:180.00,c:"gh",t:["rendimiento"],d:"Análogo GHRH sin DAC. Liberación pulsátil de GH más fisiológica. Investigado en señalización hipofisaria y eje GH/IGF-1.",dEn:"GHRH analog without DAC. More physiological pulsatile GH release. Investigated in pituitary signaling and the GH/IGF-1 axis."},
+  {n:"GHRP-2",s:"5mg",p:156.63,c:"gh",t:["rendimiento"],d:"Secretagogo de GH de 1ª generación. Agonista GHSR-1a con fuerte señal de liberación de GH. Investigado en pulsos somatotrópicos.",dEn:"1st-generation GH secretagogue. GHSR-1a agonist with a strong GH-release signal. Investigated in somatotropic pulses."},
+  {n:"HCG",s:"5000IU",p:187.50,c:"gh",d:"Gonadotropina coriónica humana. Investigada en eje hipotálamo-hipófisis-gónada, esteroidogénesis y modelos de fertilidad.",dEn:"Human chorionic gonadotropin. Investigated in the hypothalamic-pituitary-gonadal axis, steroidogenesis, and fertility models."},
+  {n:"HCG",s:"10000IU",p:228.16,c:"gh",d:"Gonadotropina coriónica humana. Investigada en eje hipotálamo-hipófisis-gónada, esteroidogénesis y modelos de fertilidad.",dEn:"Human chorionic gonadotropin. Investigated in the hypothalamic-pituitary-gonadal axis, steroidogenesis, and fertility models."},
+  {n:"HGH",s:"30IU",p:165.81,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético.",dEn:"Recombinant 191-amino-acid HGH. Investigated in somatotropic signaling, IGF-1, body composition, and energy metabolism."},
+  {n:"HGH",s:"36IU",p:287.36,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético.",dEn:"Recombinant 191-amino-acid HGH. Investigated in somatotropic signaling, IGF-1, body composition, and energy metabolism."},
+  {n:"HGH",s:"50IU",p:172.50,c:"gh",d:"HGH recombinante 191 aminoácidos. Investigada en señalización somatotrópica, IGF-1, composición corporal y metabolismo energético.",dEn:"Recombinant 191-amino-acid HGH. Investigated in somatotropic signaling, IGF-1, body composition, and energy metabolism."},
+  {n:"IGF1-LR3",s:"1mg",p:207.50,c:"gh",t:["rendimiento"],d:"IGF-1 con extensión LR3 que prolonga la vida media. Investigado en señalización anabólica, diferenciación muscular y proliferación.",dEn:"IGF-1 with an LR3 extension that prolongs half-life. Investigated in anabolic signaling, muscle differentiation, and proliferation."},
+  {n:"Ipamorelin",s:"10mg",p:174.42,c:"gh",t:["rendimiento"],d:"Agonista selectivo GHSR-1a con mínimo impacto en cortisol y prolactina. El secretagogo más limpio investigado.",dEn:"Selective GHSR-1a agonist with minimal impact on cortisol and prolactin. The cleanest secretagogue under research."},
+  {n:"Kisspeptin",s:"10mg",p:168.49,c:"gh",d:"Neuropéptido regulador del eje HPG. Investigado en señalización de GnRH, LH y FSH. Clave en fertilidad y función reproductiva.",dEn:"Neuropeptide regulator of the HPG axis. Investigated in GnRH, LH, and FSH signaling. Key in fertility and reproductive function."},
+  {n:"Synergy II",s:"10mg/10mg",p:224.95,c:"gh",stack:true,d:"CJC-1295 + Ipamorelin en un solo vial. Activa GHRH y GHSR-1a para una señalización somatotrópica más robusta.",dEn:"CJC-1295 + Ipamorelin in a single vial. Activates GHRH and GHSR-1a for a more robust somatotropic signal."},
+  {n:"ARA-290",s:"10mg",p:174.00,c:"longevidad",d:"Análogo no eritropoyético de EPO. Investigado en neuroprotección, señalización antiinflamatoria y neuropatía periférica.",dEn:"Non-erythropoietic EPO analog. Investigated in neuroprotection, anti-inflammatory signaling, and peripheral neuropathy."},
+  {n:"Cardiogen",s:"20mg",p:177.06,c:"longevidad",d:"Péptido bioregulador tetrámero cardíaco. Investigado en función cardiomiocítica y protección cardiovascular.",dEn:"Cardiac tetramer bioregulator peptide. Investigated in cardiomyocyte function and cardiovascular protection."},
+  {n:"Coherence",s:"50mg",p:214.86,c:"longevidad",stack:true,d:"Formulación combinada para investigación integral de longevidad con señalización en múltiples vías de envejecimiento celular.",dEn:"Combined formulation for integral longevity research with signaling across multiple cellular aging pathways."},
+  {n:"Cortagen",s:"20mg",p:193.01,c:"longevidad",d:"Péptido bioregulador de tejido pulmonar. Investigado en función respiratoria, epitelio bronquial y regeneración pulmonar.",dEn:"Lung tissue bioregulator peptide. Investigated in respiratory function, bronchial epithelium, and lung regeneration."},
+  {n:"Epithalon",s:"50mg",p:177.76,c:"longevidad",d:"Tetrapéptido pineal (AEDG). Investigado en regulación telomérica, expresión de telomerasa y longevidad celular. Muy citado en aging.",dEn:"Pineal tetrapeptide (AEDG). Investigated in telomere regulation, telomerase expression, and cellular longevity. Widely cited in aging research."},
+  {n:"FOX-04",s:"10mg",p:333.17,c:"longevidad",d:"Péptido senolítico experimental. Investigado en apoptosis selectiva de células senescentes. De los más avanzados en longevidad.",dEn:"Experimental senolytic peptide. Investigated in selective apoptosis of senescent cells. One of the most advanced compounds in longevity research."},
+  {n:"Glutathione",s:"1500mg",p:206.35,c:"longevidad",d:"Tripéptido endógeno (Glu-Cys-Gly). Principal antioxidante intracelular. Investigado en estrés oxidativo y detoxificación hepática.",dEn:"Endogenous tripeptide (Glu-Cys-Gly). The body's main intracellular antioxidant. Investigated in oxidative stress and hepatic detoxification."},
+  {n:"NAD+",s:"1000mg",p:210.00,c:"longevidad",d:"Coenzima NAD+. Investigada en metabolismo mitocondrial, sirtuinas (SIRT1-7), reparación de ADN y longevidad celular.",dEn:"NAD+ coenzyme. Investigated in mitochondrial metabolism, sirtuins (SIRT1-7), DNA repair, and cellular longevity."},
+  {n:"Oxytocin",s:"10mg",p:125.00,c:"longevidad",d:"Neuropéptido hipotalámico. Investigado en confianza, comportamiento prosocial, ansiedad social y recuperación del estrés.",dEn:"Hypothalamic neuropeptide. Investigated in trust, prosocial behavior, social anxiety, and stress recovery."},
+  {n:"Pinealon",s:"20mg",p:179.19,c:"longevidad",d:"Péptido bioregulador tritámero cerebral. Investigado en neuroprotección, función cognitiva y señalización neuronal en aging.",dEn:"Brain tritamer bioregulator peptide. Investigated in neuroprotection, cognitive function, and neuronal signaling in aging."},
+  {n:"Prostamax",s:"20mg",p:250.00,c:"longevidad",d:"Péptido bioregulador de tejido prostático. Investigado en función glandular y tejido reproductivo masculino.",dEn:"Prostate tissue bioregulator peptide. Investigated in glandular function and male reproductive tissue."},
+  {n:"PT-141",s:"10mg",p:186.67,c:"longevidad",d:"Análogo de α-MSH (Bremelanotide). Agonista MC3R/MC4R. Investigado en señalización central de deseo sexual.",dEn:"α-MSH analog (Bremelanotide). MC3R/MC4R agonist. Investigated in central signaling of sexual desire."},
+  {n:"SS-31",s:"50mg",p:303.28,c:"longevidad",d:"Péptido mitocondrial Szeto-Schiller 31. Investigado en protección de membrana mitocondrial, cardioprotección y estrés oxidativo.",dEn:"Szeto-Schiller 31 mitochondrial peptide. Investigated in mitochondrial membrane protection, cardioprotection, and oxidative stress."},
+  {n:"Thymosin A",s:"10mg",p:225.95,c:"longevidad",d:"Fracción 5 de timosina alfa. Investigada en modulación de linfocitos T e inmunomodulación en modelos de infección viral.",dEn:"Thymosin alpha fraction 5. Investigated in T-lymphocyte modulation and immunomodulation in viral infection models."},
+  {n:"Thymulin",s:"20mg",p:261.19,c:"longevidad",d:"Péptido tímico nonapéptido inmunomodulador. Investigado en señalización zinc-tímico y modulación de linfocitos T.",dEn:"Thymic nonapeptide immunomodulator. Investigated in zinc-thymic signaling and T-lymphocyte modulation."},
+  {n:"Vesugen",s:"20mg",p:242.50,c:"longevidad",d:"Péptido bioregulador tritámero vascular. Investigado en integridad endotelial y función de células vasculares en aging.",dEn:"Vascular tritamer bioregulator peptide. Investigated in endothelial integrity and vascular cell function in aging."},
+  {n:"Vilon",s:"20mg",p:244.19,c:"longevidad",d:"Dipéptido bioregulador (Lys-Glu). Investigado en sistema inmune, producción de citoquinas y modulación de linfocitos.",dEn:"Bioregulator dipeptide (Lys-Glu). Investigated in immune system function, cytokine production, and lymphocyte modulation."},
+  {n:"VIP",s:"10mg",p:236.20,c:"longevidad",d:"Neuropéptido vasoactivo de 28 aminoácidos. Investigado en neuroprotección, inmunomodulación e inflamación intestinal.",dEn:"28-amino-acid vasoactive neuropeptide. Investigated in neuroprotection, immunomodulation, and intestinal inflammation."},
+  {n:"DSIP",s:"15mg",p:150.33,c:"cognicion",d:"Nonapéptido delta. Investigado en inducción del sueño delta, regulación circadiana y respuesta al estrés.",dEn:"Delta sleep-inducing nonapeptide. Investigated in delta sleep induction, circadian regulation, and stress response."},
+  {n:"Selank",s:"30mg",p:154.75,c:"cognicion",d:"Análogo de tuftsin. Investigado en ansiedad, función cognitiva y señalización nootrópica sin efecto sedante documentado.",dEn:"Tuftsin analog. Investigated in anxiety, cognitive function, and nootropic signaling with no documented sedative effect."},
+  {n:"Semax",s:"30mg",p:150.75,c:"cognicion",d:"Fragmento ACTH(4-7) con extensión Pro-Gly-Pro. Investigado en neuroplasticidad, protección neuronal y rendimiento cognitivo.",dEn:"ACTH(4-7) fragment with a Pro-Gly-Pro extension. Investigated in neuroplasticity, neuronal protection, and cognitive performance."},
+  {n:"Melanotan I",s:"10mg",p:133.75,c:"estetica",d:"Análogo lineal de α-MSH (Afamelanotide). Investigado en melanogénesis, síntesis de melanina y fotoprotección.",dEn:"Linear α-MSH analog (Afamelanotide). Investigated in melanogenesis, melanin synthesis, and photoprotection."},
+  {n:"Melanotan II",s:"10mg",p:131.25,c:"estetica",d:"Análogo cíclico de α-MSH. Agonista MC1R/MC4R. Investigado en melanogénesis y función sexual. Requiere precaución en uso.",dEn:"Cyclic α-MSH analog. MC1R/MC4R agonist. Investigated in melanogenesis and sexual function. Requires caution in handling."},
+  {n:"Bacteriostatic Water",s:"3ml",p:5.00,c:"accesorios",d:"Agua estéril con 0.9% de alcohol bencílico. Estándar para reconstitución de péptidos liofilizados en laboratorio.",dEn:"Sterile water with 0.9% benzyl alcohol. The lab standard for reconstituting lyophilized peptides."},
+  {n:"Pfizer · Hospira Water",s:"30mL",p:30.00,c:"accesorios",d:"Agua para inyección de grado farmacéutico. Para reconstitución que requiere máxima pureza del solvente.",dEn:"Pharmaceutical-grade water for injection. For reconstitution requiring maximum solvent purity."},
+  {n:"Cartridge",s:"1 unidad",p:1.50,c:"accesorios",d:"Cartucho de repuesto compatible con Insulin Pen I y II. Permite reutilización precisa para protocolos de laboratorio.",dEn:"Replacement cartridge compatible with Insulin Pen I and II. Enables precise reuse for lab protocols."},
+  {n:"Insulin Pen I",s:"1 unidad",p:35.00,c:"accesorios",d:"Pluma de dosificación reutilizable con incrementos de 1 unidad. Facilita la precisión en protocolos de investigación.",dEn:"Reusable dosing pen with 1-unit increments. Facilitates precision in research protocols."},
+  {n:"Insulin Pen II · Savvio",s:"1 unidad",p:120.00,c:"accesorios",d:"Pluma Savvio de alta precisión con dosis ajustables. Para protocolos que requieren dosificación exacta y reproducible.",dEn:"High-precision Savvio pen with adjustable doses. For protocols requiring exact, reproducible dosing."}
 ];
 
 const FEATURED=[
-  {n:"BPC-157",cat:"Regeneración y Reparación Tisular",prices:[["10mg","181.82"],["20mg","180.00"],["40mg","279.76"]],
+  {n:"BPC-157",cat:"Regeneración y Reparación Tisular",catEn:"Tissue Regeneration & Repair",prices:[["10mg","181.82"],["20mg","180.00"],["40mg","279.76"]],
    desc:"El péptido de recuperación más investigado en modelos de reparación de tejidos blandos, tendones, ligamentos e integridad gastrointestinal.",
+   descEn:"The most researched recovery peptide in models of soft-tissue repair, tendons, ligaments, and gastrointestinal integrity.",
    chem:[["Secuencia","GEPPPGKPADDAGLV"],["Masa molecular","1419.53 Da"],["Fórmula","C62H98N16O22"],["CAS","137525-51-0"]],
-   areas:["FAK-paxilina y migración celular","VEGFR2-NO y señalización endotelial","Angiogénesis y perfusión","Matriz extracelular y colágeno","TGF-β/Smad en reparación","HO-1/Nrf2 antioxidante","Reepitelización experimental","Soporte de tendón y ligamento","Integridad GI preclínica","Citoprotección oxidativa"]},
-  {n:"GHK-Cu",cat:"Regeneración y Reparación Tisular",prices:[["100mg","194.08"]],
+   chemEn:[["Sequence","GEPPPGKPADDAGLV"],["Molecular mass","1419.53 Da"],["Formula","C62H98N16O22"],["CAS","137525-51-0"]],
+   areas:["FAK-paxilina y migración celular","VEGFR2-NO y señalización endotelial","Angiogénesis y perfusión","Matriz extracelular y colágeno","TGF-β/Smad en reparación","HO-1/Nrf2 antioxidante","Reepitelización experimental","Soporte de tendón y ligamento","Integridad GI preclínica","Citoprotección oxidativa"],
+   areasEn:["FAK-paxillin and cell migration","VEGFR2-NO and endothelial signaling","Angiogenesis and perfusion","Extracellular matrix and collagen","TGF-β/Smad in repair","HO-1/Nrf2 antioxidant pathway","Experimental re-epithelialization","Tendon and ligament support","Preclinical GI integrity","Oxidative cytoprotection"]},
+  {n:"GHK-Cu",cat:"Regeneración y Reparación Tisular",catEn:"Tissue Regeneration & Repair",prices:[["100mg","194.08"]],
    desc:"Tripéptido de cobre presente de forma natural en plasma humano. Investigado en longevidad cutánea, síntesis de colágeno y remodelación de ECM.",
+   descEn:"Copper tripeptide naturally present in human plasma. Investigated in skin longevity, collagen synthesis, and ECM remodeling.",
    chem:[["Secuencia","GHK·Cu²⁺"],["Masa molecular","402.92 Da"],["Fórmula","C14H24CuN6O4"],["CAS","89030-95-5"]],
-   areas:["MMP/TIMP y remodelación","Colágeno I/III y dermis","TGF-β/Smad tisular","HO-1/Nrf2 antioxidante","Homeostasis de cobre","Quimiotaxis y migración","Angiogénesis","Folículo piloso y dermis","Reepitelización de herida","Antiglicación y oxidación"]},
-  {n:"Retatrutide",cat:"Optimización Metabólica",prices:[["10mg","170.21"],["30mg","243.33"],["50mg","318.00"]],
+   chemEn:[["Sequence","GHK·Cu²⁺"],["Molecular mass","402.92 Da"],["Formula","C14H24CuN6O4"],["CAS","89030-95-5"]],
+   areas:["MMP/TIMP y remodelación","Colágeno I/III y dermis","TGF-β/Smad tisular","HO-1/Nrf2 antioxidante","Homeostasis de cobre","Quimiotaxis y migración","Angiogénesis","Folículo piloso y dermis","Reepitelización de herida","Antiglicación y oxidación"],
+   areasEn:["MMP/TIMP and remodeling","Collagen I/III and dermis","Tissue TGF-β/Smad","HO-1/Nrf2 antioxidant pathway","Copper homeostasis","Chemotaxis and migration","Angiogenesis","Hair follicle and dermis","Wound re-epithelialization","Anti-glycation and oxidation"]},
+  {n:"Retatrutide",cat:"Optimización Metabólica",catEn:"Metabolic Optimization",prices:[["10mg","170.21"],["30mg","243.33"],["50mg","318.00"]],
    desc:"El triple agonista GLP-1R/GIPR/GCGR con los resultados más destacados en ensayos clínicos de Fase II para investigación metabólica avanzada.",
+   descEn:"The triple GLP-1R/GIPR/GCGR agonist with the most notable results in Phase II clinical trials for advanced metabolic research.",
    chem:[["Denominación","LY3437943"],["Masa molecular","4894.58 Da"],["Fórmula","C228H350N48O66"],["CAS","2381089-83-2"]],
-   areas:["Triple agonismo GCGR/GIPR/GLP-1R","Señalización cAMP incretínica","Saciedad central y apetito","Vaciamiento gástrico","Control glucémico","Gasto energético y termogénesis","Metabolismo de lípidos","Adiposidad y sustratos","Hígado graso","Homeostasis cardiometabólica"]},
-  {n:"KLOWUP",cat:"Stack Propietario Ascent",prices:[["80mg","247.33"]],
+   chemEn:[["Designation","LY3437943"],["Molecular mass","4894.58 Da"],["Formula","C228H350N48O66"],["CAS","2381089-83-2"]],
+   areas:["Triple agonismo GCGR/GIPR/GLP-1R","Señalización cAMP incretínica","Saciedad central y apetito","Vaciamiento gástrico","Control glucémico","Gasto energético y termogénesis","Metabolismo de lípidos","Adiposidad y sustratos","Hígado graso","Homeostasis cardiometabólica"],
+   areasEn:["Triple GCGR/GIPR/GLP-1R agonism","Incretin cAMP signaling","Central satiety and appetite","Gastric emptying","Glycemic control","Energy expenditure and thermogenesis","Lipid metabolism","Adiposity and substrates","Fatty liver","Cardiometabolic homeostasis"]},
+  {n:"KLOWUP",cat:"Stack Propietario Ascent",catEn:"Ascent Proprietary Stack",prices:[["80mg","247.33"]],
    desc:"Stack propietario de Ascent. Cuatro vías moleculares complementarias en un solo vial liofilizado: BPC-157 + GHK-Cu + TB-500 + KPV (20mg cada uno).",
+   descEn:"Ascent's proprietary stack. Four complementary molecular pathways in a single lyophilized vial: BPC-157 + GHK-Cu + TB-500 + KPV (20mg each).",
    chem:[["Composición","4 compuestos"],["Carga total","80mg liofilizado"],["Vías","Reparación integral"],["Pureza","99%+ HPLC"]],
-   areas:["FAK/paxilina (BPC-157)","Colágeno I/III y ECM (GHK-Cu)","Actina y migración (TB-500)","Antiinflamatorio (KPV)","Angiogénesis","Reepitelización","Sinergia por vías complementarias"]},
-  {n:"TB-500",cat:"Regeneración y Reparación Tisular",prices:[["10mg","216.98"]],
+   chemEn:[["Composition","4 compounds"],["Total load","80mg lyophilized"],["Pathways","Comprehensive repair"],["Purity","99%+ HPLC"]],
+   areas:["FAK/paxilina (BPC-157)","Colágeno I/III y ECM (GHK-Cu)","Actina y migración (TB-500)","Antiinflamatorio (KPV)","Angiogénesis","Reepitelización","Sinergia por vías complementarias"],
+   areasEn:["FAK/paxillin (BPC-157)","Collagen I/III and ECM (GHK-Cu)","Actin and migration (TB-500)","Anti-inflammatory (KPV)","Angiogenesis","Re-epithelialization","Synergy across complementary pathways"]},
+  {n:"TB-500",cat:"Regeneración y Reparación Tisular",catEn:"Tissue Regeneration & Repair",prices:[["10mg","216.98"]],
    desc:"Fragmento sintético del péptido Ac-LKKTETQ de Thymosin β-4. Investigado en migración celular, organización del citoesqueleto y recuperación sistémica.",
+   descEn:"Synthetic fragment of the Ac-LKKTETQ peptide from Thymosin β-4. Investigated in cell migration, cytoskeletal organization, and systemic recovery.",
    chem:[["Secuencia","Ac-LKKTETQ"],["Masa molecular","889.00 Da"],["Fórmula","C38H68N10O14"],["CAS","885340-08-9"]],
-   areas:["Actina y citoesqueleto","Migración celular","Reparación preclínica","Angiogénesis periférica","Remodelación de ECM","Señalización de integrinas","Fibroblastos y reepitelización","Tendón y ligamento"]},
-  {n:"CJC-1295 noDAC",cat:"Hormona de Crecimiento",prices:[["10mg","180.00"]],
+   chemEn:[["Sequence","Ac-LKKTETQ"],["Molecular mass","889.00 Da"],["Formula","C38H68N10O14"],["CAS","885340-08-9"]],
+   areas:["Actina y citoesqueleto","Migración celular","Reparación preclínica","Angiogénesis periférica","Remodelación de ECM","Señalización de integrinas","Fibroblastos y reepitelización","Tendón y ligamento"],
+   areasEn:["Actin and cytoskeleton","Cell migration","Preclinical repair","Peripheral angiogenesis","ECM remodeling","Integrin signaling","Fibroblasts and re-epithelialization","Tendon and ligament"]},
+  {n:"CJC-1295 noDAC",cat:"Hormona de Crecimiento",catEn:"Growth Hormone",prices:[["10mg","180.00"]],
    desc:"Análogo de GHRH con alta afinidad hipofisaria. Combinado con Ipamorelin activa dos vías del eje GH para un perfil de liberación más robusto.",
+   descEn:"GHRH analog with high pituitary affinity. Combined with Ipamorelin, it activates two pathways of the GH axis for a more robust release profile.",
    chem:[["Tipo","Análogo GHRH"],["Presentación","10mg liofilizado"],["Stack","con Ipamorelin"],["Pureza","99%+ HPLC"]],
-   areas:["Señalización GHRH hipofisaria","Liberación pulsátil de GH","Modulación eje GH/IGF-1","Sinergia secretagoga","Composición corporal","Recuperación y sueño"]}
+   chemEn:[["Type","GHRH analog"],["Presentation","10mg lyophilized"],["Stack","with Ipamorelin"],["Purity","99%+ HPLC"]],
+   areas:["Señalización GHRH hipofisaria","Liberación pulsátil de GH","Modulación eje GH/IGF-1","Sinergia secretagoga","Composición corporal","Recuperación y sueño"],
+   areasEn:["Pituitary GHRH signaling","Pulsatile GH release","GH/IGF-1 axis modulation","Secretagogue synergy","Body composition","Recovery and sleep"]}
 ];
 
 const REVIEWS=[
-  {who:"Sebastián M.",loc:"Medellín, Colombia",date:"Nov 2025",txt:"Pureza 99.4% verificada. Entrega en Medellín en 2 días. El soporte resolvió mis dudas sobre el stack BPC-157 + TB-500 con referencias de PubMed incluidas.",tags:["BPC-157","TB-500"]},
-  {who:"Valentina R.",loc:"Bogotá, Colombia",date:"Dic 2025",txt:"Llevo 4 meses investigando con GHK-Cu. El nivel técnico de Ascent es incomparable. El equipo responde en inglés y conoce los mecanismos moleculares de cada compuesto.",tags:["GHK-Cu","Soporte ES/EN"]},
-  {who:"Andrés F.",loc:"Bogotá, Colombia",date:"Ene 2026",txt:"Pedí Retatrutide 10mg desde Bogotá. Llegó en 2 días con empaque térmico, pureza 99.1% verificada. El catálogo es el más completo que he encontrado en LATAM.",tags:["Retatrutide","Entrega rápida"]},
-  {who:"Camila T.",loc:"Medellín, Colombia",date:"Feb 2026",txt:"La transparencia técnica de Ascent me convenció desde el primer mensaje. Responden cualquier pregunta antes de comprar. El KLOWUP es un stack muy bien pensado.",tags:["KLOWUP","Pureza verificada"]},
-  {who:"Daniel O.",loc:"Cali, Colombia",date:"Mar 2026",txt:"Investigador independiente. Ascent es el único que responde preguntas técnicas reales con mecanismos, vías de señalización y literatura PubMed. No solo venden.",tags:["Soporte técnico","Investigador"]},
-  {who:"Isabella C.",loc:"Cali, Colombia",date:"Abr 2026",txt:"Pedido de CJC-1295 + Ipamorelin desde Cali. Entrega en 3 días, empaque excelente, pureza 99.2% verificada. Me explicaron la diferencia entre Synergy II y viales separados.",tags:["CJC-1295","Ipamorelin"]}
+  {who:"Sebastián M.",loc:"Medellín, Colombia",date:"Nov 2025",txt:"Pureza 99.4% verificada. Entrega en Medellín en 2 días. El soporte resolvió mis dudas sobre el stack BPC-157 + TB-500 con referencias de PubMed incluidas.",txtEn:"99.4% purity verified. Delivered in Medellín in 2 days. Support answered my questions about the BPC-157 + TB-500 stack, PubMed references included.",tags:["BPC-157","TB-500"],tagsEn:["BPC-157","TB-500"]},
+  {who:"Valentina R.",loc:"Bogotá, Colombia",date:"Dic 2025",txt:"Llevo 4 meses investigando con GHK-Cu. El nivel técnico de Ascent es incomparable. El equipo responde en inglés y conoce los mecanismos moleculares de cada compuesto.",txtEn:"I've been researching with GHK-Cu for 4 months. Ascent's technical level is unmatched. The team responds in English and knows the molecular mechanisms of every compound.",tags:["GHK-Cu","Soporte ES/EN"],tagsEn:["GHK-Cu","ES/EN support"]},
+  {who:"Andrés F.",loc:"Bogotá, Colombia",date:"Ene 2026",txt:"Pedí Retatrutide 10mg desde Bogotá. Llegó en 2 días con empaque térmico, pureza 99.1% verificada. El catálogo es el más completo que he encontrado en LATAM.",txtEn:"I ordered Retatrutide 10mg from Bogotá. It arrived in 2 days with thermal packaging, 99.1% purity verified. The most complete catalog I've found in LATAM.",tags:["Retatrutide","Entrega rápida"],tagsEn:["Retatrutide","Fast delivery"]},
+  {who:"Camila T.",loc:"Medellín, Colombia",date:"Feb 2026",txt:"La transparencia técnica de Ascent me convenció desde el primer mensaje. Responden cualquier pregunta antes de comprar. El KLOWUP es un stack muy bien pensado.",txtEn:"Ascent's technical transparency won me over from the first message. They answer any question before you buy. KLOWUP is a very well thought-out stack.",tags:["KLOWUP","Pureza verificada"],tagsEn:["KLOWUP","Verified purity"]},
+  {who:"Daniel O.",loc:"Cali, Colombia",date:"Mar 2026",txt:"Investigador independiente. Ascent es el único que responde preguntas técnicas reales con mecanismos, vías de señalización y literatura PubMed. No solo venden.",txtEn:"Independent researcher. Ascent is the only one who answers real technical questions with mechanisms, signaling pathways, and PubMed literature. They don't just sell.",tags:["Soporte técnico","Investigador"],tagsEn:["Technical support","Researcher"]},
+  {who:"Isabella C.",loc:"Cali, Colombia",date:"Abr 2026",txt:"Pedido de CJC-1295 + Ipamorelin desde Cali. Entrega en 3 días, empaque excelente, pureza 99.2% verificada. Me explicaron la diferencia entre Synergy II y viales separados.",txtEn:"Ordered CJC-1295 + Ipamorelin from Cali. Delivered in 3 days, excellent packaging, 99.2% purity verified. They explained the difference between Synergy II and separate vials to me.",tags:["CJC-1295","Ipamorelin"],tagsEn:["CJC-1295","Ipamorelin"]}
 ];
 
 const FAQS=[
-  ["¿De qué laboratorio provienen los péptidos de Ascent Compounds?","Trabajamos con fabricantes especializados en síntesis peptídica de grado investigación con procesos documentados. Por política estándar de confidencialidad de cadena de suministro no divulgamos nombres de proveedores. Lo que sí hacemos: verificar la pureza de cada lote bajo estándares 99%+ HPLC antes de distribuirlo y orientarte técnicamente antes de tu compra."],
-  ["¿Cómo garantizan la pureza de los compuestos?","Cada lote pasa por verificación de pureza bajo estándares 99%+ HPLC antes de entrar a distribución. Sin cumplir ese estándar, el lote no se distribuye. Nuestro equipo técnico puede orientarte sobre las especificaciones de cualquier compuesto antes de tu compra."],
-  ["¿Hacen envíos a Colombia, México y USA?","Sí. Operamos activamente en Colombia, México y USA con envío incluido en todas las compras de péptidos. Para USA aplican condiciones específicas. El envío se realiza con manejo de cadena de frío para preservar la integridad del compuesto durante el tránsito."],
-  ["¿Cómo debo almacenar los péptidos cuando los reciba?","Los péptidos liofilizados deben conservarse refrigerados entre 2°C y 8°C, secos y protegidos de la luz. Una vez reconstituidos, deben refrigerarse y usarse según el protocolo del lote. Nuestro equipo técnico puede asesorarte por WhatsApp."],
-  ["¿Qué es el KLOWUP y por qué es un stack propietario?","KLOWUP combina BPC-157 + GHK-Cu + TB-500 + KPV en 80mg total (20mg de cada uno en un solo vial). Articula cuatro vías complementarias de reparación: señalización y angiogénesis, ECM y colágeno, migración celular, y actividad antiinflamatoria experimental. Es exclusivo del catálogo Ascent."],
-  ["¿Tienen soporte técnico o solo venden?","Tenemos equipo técnico especializado en español e inglés para responder preguntas sobre mecanismos moleculares, vías de investigación, diferencias entre presentaciones y compatibilidad. No damos recomendaciones de uso en humanos. Nuestros productos son exclusivamente para investigación."],
-  ["¿Para qué sirven los péptidos de investigación?","Son compuestos utilizados exclusivamente en contextos de investigación científica en laboratorio. No son medicamentos, no están aprobados para uso terapéutico en humanos. La literatura en PubMed documenta sus vías moleculares y resultados en modelos preclínicos. For research purposes only."]
+  ["¿De qué laboratorio provienen los péptidos de Ascent Compounds?","Trabajamos con fabricantes especializados en síntesis peptídica de grado investigación con procesos documentados. Por política estándar de confidencialidad de cadena de suministro no divulgamos nombres de proveedores. Lo que sí hacemos: verificar la pureza de cada lote bajo estándares 99%+ HPLC antes de distribuirlo y orientarte técnicamente antes de tu compra.",
+   "Which lab do Ascent Compounds' peptides come from?","We work with manufacturers specialized in research-grade peptide synthesis with documented processes. As standard supply-chain confidentiality policy, we don't disclose supplier names. What we do guarantee: verifying the purity of every batch under 99%+ HPLC standards before distribution, and providing technical guidance before your purchase."],
+  ["¿Cómo garantizan la pureza de los compuestos?","Cada lote pasa por verificación de pureza bajo estándares 99%+ HPLC antes de entrar a distribución. Sin cumplir ese estándar, el lote no se distribuye. Nuestro equipo técnico puede orientarte sobre las especificaciones de cualquier compuesto antes de tu compra.",
+   "How do you guarantee the purity of the compounds?","Every batch undergoes purity verification under 99%+ HPLC standards before entering distribution. If a batch doesn't meet that standard, it isn't distributed. Our technical team can guide you on the specifications of any compound before your purchase."],
+  ["¿Hacen envíos a Colombia, México y USA?","Sí. Operamos activamente en Colombia, México y USA con envío incluido en todas las compras de péptidos. Para USA aplican condiciones específicas. El envío se realiza con manejo de cadena de frío para preservar la integridad del compuesto durante el tránsito.",
+   "Do you ship to Colombia, Mexico, and the USA?","Yes. We actively operate in Colombia, Mexico, and the USA with free shipping included on all peptide orders. Specific conditions apply for the USA. Shipping is handled with cold-chain management to preserve compound integrity in transit."],
+  ["¿Cómo debo almacenar los péptidos cuando los reciba?","Los péptidos liofilizados deben conservarse refrigerados entre 2°C y 8°C, secos y protegidos de la luz. Una vez reconstituidos, deben refrigerarse y usarse según el protocolo del lote. Nuestro equipo técnico puede asesorarte por WhatsApp.",
+   "How should I store the peptides once I receive them?","Lyophilized peptides should be kept refrigerated between 2°C and 8°C, dry, and protected from light. Once reconstituted, they should be refrigerated and used according to the batch protocol. Our technical team can advise you over WhatsApp."],
+  ["¿Qué es el KLOWUP y por qué es un stack propietario?","KLOWUP combina BPC-157 + GHK-Cu + TB-500 + KPV en 80mg total (20mg de cada uno en un solo vial). Articula cuatro vías complementarias de reparación: señalización y angiogénesis, ECM y colágeno, migración celular, y actividad antiinflamatoria experimental. Es exclusivo del catálogo Ascent.",
+   "What is KLOWUP and why is it a proprietary stack?","KLOWUP combines BPC-157 + GHK-Cu + TB-500 + KPV in 80mg total (20mg of each in a single vial). It brings together four complementary repair pathways: signaling and angiogenesis, ECM and collagen, cell migration, and experimental anti-inflammatory activity. It's exclusive to the Ascent catalog."],
+  ["¿Tienen soporte técnico o solo venden?","Tenemos equipo técnico especializado en español e inglés para responder preguntas sobre mecanismos moleculares, vías de investigación, diferencias entre presentaciones y compatibilidad. No damos recomendaciones de uso en humanos. Nuestros productos son exclusivamente para investigación.",
+   "Do you offer technical support, or do you just sell?","We have a specialized technical team, in both Spanish and English, to answer questions about molecular mechanisms, research pathways, differences between presentations, and compatibility. We don't give recommendations for human use. Our products are exclusively for research."],
+  ["¿Para qué sirven los péptidos de investigación?","Son compuestos utilizados exclusivamente en contextos de investigación científica en laboratorio. No son medicamentos, no están aprobados para uso terapéutico en humanos. La literatura en PubMed documenta sus vías moleculares y resultados en modelos preclínicos. For research purposes only.",
+   "What are research peptides used for?","They are compounds used exclusively in laboratory scientific research contexts. They are not medications and are not approved for therapeutic use in humans. PubMed literature documents their molecular pathways and results in preclinical models. For research purposes only."]
 ];
 
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
@@ -865,22 +1056,38 @@ function spinToScroll(){
   if(f!==spinLast){heroVialEl.src=SPIN_FRAMES[f];spinLast=f;}
 }
 
+function t(key){return (I18N[LANG]&&I18N[LANG][key])??key;}
+
+function applyI18n(){
+  document.documentElement.lang=LANG;
+  $$("[data-i18n]").forEach(el=>{const v=t(el.getAttribute("data-i18n"));if(v!==undefined)el.innerHTML=v;});
+  $$("[data-i18n-placeholder]").forEach(el=>{el.placeholder=t(el.getAttribute("data-i18n-placeholder"));});
+  $$("[data-i18n-aria]").forEach(el=>{el.setAttribute("aria-label",t(el.getAttribute("data-i18n-aria")));});
+  [["btn-es","es"],["btn-en","en"],["btn-es-m","es"],["btn-en-m","en"]].forEach(([id,l])=>{
+    const b=document.getElementById(id); if(b)b.classList.toggle("active",LANG===l);
+  });
+}
+
 $("#headStars").outerHTML=starRow(5);
 
-$("#featGrid").innerHTML=FEATURED.map(f=>`
-  <div class="feat surf reveal">
-    <div class="cat">${f.cat}</div>
+function renderFeatured(){
+  $("#featGrid").innerHTML=FEATURED.map(f=>`
+  <div class="feat surf reveal in">
+    <div class="cat">${LANG==="en"?f.catEn:f.cat}</div>
     <div class="feat-top">
       <h3>${f.n}</h3>
       <div class="price-list">${f.prices.map(p=>`${p[0]}: <b>$${p[1]}</b>`).join("<br>")}</div>
     </div>
-    <p class="desc">${f.desc}</p>
-    <div class="chem">${f.chem.map(c=>`<div><span>${c[0]}</span><b>${c[1]}</b></div>`).join("")}</div>
-    <details><summary>Áreas de investigación documentadas ${icon("i-chevron")}</summary><ul>${f.areas.map(a=>`<li>${a}</li>`).join("")}</ul></details>
+    <p class="desc">${LANG==="en"?f.descEn:f.desc}</p>
+    <div class="chem">${(LANG==="en"?f.chemEn:f.chem).map(c=>`<div><span>${c[0]}</span><b>${c[1]}</b></div>`).join("")}</div>
+    <details><summary>${t("feat.areas")} ${icon("i-chevron")}</summary><ul>${(LANG==="en"?f.areasEn:f.areas).map(a=>`<li>${a}</li>`).join("")}</ul></details>
     <div class="rfo">For research purposes only</div>
   </div>`).join("");
+}
 
-$("#filters").innerHTML=CATS.map((c,i)=>`<button class="filter-btn${i===0?" active":""}" data-cat="${c[0]}">${c[1]}</button>`).join("");
+function renderFilters(){
+  $("#filters").innerHTML=CATS.map((c,i)=>`<button class="filter-btn${i===0?" active":""}" data-cat="${c[0]}">${LANG==="en"?c[2]:c[1]}</button>`).join("");
+}
 
 function renderCatalog(cat="todo",q=""){
   q=q.trim().toLowerCase();
@@ -890,22 +1097,62 @@ function renderCatalog(cat="todo",q=""){
     return inCat&&inQ;
   });
   const g=$("#catGrid");
-  if(!list.length){g.innerHTML=`<div class="no-results">No se encontraron compuestos para tu búsqueda.</div>`;return;}
+  if(!list.length){g.innerHTML=`<div class="no-results">${t("cat.noresults")}</div>`;return;}
+  const labels=LANG==="en"?CATLABEL_EN:CATLABEL;
   g.innerHTML=list.map(p=>{
     const id=(p.n+"|"+p.s);
     return `<div class="card surf reveal in">
       <div class="c-chip">${icon(CATICON[p.c]||"i-flask")}</div>
-      <div class="c-cat">${p.stack?"Stack propietario Ascent":(CATLABEL[p.c]||"")}</div>
+      <div class="c-cat">${p.stack?t("cat.stackbadge"):(labels[p.c]||"")}</div>
       <h4>${p.n}</h4>
       <div class="size">${p.s} · <span class="rfo">RFO</span></div>
-      <div class="c-desc">${p.d}</div>
+      <div class="c-desc">${LANG==="en"?p.dEn:p.d}</div>
       <div class="c-bottom">
         <div class="c-price">${money(p.p)}</div>
-        <button class="add-btn" data-id="${encodeURIComponent(id)}" data-name="${p.n}" data-size="${p.s}" data-price="${p.p}" aria-label="Agregar ${p.n}">${icon("i-plus")}</button>
+        <button class="add-btn" data-id="${encodeURIComponent(id)}" data-name="${p.n}" data-size="${p.s}" data-price="${p.p}" aria-label="${t('cat.add')} ${p.n}">${icon("i-plus")}</button>
       </div>
     </div>`;}).join("");
   applyStagger(g);
 }
+
+function renderReviews(){
+  $("#revGrid").innerHTML=REVIEWS.map(r=>`
+  <div class="rev surf reveal in">
+    <div class="who"><div><b>${r.who}</b><div class="loc">${r.loc}</div></div><div class="loc">${r.date}</div></div>
+    ${starRow(5)}
+    <div class="txt">"${LANG==="en"?r.txtEn:r.txt}"</div>
+    <div class="rtags">${(LANG==="en"?r.tagsEn:r.tags).map(tg=>`<span>${tg}</span>`).join("")}</div>
+  </div>`).join("");
+}
+
+function renderFAQ(){
+  $("#faqList").innerHTML=FAQS.map(f=>`
+  <div class="faq-item reveal in">
+    <button class="faq-q">${LANG==="en"?f[2]:f[0]}${icon("i-plus")}</button>
+    <div class="faq-a"><div>${LANG==="en"?f[3]:f[1]}</div></div>
+  </div>`).join("");
+}
+
+function renderAll(){
+  renderFeatured();
+  renderFilters();
+  const activeCat=($(".filter-btn.active")&&$(".filter-btn.active").dataset.cat)||"todo";
+  const q=($("#search")&&$("#search").value)||"";
+  renderCatalog(activeCat,q);
+  renderReviews();
+  renderFAQ();
+  updateCart();
+}
+
+function setLang(lang){
+  LANG=lang;
+  localStorage.setItem("ascent_lang",lang);
+  applyI18n();
+  renderAll();
+}
+
+renderFeatured();
+renderFilters();
 renderCatalog();
 
 $("#filters").addEventListener("click",e=>{
@@ -915,19 +1162,8 @@ $("#filters").addEventListener("click",e=>{
 });
 $("#search").addEventListener("input",e=>renderCatalog($(".filter-btn.active").dataset.cat,e.target.value));
 
-$("#revGrid").innerHTML=REVIEWS.map(r=>`
-  <div class="rev surf reveal">
-    <div class="who"><div><b>${r.who}</b><div class="loc">${r.loc}</div></div><div class="loc">${r.date}</div></div>
-    ${starRow(5)}
-    <div class="txt">"${r.txt}"</div>
-    <div class="rtags">${r.tags.map(t=>`<span>${t}</span>`).join("")}</div>
-  </div>`).join("");
-
-$("#faqList").innerHTML=FAQS.map(f=>`
-  <div class="faq-item reveal">
-    <button class="faq-q">${f[0]}${icon("i-plus")}</button>
-    <div class="faq-a"><div>${f[1]}</div></div>
-  </div>`).join("");
+renderReviews();
+renderFAQ();
 $("#faqList").addEventListener("click",e=>{
   const q=e.target.closest(".faq-q");if(!q)return;
   const a=q.nextElementSibling, open=q.classList.contains("open");
@@ -959,7 +1195,7 @@ function updateCart(){
   if(count){cc.style.display="grid";cc.textContent=count}else{cc.style.display="none"}
   $("#cartTotal").textContent=money(total);
   const body=$("#cartBody");
-  if(!ids.length){body.innerHTML=`<div class="cart-empty">Tu carrito está vacío.<br>Agrega compuestos del catálogo.</div>`;return;}
+  if(!ids.length){body.innerHTML=`<div class="cart-empty">${t("cart.empty")}</div>`;return;}
   body.innerHTML=ids.map(id=>`
     <div class="cart-item">
       <div class="ci-thumb"><img src="${VIAL}" alt=""></div>
@@ -977,11 +1213,14 @@ $("#cartBody").addEventListener("click",e=>{
 });
 $("#checkoutBtn").onclick=()=>{
   const ids=Object.keys(cart);
-  if(!ids.length){alert("Tu carrito está vacío. Agrega compuestos del catálogo.");return;}
+  if(!ids.length){alert(t("cart.alertEmpty"));return;}
   let total=0;const lines=ids.map(id=>{const c=cart[id];total+=c.price*c.qty;return `• ${c.name} ${c.size} x${c.qty} · ${money(c.price*c.qty)}`;});
-  const msg=`Hola, quiero realizar un pedido:%0A%0A${lines.join("%0A")}%0A%0ATotal estimado: ${money(total)}%0A%0A(For research purposes only)`;
+  const msg=`${t("cart.msgIntro")}%0A%0A${lines.join("%0A")}%0A%0A${t("cart.msgTotal")}: ${money(total)}%0A%0A(For research purposes only)`;
   window.open(`https://wa.me/${WA}?text=${msg}`,"_blank");
 };
+
+applyI18n();
+
 
 /* UI BEHAVIOR */
 const nav=$("#nav"),progress=$("#progress");
