@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.classList.remove('no-js')</script>
+<title>Diagnóstico de Péptidos | Ascent Compounds</title>
+<meta name="description" content="Responde 5 preguntas y descubre qué péptidos de investigación tienen sentido para lo que buscas. Ascent Compounds, Colombia · México · USA.">
+<meta name="theme-color" content="#080808">
+<link rel="canonical" href="https://ascentcompounds.com/diagnostico">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="robots" content="noindex, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ascent Compounds">
+<meta property="og:title" content="Diagnóstico de Péptidos | Ascent Compounds">
+<meta property="og:description" content="Cinco preguntas para llegar a los compuestos de investigación que tienen sentido para ti.">
+<meta property="og:image" content="https://ascentcompounds.com/assets/og-image.png">
+<meta property="og:url" content="https://ascentcompounds.com/diagnostico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080808;
+    --gold:#C9A96E;
+    --silver:#AAB4BD;
+    --white:#FFFFFF;
+    --body-gray:#BABABA;
+    --panel:#111111;
+    --panel-border:#232323;
+    --disclaimer:#8f8988;
+    --ease-out:cubic-bezier(.23,1,.32,1);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--bg); color:var(--white); font-family:'Montserrat',sans-serif; overflow-x:hidden;}
+  body{min-height:100vh;}
+  a{color:inherit;}
+  .ad-root{position:relative; min-height:100vh; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:104px 24px 64px; overflow:hidden;}
+
+  /* corner glows + gold marks — consistent with carousel system */
+  .ad-corner{position:absolute; width:70px; height:70px; border:0; pointer-events:none;}
+  .ad-corner.tl{top:28px; left:28px; border-top:3px solid var(--gold); border-left:3px solid var(--gold);}
+  .ad-corner.br{bottom:28px; right:28px; border-bottom:3px solid var(--gold); border-right:3px solid var(--gold);}
+  .ad-glow{position:absolute; width:600px; height:600px; border-radius:50%; background:radial-gradient(circle, rgba(201,169,110,0.08) 0%, rgba(201,169,110,0) 70%); pointer-events:none;}
+  .ad-glow.top{top:-250px; right:-200px;}
+  .ad-glow.bottom{bottom:-250px; left:-200px;}
+
+  /* TOP BAR: brand kicker truly centered, lang toggle pinned right, spacer balances it so centering holds at any width */
+  .ad-topbar{position:absolute; top:0; left:0; right:0; z-index:3; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:26px 22px;}
+  .ad-topbar .ad-spacer{width:74px; flex-shrink:0;}
+  .ad-brand{flex:1; text-align:center; font-size:11px; font-weight:700; letter-spacing:4px; color:var(--silver); text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  .ad-lang{display:flex; border:1px solid var(--gold); border-radius:100px; overflow:hidden; flex-shrink:0;}
+  .ad-lang button{background:transparent; border:none; color:var(--gold); font-family:'Montserrat',sans-serif; font-weight:700; font-size:11px; letter-spacing:2px; padding:9px 14px; min-height:38px; cursor:pointer; transition:background .2s ease, color .2s ease, transform 120ms var(--ease-out);}
+  .ad-lang button.active{background:var(--gold); color:var(--bg);}
+  .ad-lang button:active{transform:scale(.92);}
+
+  .ad-progress-wrap{width:100%; max-width:560px; margin-bottom:48px; z-index:2;}
+  .ad-progress-meta{display:flex; justify-content:space-between; font-size:12px; font-weight:700; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:10px;}
+  .ad-progress-track{width:100%; height:2px; background:#232323; border-radius:2px; overflow:hidden;}
+  .ad-progress-fill{height:100%; width:100%; background:var(--gold); border-radius:2px; transform:scaleX(0); transform-origin:left center; transition:transform .5s var(--ease-out);}
+
+  .ad-stage{width:100%; max-width:560px; z-index:2;}
+  .ad-panel{opacity:0; transform:translateY(16px); transition:opacity .4s var(--ease-out), transform .4s var(--ease-out);}
+  .ad-panel.active{opacity:1; transform:translateY(0);}
+  .ad-panel:not(.active){display:none;}
+
+  /* INTRO */
+  .ad-kicker{font-size:13px; font-weight:700; letter-spacing:5px; color:var(--gold); text-transform:uppercase; text-align:center; margin-bottom:22px;}
+  .ad-hero-title{font-size:clamp(38px,7vw,64px); font-weight:900; letter-spacing:-0.03em; line-height:1.05; text-align:center; margin-bottom:22px;}
+  .ad-hero-title span{color:var(--gold);}
+  .ad-hero-sub{font-size:16px; font-weight:300; line-height:1.75; color:var(--body-gray); text-align:center; max-width:440px; margin:0 auto 40px;}
+  .ad-rule{width:60px; height:4px; background:var(--gold); border-radius:2px; margin:0 auto 32px;}
+
+  /* QUESTIONS */
+  .ad-q-kicker{font-size:12px; font-weight:700; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:16px;}
+  .ad-q-text{font-size:clamp(24px,4vw,32px); font-weight:700; letter-spacing:-0.5px; line-height:1.3; margin-bottom:36px;}
+  .ad-options{display:flex; flex-direction:column; gap:12px;}
+  .ad-option{
+    display:flex; align-items:flex-start; gap:14px; text-align:left; background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    padding:20px 24px; font-family:'Montserrat',sans-serif; font-size:16px; font-weight:400; color:var(--white); line-height:1.5;
+    cursor:pointer; transition:border-color .25s ease, background .25s ease, transform 150ms var(--ease-out); position:relative; width:100%;
+  }
+  .ad-option:active{transform:scale(0.97);}
+  .ad-option .num{color:var(--gold); font-weight:700; flex-shrink:0;}
+
+  /* RESULTS */
+  .ad-results-head{text-align:center; margin-bottom:40px;}
+  .ad-loading{text-align:center; padding:60px 0;}
+  .ad-loading .dot{display:inline-block; width:6px; height:6px; background:var(--gold); border-radius:50%; margin:0 4px; animation:adpulse 1.1s infinite ease-in-out;}
+  .ad-loading .dot:nth-child(2){animation-delay:.15s;}
+  .ad-loading .dot:nth-child(3){animation-delay:.3s;}
+  @keyframes adpulse{0%,80%,100%{opacity:.25; transform:scale(0.8);} 40%{opacity:1; transform:scale(1.15);}}
+  .ad-loading p{margin-top:22px; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--silver); font-weight:700;}
+
+  .ad-card{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:28px; margin-bottom:18px; position:relative; overflow:hidden;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05); opacity:1;
+    animation:adCardIn .5s var(--ease-out) backwards;
+  }
+  /* opacity:1 above is the resting value the element reverts to once the animation completes;
+     "backwards" only affects the pre-start delay window, so a stalled animation clock (a
+     backgrounded tab) still leaves the card in the DOM and readable, never permanently hidden */
+  @keyframes adCardIn{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  .ad-card::before{content:""; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--gold);}
+  .ad-card-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;}
+  .ad-card-name{font-size:24px; font-weight:900; letter-spacing:-0.5px;}
+  .ad-pill{display:inline-block; border:1px solid var(--gold); color:var(--gold); font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:5px 12px; border-radius:20px;}
+  .ad-card-desc{font-size:15px; font-weight:300; line-height:1.75; color:var(--body-gray);}
+  .ad-match{font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:4px;}
+
+  .ad-disclaimer{font-size:11px; font-weight:300; color:var(--disclaimer); text-align:center; line-height:1.6; margin:28px 0 8px; padding:0 12px;}
+  .ad-disclaimer .en{font-style:italic; display:block; margin-top:6px; color:var(--disclaimer);}
+
+  .ad-cta-btn{
+    display:block; width:100%; text-align:center; text-decoration:none; border:2px solid var(--gold); color:var(--gold);
+    font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:3px; text-transform:uppercase; font-size:14px;
+    padding:20px 28px; border-radius:4px; background:transparent; cursor:pointer; transition:background .25s ease, color .25s ease, transform 150ms var(--ease-out); margin-top:8px;
+  }
+  .ad-cta-btn:active{transform:scale(.98);}
+  .ad-restart{display:block; text-align:center; margin:20px auto 0; font-size:12px; color:var(--silver); text-decoration:underline; cursor:pointer; background:none; border:none; font-family:'Montserrat',sans-serif; transition:color .2s ease, opacity 120ms var(--ease-out);}
+  .ad-restart:active{opacity:.6;}
+
+  .ad-start-btn{
+    display:block; margin:0 auto; border:2px solid var(--gold); color:var(--gold); background:transparent;
+    font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:3px; text-transform:uppercase; font-size:14px;
+    padding:20px 44px; border-radius:4px; cursor:pointer; transition:background .25s ease, color .25s ease, transform 150ms var(--ease-out);
+  }
+  .ad-start-btn:active{transform:scale(.97);}
+
+  .ad-skip-link{
+    display:block; text-align:center; margin-top:24px; font-size:12px; font-weight:400;
+    color:var(--silver); text-decoration:none; letter-spacing:0.5px; transition:color .2s ease, opacity 120ms var(--ease-out);
+  }
+  .ad-skip-link:active{opacity:.6;}
+
+  /* Hover only for real pointers — prevents "sticky hover" lingering after a tap on touch devices */
+  @media (hover:hover) and (pointer:fine){
+    .ad-option:hover{border-color:var(--gold); background:#161310;}
+    .ad-cta-btn:hover{background:var(--gold); color:#080808;}
+    .ad-start-btn:hover{background:var(--gold); color:#080808;}
+    .ad-skip-link:hover{color:var(--gold);}
+    .ad-restart:hover{color:var(--gold);}
+  }
+
+  /* KEYBOARD FOCUS: every interactive element gets a visible ring, mouse users never see it */
+  :focus{outline:none;}
+  .ad-option:focus-visible,
+  .ad-start-btn:focus-visible,
+  .ad-cta-btn:focus-visible,
+  .ad-restart:focus-visible,
+  .ad-skip-link:focus-visible,
+  .ad-lang button:focus-visible{
+    outline:2px solid var(--gold); outline-offset:3px; border-radius:4px;
+  }
+
+  @media (max-width:680px){
+    .ad-root{padding:96px 20px 56px;}
+  }
+  @media (max-width:480px){
+    .ad-root{padding:88px 18px 48px;}
+    .ad-option{padding:16px 18px; font-size:14px;}
+    .ad-topbar{padding:20px 16px;}
+    .ad-brand{font-size:10px; letter-spacing:2.5px;}
+    .ad-topbar .ad-spacer{width:60px;}
+    .ad-lang button{padding:6px 10px; font-size:10px;}
+    .ad-card{padding:22px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important; transition-duration:.01ms!important;}
+  }
+</style>
+</head>
+<body>
+
+<section class="ad-root" id="ascent-diagnostic">
+  <div class="ad-corner tl"></div>
+  <div class="ad-corner br"></div>
+  <div class="ad-glow top"></div>
+  <div class="ad-glow bottom"></div>
+
+  <div class="ad-topbar">
+    <div class="ad-spacer" aria-hidden="true"></div>
+    <div class="ad-brand">ASCENT COMPOUNDS</div>
+    <div class="ad-lang" role="group" aria-label="Language">
+      <button id="ad-lang-es" class="active" data-lang="es">ES</button>
+      <button id="ad-lang-en" data-lang="en">EN</button>
+    </div>
+  </div>
+
+  <div class="ad-progress-wrap" id="ad-progress-wrap" style="display:none;">
+    <div class="ad-progress-meta">
+      <span id="ad-progress-label">PREGUNTA 01 DE 05</span>
+      <span id="ad-progress-pct">20%</span>
+    </div>
+    <div class="ad-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="ad-progress-track"><div class="ad-progress-fill" id="ad-progress-fill"></div></div>
+  </div>
+
+  <div class="ad-stage" id="ad-stage">
+
+    <!-- INTRO -->
+    <div class="ad-panel active" data-panel="intro">
+      <div class="ad-kicker">Ascent Diagnostic Protocol</div>
+      <h1 class="ad-hero-title" id="ad-intro-title">¿Listo para <span>ascender</span>?</h1>
+      <div class="ad-rule"></div>
+      <p class="ad-hero-sub" id="ad-intro-sub">Antes de recomendarte algo, queremos entenderte. Cinco preguntas, sin vueltas, para llegar a los compuestos que realmente tienen sentido para lo que estás buscando.</p>
+      <button class="ad-start-btn" id="ad-start-btn">Empezar</button>
+      <a href="/#catalogo" class="ad-skip-link" id="ad-skip-link">Ya sé lo que estoy buscando →</a>
+    </div>
+
+    <!-- QUESTIONS render dynamically here -->
+    <div class="ad-panel" data-panel="question" id="ad-question-panel">
+      <div class="ad-q-kicker" id="ad-q-kicker">PREGUNTA 01</div>
+      <div class="ad-q-text" id="ad-q-text" aria-live="polite"></div>
+      <div class="ad-options" id="ad-options"></div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="ad-panel" data-panel="loading">
+      <div class="ad-loading">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <p id="ad-loading-text">Procesando tu perfil de investigación</p>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="ad-panel" data-panel="results">
+      <div class="ad-results-head">
+        <div class="ad-kicker" id="ad-results-kicker">Con base en lo que nos compartiste</div>
+        <h2 class="ad-hero-title" style="font-size:clamp(28px,5vw,40px);" id="ad-results-title">Esto tiene <span>sentido para ti</span></h2>
+      </div>
+      <div id="ad-results-cards" aria-live="polite"></div>
+      <p class="ad-disclaimer">
+        <span id="ad-disclaimer-main">Esta recomendación se basa en literatura científica disponible sobre modelos animales y ensayos preclínicos/clínicos. No constituye asesoría médica ni indicación de uso humano.</span>
+        <span class="en">For research purposes only. Not for human consumption.</span>
+      </p>
+      <a href="#" class="ad-cta-btn" id="ad-whatsapp-btn" target="_blank" rel="noopener">Seguir la conversación por WhatsApp →</a>
+      <button class="ad-restart" id="ad-restart-btn">Volver a empezar</button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+
+  // ---------- i18n ----------
+  var LANG = localStorage.getItem("ascent_lang") || "es";
+
+  var UI = {
+    es: {
+      introTitleBefore:"¿Listo para ", introTitleGold:"ascender", introTitleAfter:"?",
+      introSub:"Antes de recomendarte algo, queremos entenderte. Cinco preguntas, sin vueltas, para llegar a los compuestos que realmente tienen sentido para lo que estás buscando.",
+      startBtn:"Empezar", skipLink:"Ya sé lo que estoy buscando →",
+      loadingText:"Procesando tu perfil de investigación",
+      progressProcessing:"PROCESANDO",
+      progressLabel:function(n,total){ return "PREGUNTA " + pad(n) + " DE " + pad(total); },
+      resultsKicker:"Con base en lo que nos compartiste",
+      resultsTitleBefore:"Esto tiene ", resultsTitleGold:"sentido para ti", resultsTitleAfter:"",
+      matchBest:"Tu mejor match", matchAlso:"También va contigo",
+      disclaimerMain:"Esta recomendación se basa en literatura científica disponible sobre modelos animales y ensayos preclínicos/clínicos. No constituye asesoría médica ni indicación de uso humano.",
+      ctaBtn:"Seguir la conversación por WhatsApp →",
+      restart:"Volver a empezar",
+      waLines:function(names){
+        return [
+          "Hola, completé el Ascent Diagnostic Protocol.",
+          "Compuestos recomendados: " + names + ".",
+          "Quiero más información para mi investigación.",
+          "(For research purposes only)"
+        ];
+      }
+    },
+    en: {
+      introTitleBefore:"Ready to ", introTitleGold:"ascend", introTitleAfter:"?",
+      introSub:"Before we recommend anything, we want to understand you. Five questions, no runaround, to get to the compounds that actually make sense for what you're looking for.",
+      startBtn:"Start", skipLink:"I already know what I'm looking for →",
+      loadingText:"Processing your research profile",
+      progressProcessing:"PROCESSING",
+      progressLabel:function(n,total){ return "QUESTION " + pad(n) + " OF " + pad(total); },
+      resultsKicker:"Based on what you shared with us",
+      resultsTitleBefore:"This makes ", resultsTitleGold:"sense for you", resultsTitleAfter:"",
+      matchBest:"Your best match", matchAlso:"Also fits you",
+      disclaimerMain:"This recommendation is based on available scientific literature on animal models and preclinical/clinical trials. It does not constitute medical advice or an indication for human use.",
+      ctaBtn:"Continue the conversation on WhatsApp →",
+      restart:"Start over",
+      waLines:function(names){
+        return [
+          "Hi, I just completed the Ascent Diagnostic Protocol.",
+          "Recommended compounds: " + names + ".",
+          "I'd like more information for my research.",
+          "(For research purposes only)"
+        ];
+      }
+    }
+  };
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  // ---------- DATA ----------
+  var WHATSAPP_NUMBER = "573164114411"; // Ascent Compounds
+
+  var compounds = {
+    bpc:  { name:"BPC-157",
+            tag:{ es:"Recuperación Tisular · GI", en:"Tissue Recovery · GI" },
+            desc:{ es:"Pentadecapéptido derivado de una proteína gástrica. Estudios en modelos animales muestran un rol en la angiogénesis y en la reparación de tejido conectivo, articular y del tracto gastrointestinal.",
+                   en:"Pentadecapeptide derived from a gastric protein. Studies in animal models show a role in angiogenesis and in the repair of connective, joint, and gastrointestinal tract tissue." } },
+    tb:   { name:"TB-500",
+            tag:{ es:"Regeneración Muscular Sistémica", en:"Systemic Muscle Regeneration" },
+            desc:{ es:"Fragmento sintético de Timosina Beta-4. Investigado en modelos preclínicos por su interacción con la actina y su rol potencial en la migración celular y la regeneración muscular sistémica.",
+                   en:"Synthetic fragment of Thymosin Beta-4. Investigated in preclinical models for its interaction with actin and its potential role in cell migration and systemic muscle regeneration." } },
+    ghk:  { name:"GHK-Cu",
+            tag:{ es:"Colágeno · Anti-Aging", en:"Collagen · Anti-Aging" },
+            desc:{ es:"Complejo péptido-cobre presente naturalmente en el organismo. Estudios en modelos animales muestran su influencia en la síntesis de colágeno y la remodelación de la matriz extracelular dérmica.",
+                   en:"Copper-peptide complex naturally present in the body. Studies in animal models show its influence on collagen synthesis and dermal extracellular matrix remodeling." } },
+    cjc:  { name:"CJC-1295 / Ipamorelin",
+            tag:{ es:"GH · Composición Corporal", en:"GH · Body Composition" },
+            desc:{ es:"Combinación de un análogo de GHRH (CJC-1295) y un secretagogo selectivo de GH (Ipamorelin). Estudiada en modelos animales por su efecto sinérgico en la liberación pulsátil de hormona de crecimiento.",
+                   en:"Combination of a GHRH analog (CJC-1295) and a selective GH secretagogue (Ipamorelin). Studied in animal models for its synergistic effect on pulsatile growth hormone release." } },
+    reta: { name:"Retatrutide",
+            tag:{ es:"Triple Agonista GLP-1 / GIP / Glucagón", en:"Triple GLP-1 / GIP / Glucagon Agonist" },
+            desc:{ es:"Agonista triple de los receptores GLP-1, GIP y glucagón. Investigado en ensayos clínicos por su impacto en la regulación metabólica y la composición corporal.",
+                   en:"Triple agonist of the GLP-1, GIP, and glucagon receptors. Investigated in clinical trials for its impact on metabolic regulation and body composition." } }
+  };
+
+  var questions = [
+    { key:"q1", scored:true,
+      kicker:{ es:"PUNTO DE PARTIDA", en:"STARTING POINT" },
+      text:{ es:"¿Qué te trajo hasta aquí hoy?", en:"What brought you here today?" },
+      options:[
+        { es:"Una lesión o una molestia que no termina de irse", en:"An injury or a nagging discomfort that won't go away", scores:{bpc:2, tb:2} },
+        { es:"Quiero que mi piel y mi cuerpo envejezcan mejor", en:"I want my skin and body to age better", scores:{ghk:3} },
+        { es:"Busco rendir más y ver resultados en mi composición corporal", en:"I want to perform better and see results in my body composition", scores:{cjc:3} },
+        { es:"Quiero entender y ajustar mi metabolismo", en:"I want to understand and adjust my metabolism", scores:{reta:3} }
+      ]
+    },
+    { key:"q2", scored:true,
+      kicker:{ es:"DÓNDE LO SIENTES", en:"WHERE YOU FEEL IT" },
+      text:{ es:"Cuando piensas en recuperación, ¿en qué parte de tu cuerpo piensas primero?", en:"When you think about recovery, what part of your body comes to mind first?" },
+      options:[
+        { es:"Articulaciones, tendones o digestión", en:"Joints, tendons, or digestion", scores:{bpc:3} },
+        { es:"Músculo, después de entrenar fuerte", en:"Muscle, after training hard", scores:{tb:3} },
+        { es:"Piel y esa firmeza que se pierde con los años", en:"Skin and that firmness that fades with age", scores:{ghk:3} },
+        { es:"Energía y esa sensación de estar en tu mejor forma", en:"Energy and that feeling of being in your best shape", scores:{cjc:3} }
+      ]
+    },
+    { key:"q3", scored:true,
+      kicker:{ es:"EL RESULTADO QUE BUSCAS", en:"THE RESULT YOU'RE AFTER" },
+      text:{ es:"Si pudieras estudiar un solo resultado en ti mismo, ¿cuál sería?", en:"If you could study just one outcome in yourself, what would it be?" },
+      options:[
+        { es:"Menos inflamación, reparación más rápida", en:"Less inflammation, faster repair", scores:{bpc:2} },
+        { es:"Recuperarte como si tuvieras diez años menos", en:"Recovering like you're ten years younger", scores:{tb:2} },
+        { es:"Piel más firme y con mejor estructura", en:"Firmer skin with better structure", scores:{ghk:2} },
+        { es:"Apetito y metabolismo trabajando a tu favor", en:"Appetite and metabolism working in your favor", scores:{reta:3} }
+      ]
+    },
+    { key:"q4", scored:true,
+      kicker:{ es:"TU PERFIL", en:"YOUR PROFILE" },
+      text:{ es:"¿Cómo te describirías como investigador de tu propio cuerpo?", en:"How would you describe yourself as a researcher of your own body?" },
+      options:[
+        { es:"Pienso en longevidad y estética a largo plazo", en:"I think about longevity and long-term aesthetics", scores:{ghk:2} },
+        { es:"Soy competitivo, busco rendimiento y composición corporal", en:"I'm competitive, chasing performance and body composition", scores:{cjc:2} },
+        { es:"Soy práctico, quiero resolver una molestia puntual", en:"I'm practical, I want to solve a specific issue", scores:{bpc:2, tb:1} },
+        { es:"Me obsesiona lo metabólico, los números y el porqué", en:"I'm obsessed with metabolism, the numbers, and the why", scores:{reta:2} }
+      ]
+    },
+    { key:"q5", scored:false,
+      kicker:{ es:"UNA ÚLTIMA COSA", en:"ONE LAST THING" },
+      text:{ es:"¿Qué tanto conoces ya el mundo de los péptidos de investigación?", en:"How familiar are you already with the world of research peptides?" },
+      options:[
+        { es:"Apenas estoy empezando a investigar", en:"I'm just starting to research" },
+        { es:"Ya he leído protocolos y estudios", en:"I've already read protocols and studies" },
+        { es:"Ya estoy en medio de una investigación activa", en:"I'm already in the middle of active research" }
+      ]
+    }
+  ];
+
+  // ---------- STATE ----------
+  var state = { step:-1, scores:{bpc:0,tb:0,ghk:0,cjc:0,reta:0}, answers:[] };
+
+  var panels = {
+    intro: document.querySelector('[data-panel="intro"]'),
+    question: document.querySelector('[data-panel="question"]'),
+    loading: document.querySelector('[data-panel="loading"]'),
+    results: document.querySelector('[data-panel="results"]')
+  };
+  var progressWrap = document.getElementById('ad-progress-wrap');
+  var progressFill = document.getElementById('ad-progress-fill');
+  var progressLabel = document.getElementById('ad-progress-label');
+  var progressPct = document.getElementById('ad-progress-pct');
+  var progressTrack = document.getElementById('ad-progress-track');
+
+  function setProgress(pct){
+    progressFill.style.transform = 'scaleX(' + (pct/100) + ')';
+    progressTrack.setAttribute('aria-valuenow', String(pct));
+  }
+
+  function t(){ return UI[LANG]; }
+
+  function showPanel(name){
+    Object.keys(panels).forEach(function(k){
+      panels[k].classList.toggle('active', k === name);
+    });
+  }
+
+  function applyStaticText(){
+    document.getElementById('ad-intro-title').innerHTML = t().introTitleBefore + '<span>' + t().introTitleGold + '</span>' + t().introTitleAfter;
+    document.getElementById('ad-intro-sub').textContent = t().introSub;
+    document.getElementById('ad-start-btn').textContent = t().startBtn;
+    document.getElementById('ad-skip-link').textContent = t().skipLink;
+    document.getElementById('ad-loading-text').textContent = t().loadingText;
+    document.getElementById('ad-results-kicker').textContent = t().resultsKicker;
+    document.getElementById('ad-results-title').innerHTML = t().resultsTitleBefore + '<span>' + t().resultsTitleGold + '</span>' + t().resultsTitleAfter;
+    document.getElementById('ad-disclaimer-main').textContent = t().disclaimerMain;
+    document.getElementById('ad-whatsapp-btn').textContent = t().ctaBtn;
+    document.getElementById('ad-restart-btn').textContent = t().restart;
+    document.documentElement.lang = LANG;
+  }
+
+  function setLang(lang){
+    LANG = lang;
+    localStorage.setItem("ascent_lang", lang);
+    document.getElementById('ad-lang-es').classList.toggle('active', lang === 'es');
+    document.getElementById('ad-lang-en').classList.toggle('active', lang === 'en');
+    applyStaticText();
+    // re-render whatever the user is currently looking at, without resetting progress
+    if(state.step >= 0 && state.step < questions.length){
+      renderQuestion();
+    } else if(state.step >= questions.length){
+      renderResults();
+    }
+  }
+
+  document.getElementById('ad-lang-es').addEventListener('click', function(){ setLang('es'); });
+  document.getElementById('ad-lang-en').addEventListener('click', function(){ setLang('en'); });
+
+  function renderQuestion(){
+    var q = questions[state.step];
+    document.getElementById('ad-q-kicker').textContent = q.kicker[LANG];
+    document.getElementById('ad-q-text').textContent = q.text[LANG];
+    var optsWrap = document.getElementById('ad-options');
+    optsWrap.innerHTML = "";
+    q.options.forEach(function(opt, idx){
+      var btn = document.createElement('button');
+      btn.className = 'ad-option';
+      btn.innerHTML = '<span class="num">' + pad(idx+1) + '</span><span>' + opt[LANG] + '</span>';
+      btn.addEventListener('click', function(){ answerQuestion(q, opt); });
+      optsWrap.appendChild(btn);
+    });
+
+    progressWrap.style.display = 'block';
+    var pct = Math.round(((state.step) / questions.length) * 100);
+    setProgress(pct);
+    progressLabel.textContent = t().progressLabel(state.step+1, questions.length);
+    progressPct.textContent = pct + '%';
+    showPanel('question');
+  }
+
+  function answerQuestion(q, opt){
+    state.answers.push({ question:q.text.es, answer:opt.es });
+    if(q.scored && opt.scores){
+      Object.keys(opt.scores).forEach(function(k){ state.scores[k] += opt.scores[k]; });
+    }
+    state.step++;
+    if(state.step < questions.length){
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  }
+
+  function finishQuiz(){
+    showPanel('loading');
+    setProgress(100);
+    progressPct.textContent = '100%';
+    progressLabel.textContent = t().progressProcessing;
+    setTimeout(renderResults, 900);
+  }
+
+  function renderResults(){
+    var ranked = Object.keys(state.scores)
+      .map(function(k){ return { key:k, score:state.scores[k] }; })
+      .sort(function(a,b){ return b.score - a.score; });
+
+    var top = [ranked[0]];
+    if(ranked[1] && ranked[1].score > 0) top.push(ranked[1]);
+    if(ranked[2] && ranked[2].score > 0 && (ranked[1].score - ranked[2].score) <= 1) top.push(ranked[2]);
+
+    var cardsWrap = document.getElementById('ad-results-cards');
+    cardsWrap.innerHTML = "";
+    top.forEach(function(item, i){
+      var c = compounds[item.key];
+      var card = document.createElement('div');
+      card.className = 'ad-card';
+      card.style.animationDelay = (i * 80) + 'ms';
+      card.innerHTML =
+        '<div class="ad-match">' + (i === 0 ? t().matchBest : t().matchAlso) + '</div>' +
+        '<div class="ad-card-top">' +
+          '<div class="ad-card-name">' + c.name + '</div>' +
+          '<span class="ad-pill">' + c.tag[LANG] + '</span>' +
+        '</div>' +
+        '<div class="ad-card-desc">' + c.desc[LANG] + '</div>';
+      cardsWrap.appendChild(card);
+    });
+
+    // Build WhatsApp message with quiz context — same wa.me pattern used by the site's cart checkout
+    var compoundNames = top.map(function(item){ return compounds[item.key].name; }).join(', ');
+    var msg = encodeURIComponent(t().waLines(compoundNames).join('\n'));
+    document.getElementById('ad-whatsapp-btn').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg;
+
+    progressWrap.style.display = 'none';
+    showPanel('results');
+  }
+
+  document.getElementById('ad-start-btn').addEventListener('click', function(){
+    state.step = 0;
+    renderQuestion();
+  });
+
+  document.getElementById('ad-restart-btn').addEventListener('click', function(){
+    state.step = -1;
+    state.scores = {bpc:0,tb:0,ghk:0,cjc:0,reta:0};
+    state.answers = [];
+    progressWrap.style.display = 'none';
+    showPanel('intro');
+    window.scrollTo({top: document.getElementById('ascent-diagnostic').offsetTop, behavior:'smooth'});
+  });
+
+  // init
+  document.getElementById('ad-lang-es').classList.toggle('active', LANG === 'es');
+  document.getElementById('ad-lang-en').classList.toggle('active', LANG === 'en');
+  applyStaticText();
+
+})();
+</script>
+
+</body>
+</html>
