@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalog · Ascent Labs</title>
+<meta name="description" content="Every Ascent compound, searchable by name, research category or mechanism. For laboratory research only.">
+<link rel="icon" href="/assets/img/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="shop">
+
+<!-- ============ AGE / RESEARCH-USE GATE ============ -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-backdrop" id="gate-backdrop"></div>
+  <div class="gate-card" role="dialog" aria-modal="true"
+       aria-labelledby="gate-title" aria-describedby="gate-desc">
+    <img class="gate-mark" src="assets/img/logo-mark.png" alt="" aria-hidden="true">
+    <h2 id="gate-title" data-i18n="gate.title">Before you enter</h2>
+    <p id="gate-desc" class="gate-lead" data-i18n="gate.lead">Please confirm the following to continue to the Ascent Labs catalog.</p>
+
+    <ul class="gate-list">
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-i18n-html="gate.age">I am <strong>21 years of age or older</strong>.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-i18n-html="gate.use">I understand these compounds are supplied <strong>for laboratory research</strong>, and that research is their only intended use.</span>
+      </li>
+    </ul>
+
+    <div class="gate-actions">
+      <button class="btn btn--primary" id="gate-accept" data-i18n="gate.accept">I confirm</button>
+      <button class="btn btn--ghost" id="gate-decline" data-i18n="gate.decline">Leave site</button>
+    </div>
+    <p class="gate-fine" data-i18n="gate.fine">Nothing on this site is medical advice.</p>
+  </div>
+
+  <!-- shown if the visitor declines -->
+  <div class="gate-card gate-card--declined" id="gate-declined" hidden role="alertdialog" aria-labelledby="gate-dtitle">
+    <h2 id="gate-dtitle" data-i18n="gate.dtitle">Thanks for stopping by</h2>
+    <p class="gate-lead" data-i18n="gate.dlead">This catalog is limited to research professionals aged 21 or over. You are welcome back any time.</p>
+    <button class="btn btn--ghost" id="gate-back" data-i18n="gate.back">Go back</button>
+  </div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Ascent Labs, home" data-i18n-aria="aria.home">
+      <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
+    </a>
+    <nav class="nav-links" aria-label="Main" data-i18n-aria="aria.main">
+      <a href="/#standard" data-i18n="nav.standard">Standard</a>
+      <a href="/catalog" data-i18n="nav.catalog">Catalog</a>
+      <a href="/explore" data-i18n="nav.explore" aria-current="page">Explore</a>
+      <a href="/#app" data-i18n="nav.app">App</a>
+      <a href="/#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language" data-i18n-aria="aria.lang">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+    <button class="nav-cta" id="cart-open" aria-label="Open order" data-i18n-aria="cart.open">
+      <span data-i18n="nav.order">Order</span> <span class="count" id="cart-count">0</span>
+    </button>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="burger-box" aria-hidden="true">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <nav aria-label="Mobile" data-i18n-aria="aria.mobile">
+    <a href="/#standard" style="--i:0" data-i18n="nav.standard">Standard</a>
+    <a href="/catalog"  style="--i:1" data-i18n="nav.catalog">Catalog</a>
+    <a href="/explore"  style="--i:2" data-i18n="nav.explore">Explore</a>
+    <a href="/#app"      style="--i:3" data-i18n="nav.app">App</a>
+    <a href="/#faq"      style="--i:5" data-i18n="nav.faq">FAQ</a>
+    <a href="https://wa.me/573164114411" target="_blank" rel="noopener" style="--i:6" data-i18n="nav.support">Support</a>
+  </nav>
+</div>
+
+<main id="top">
+<section class="sec sec--cream ex-page" id="catalog">
+  <div class="wrap">
+    <div class="stack shop-intro">
+      <p class="eyebrow" data-i18n="shop.eyebrow">Catalog</p>
+      <h1 data-i18n="shop.h1">Every compound.</h1>
+      <p class="lead" data-i18n="shop.lead">Search by name, research category or mechanism, or filter below.</p>
+      <a class="cat-explore" href="/explore">
+        <span data-i18n="cat.exploreLink">Not sure where to start? Explore by research area</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Search and filters sit OUTSIDE the content wrap, in their own full-bleed
+       sticky bar, so the hairline underneath runs the full viewport width
+       instead of stopping at the 1240px content column and reading as a stray
+       rule. The bar has its own inner .wrap to keep the controls aligned with
+       the grid below. -->
+  <div class="shop-bar">
+    <div class="wrap shop-bar-inner">
+      <!-- type="search" rather than text: mobile keyboards drop the autocorrect
+           bar and offer a clear affordance, and the enter key reads as Search -->
+      <div class="shop-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5" stroke-linecap="round"/>
+        </svg>
+        <input type="search" id="cat-search" autocomplete="off"
+               placeholder="Search compounds" data-i18n-ph="shop.placeholder"
+               aria-label="Search compounds" data-i18n-aria="shop.placeholder">
+        <button type="button" id="cat-search-clear" aria-label="Clear search" data-i18n-aria="shop.clear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="chips" id="filters" role="tablist" aria-label="Filter by category" data-i18n-aria="aria.filters"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="small tabular" id="count" aria-live="polite"></p>
+    <div class="grid-p" id="products"></div>
+
+    <p class="shop-empty" id="shop-empty" hidden data-i18n="shop.empty">No compounds match that search. Try a shorter term, or clear the filters.</p>
+
+    <div id="sheet-data" class="sr-only" aria-hidden="true">
+<!-- prerender:catalog -->
+<section><h3>BPC-157 — Regeneration</h3><p>Synthetic pentadecapeptide, a partial sequence of a protein found in gastric juice.</p><dl><dt>Sequence</dt><dd>GEPPPGKPADDAGLV</dd><dt>Molecular mass</dt><dd>1419.53 Da</dd><dt>Formula</dt><dd>C62H98N16O22</dd><dt>CAS</dt><dd>137525-51-0</dd></dl><p>Documented research areas: FAK-paxillin and cell migration, VEGFR2-NO and endothelial signaling, Angiogenesis and perfusion, Extracellular matrix and collagen, TGF-β/Smad in repair, HO-1/Nrf2 antioxidant, Experimental re-epithelialization, Preclinical GI integrity, Oxidative cytoprotection.</p><p>Available presentations: 10mg (US$181.82), 20mg (US$180.00), 40mg (US$279.76).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cartalax — Regeneration</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$184.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>GHK-Cu — Regeneration</h3><p>Copper-binding tripeptide (Gly-His-Lys) occurring naturally in human plasma.</p><dl><dt>Sequence</dt><dd>GHK·Cu²⁺</dd><dt>Molecular mass</dt><dd>402.92 Da</dd><dt>Formula</dt><dd>C14H24CuN6O4</dd><dt>CAS</dt><dd>89030-95-5</dd></dl><p>Documented research areas: MMP/TIMP and remodeling, Type I/III collagen and dermis, Tissue TGF-β/Smad, HO-1/Nrf2 antioxidant, Copper homeostasis, Chemotaxis and migration, Angiogenesis, Wound re-epithelialization, Anti-glycation and oxidation.</p><p>Available presentations: 50mg (US$50.00), 100mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>KLOWUP — Combination</h3><p>Four compounds in a single lyophilized vial: BPC-157, GHK-Cu, TB-500 and KPV, 20mg each.</p><dl><dt>Composition</dt><dd>4 compounds</dd><dt>Total load</dt><dd>80mg lyophilized</dd><dt>Components</dt><dd>BPC-157, GHK-Cu, TB-500, KPV</dd><dt>Purity</dt><dd>Manufacturer COA per batch</dd></dl><p>Documented research areas: FAK/paxillin (BPC-157), Type I/III collagen and ECM (GHK-Cu), Actin and migration (TB-500), MC1R signaling (KPV), Angiogenesis, Re-epithelialization.</p><p>Available presentations: 80mg (US$247.33).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>BPC-157 / TB-500 — Regeneration</h3><p>BPC-157 and TB-500 in a single lyophilized vial, 10mg each.</p><p>Available presentations: 20mg (US$120.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>KPV — Regeneration</h3><p>Tripeptide (Lys-Pro-Val), the C-terminal fragment of alpha-MSH. Agonist at the MC1R melanocortin receptor.</p><p>Available presentations: 10mg (US$80.00), 30mg (US$262.50).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>TB-500 — Regeneration</h3><p>Synthetic Ac-LKKTETQ fragment of thymosin beta-4.</p><dl><dt>Sequence</dt><dd>Ac-LKKTETQ</dd><dt>Molecular mass</dt><dd>889.00 Da</dd><dt>Formula</dt><dd>C38H68N10O14</dd><dt>CAS</dt><dd>885340-08-9</dd></dl><p>Documented research areas: Actin and cytoskeleton, Cell migration, Preclinical repair, Peripheral angiogenesis, ECM remodeling, Integrin signaling, Fibroblasts and re-epithelialization.</p><p>Available presentations: 10mg (US$216.98).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>5-Amino-1MQ — Metabolic</h3><p>Small-molecule inhibitor of nicotinamide N-methyltransferase (NNMT).</p><p>Available presentations: 50mg (US$140.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>AICAR — Metabolic</h3><p>AMP analog and activator of AMP-activated protein kinase (AMPK).</p><p>Available presentations: 50mg (US$130.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>AOD-9604 — Metabolic</h3><p>Synthetic fragment of human growth hormone, residues 177 to 191.</p><p>Available presentations: 5mg (US$110.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Eloratlintide — Metabolic</h3><p>Synthetic peptide. Agonist at the amylin receptor.</p><p>Available presentations: 10mg (US$300.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>MOTS-c — Metabolic</h3><p>Peptide encoded in mitochondrial DNA.</p><p>Available presentations: 10mg (US$80.00), 40mg (US$220.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Retatrutide — Metabolic</h3><p>Synthetic triple agonist peptide with affinity for the GLP-1, GIP and glucagon receptors.</p><dl><dt>Designation</dt><dd>LY3437943</dd><dt>Molecular mass</dt><dd>4894.58 Da</dd><dt>Formula</dt><dd>C228H350N48O66</dd><dt>CAS</dt><dd>2381089-83-2</dd></dl><p>Documented research areas: Triple GCGR/GIPR/GLP-1R agonism, Incretin cAMP signaling.</p><p>Available presentations: 10mg (US$170.21), 20mg (US$125.00), 30mg (US$243.33), 50mg (US$318.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>SLU-PP-332 — Metabolic</h3><p>Synthetic pan-agonist of the estrogen-related receptors ERR alpha, beta and gamma.</p><p>Available presentations: 5mg (US$187.06).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tensity I — Metabolic</h3><p>Combination formulation supplied in a single vial.</p><p>Available presentations: 20mg (US$246.67).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tesamorelin — Metabolic</h3><p>Synthetic analog of growth-hormone-releasing hormone.</p><p>Available presentations: 5mg (US$100.00), 10mg (US$180.00), 20mg (US$227.59).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tirzepatide — Metabolic</h3><p>Synthetic peptide. Dual agonist at the GLP-1 and GIP receptors.</p><p>Available presentations: 5mg (US$161.76), 10mg (US$186.90), 30mg (US$258.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HGH Fragment 176-191 — Metabolic</h3><p>Synthetic fragment of human growth hormone, residues 176 to 191.</p><p>Available presentations: 5mg (US$110.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cagrilintide — Metabolic</h3><p>Synthetic peptide. Long-acting agonist at the amylin receptor.</p><p>Available presentations: 5mg (US$110.00), 10mg (US$180.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>CJC-1295 noDAC — GH Axis</h3><p>Synthetic analog of growth-hormone-releasing hormone, without the drug affinity complex modification.</p><dl><dt>Type</dt><dd>GHRH analog</dd><dt>Presentation</dt><dd>10mg lyophilized</dd><dt>Purity</dt><dd>Manufacturer COA per batch</dd></dl><p>Documented research areas: Pituitary GHRH signaling, Pulsatile GH release, GH/IGF-1 axis modulation.</p><p>Available presentations: 10mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>GHRP-2 — GH Axis</h3><p>Synthetic hexapeptide. Agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$156.63).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HCG — GH Axis</h3><p>Human chorionic gonadotropin, a glycoprotein hormone.</p><p>Available presentations: 5000IU (US$95.00), 10000IU (US$160.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HGH — GH Axis</h3><p>Recombinant human growth hormone, 191 amino acids.</p><p>Available presentations: 10IU (US$60.00), 12IU (US$75.00), 15IU (US$95.00), 24IU (US$130.00), 30IU (US$165.81), 36IU (US$170.00), 50IU (US$230.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>IGF1-LR3 — GH Axis</h3><p>Analog of insulin-like growth factor 1 with an N-terminal extension.</p><p>Available presentations: 0.1mg (US$45.00), 1mg (US$230.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Ipamorelin — GH Axis</h3><p>Synthetic pentapeptide. Selective agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$50.00), 10mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Kisspeptin — GH Axis</h3><p>Neuropeptide encoded by the KISS1 gene. Ligand at the KISS1R receptor.</p><p>Available presentations: 10mg (US$95.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Synergy II — GH Axis</h3><p>CJC-1295 and Ipamorelin in a single vial. A GHRH analog and a GHSR-1a agonist.</p><p>Available presentations: 10mg/10mg (US$224.95).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HMG — GH Axis</h3><p>Human menopausal gonadotropin, carrying follicle-stimulating and luteinising activity.</p><p>Available presentations: 75IU (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Sermorelin — GH Axis</h3><p>Synthetic analog of growth-hormone-releasing hormone, residues 1 to 29.</p><p>Available presentations: 5mg (US$95.00), 10mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Hexarelin — GH Axis</h3><p>Synthetic hexapeptide. Agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$95.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>ARA-290 — Longevity</h3><p>Eleven-amino-acid peptide derived from the B helix of erythropoietin.</p><p>Available presentations: 10mg (US$174.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cardiogen — Longevity</h3><p>Synthetic bioregulator tetrapeptide.</p><p>Available presentations: 20mg (US$177.06).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Coherence — Longevity</h3><p>Combination formulation supplied in a single vial.</p><p>Available presentations: 50mg (US$214.86).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cortagen — Longevity</h3><p>Synthetic bioregulator tetrapeptide.</p><p>Available presentations: 20mg (US$193.01).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Epithalon — Longevity</h3><p>Synthetic tetrapeptide (Ala-Glu-Asp-Gly).</p><p>Available presentations: 10mg (US$60.00), 40mg (US$160.00), 50mg (US$177.76).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>FOX-04 — Longevity</h3><p>Experimental peptide targeting the FOXO4 and p53 interaction.</p><p>Available presentations: 10mg (US$333.17).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Glutathione — Longevity</h3><p>Endogenous tripeptide (Glu-Cys-Gly).</p><p>Available presentations: 1500mg (US$206.35).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>NAD+ — Longevity</h3><p>Nicotinamide adenine dinucleotide. Coenzyme in cellular redox reactions.</p><p>Available presentations: 100mg (US$50.00), 500mg (US$80.00), 1000mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Oxytocin — Longevity</h3><p>Nonapeptide hormone produced in the hypothalamus.</p><p>Available presentations: 10mg (US$125.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Pinealon — Longevity</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$179.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Prostamax — Longevity</h3><p>Synthetic bioregulator peptide.</p><p>Available presentations: 20mg (US$250.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>PT-141 — Longevity</h3><p>Cyclic analog of alpha-MSH. Agonist at the MC3R and MC4R melanocortin receptors.</p><p>Available presentations: 10mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>SS-31 — Longevity</h3><p>Synthetic tetrapeptide, also known as elamipretide.</p><p>Available presentations: 10mg (US$120.00), 50mg (US$380.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Thymosin A — Longevity</h3><p>Thymic peptide preparation, fraction 5.</p><p>Available presentations: 5mg (US$100.00), 10mg (US$180.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Thymulin — Longevity</h3><p>Zinc-bound thymic nonapeptide.</p><p>Available presentations: 20mg (US$261.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Vesugen — Longevity</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$242.50).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Vilon — Longevity</h3><p>Synthetic bioregulator dipeptide (Lys-Glu).</p><p>Available presentations: 20mg (US$244.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>VIP — Longevity</h3><p>Vasoactive intestinal peptide, 28 amino acids.</p><p>Available presentations: 10mg (US$236.20).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>DSIP — Cognition</h3><p>Nonapeptide, known as delta sleep-inducing peptide.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 15mg (US$100.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Selank — Cognition</h3><p>Synthetic heptapeptide analog of tuftsin.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 30mg (US$154.75).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Semax — Cognition</h3><p>Heptapeptide: the ACTH(4-7) fragment with a Pro-Gly-Pro extension.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 30mg (US$150.75).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Melanotan I — Aesthetics</h3><p>Linear analog of alpha-melanocyte-stimulating hormone.</p><p>Available presentations: 10mg (US$60.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Melanotan II — Aesthetics</h3><p>Cyclic analog of alpha-MSH. Agonist at the MC1R and MC4R melanocortin receptors.</p><p>Available presentations: 10mg (US$60.00).</p><p>For research use only. Not for human consumption.</p></section>
+<!-- /prerender:catalog -->
+<!-- prerender:catalog -->
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
+        <p class="small" style="color:rgba(247,244,236,.6);max-width:34ch"><span data-i18n="foot.blurb">Research-grade peptides, with a certificate of analysis for every batch. Active distribution in Colombia, Mexico and the USA.</span></p>
+      </div>
+      <div>
+        <h4 data-i18n="foot.catalog">Catalog</h4>
+        <div class="f-list">
+          <a href="/#catalog" data-i18n="foot.all">All compounds</a>
+          <a href="/#standard" data-i18n="foot.ourStandard">Our standard</a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="foot.support">Support</h4>
+        <div class="f-list">
+          <a href="/#faq" data-i18n="nav.faq">FAQ</a>
+          <a href="/returns" data-i18n="foot.returns">Returns and refunds</a>
+          <a href="https://wa.me/573164114411" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="foot.payment">Payment</h4>
+        <div class="f-list">
+          <span>Bancolombia · Nequi · Wompi</span>
+          <span>Zelle · USDT</span>
+          <span>Payment link</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The single explicit legal statement on the site. Everything else uses
+         softer positive framing; this one place says it plainly. -->
+    <div class="disclaimer" id="legal">
+      <strong data-i18n="foot.legalStrong">For research use only.</strong>
+      <span data-i18n="foot.legal">All compounds listed on this site are supplied strictly for laboratory research.</span>
+      <strong data-i18n="foot.legalStrong2">They are not medicines, are not dietary supplements, and are not intended for human or veterinary use.</strong>
+      <span data-i18n="foot.legalSupplier">Ascent is a chemical supplier. It is not a compounding pharmacy, and it is not an outsourcing facility as defined under section 503B of the Federal Food, Drug, and Cosmetic Act.</span>
+      <span data-i18n="foot.legalFda">The statements on this website have not been evaluated by the U.S. Food and Drug Administration.</span>
+      <span data-i18n="foot.legal2">They have not been approved by any regulatory authority for the diagnosis, treatment, cure or prevention of any condition. Nothing on this site is medical advice or a recommendation to use any compound. By purchasing, you confirm you are a qualified buyer aged 21 or over and that these compounds will be handled in an appropriate research setting.</span>
+    </div>
+
+    <div class="f-bottom">
+      <span data-i18n="foot.rights">© 2026 Ascent Labs</span>
+      <span>Colombia · Mexico · USA</span>
+    </div>
+  </div>
+</footer>
+
+<!-- The compound sheet and both scrims are wired unguarded in site.js, and
+     the cart drawer needs its scrim to dim the page, so this chrome ships on
+     every page that loads site.js. -->
+<!-- ============ COMPOUND DETAIL ============ -->
+<div class="scrim" id="sheet-scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-name" aria-hidden="true">
+  <div class="cart-h">
+    <div style="margin-right:auto">
+      <p class="eyebrow" id="sheet-cat"></p>
+      <h3 id="sheet-name" style="margin-top:4px"></h3>
+    </div>
+    <button class="icon-btn" id="sheet-close" aria-label="Close compound details" data-i18n-aria="sheet.close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-body" id="sheet-body"></div>
+</aside>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="cart" id="cart" aria-label="Your order" data-i18n-aria="cart.title" aria-hidden="true">
+  <div class="cart-h">
+    <h3 data-i18n="cart.title">Your order</h3>
+    <button class="icon-btn" id="cart-close" aria-label="Close order" data-i18n-aria="cart.close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <!-- The notes scroll WITH the items. Pinned in the footer they cost 128px of
+       a phone screen permanently, which had squeezed the order itself into a
+       291px window — smaller than a single line. The footer pins only what a
+       buyer must be able to see at the moment they tap Checkout: what they are
+       paying now, and what recurs. -->
+  <div class="cart-scroll">
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-notes" id="cart-notes" hidden>
+      <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico.</p>
+      <!-- Stated plainly rather than buried: a precise USD figure that then
+           does not match the buyer's statement generates support tickets and
+           chargebacks, and chargebacks are what threaten a high-risk account. -->
+      <p class="small fx-note" data-i18n="fx.note">Charged in Colombian pesos at the official TRM rate. Your bank applies its own conversion, so your statement may differ slightly.</p>
+    </div>
+  </div>
+  <div class="cart-f">
+    <div class="cart-total"><span id="cart-total-label" data-i18n="cart.total">Total</span><b class="tabular" id="cart-total">$0.00</b></div>
+    <p class="cart-saved small" id="cart-saved" hidden></p>
+    <p class="cart-blocked small" id="cart-blocked" hidden></p>
+    <!-- Stays pinned with the total rather than scrolling with the notes. A
+         pinned label reading "Total today" while the "then" scrolled out of
+         sight would be worse than pinning neither. -->
+    <!-- No target="_blank" and no research-use tick here. Both are leftovers
+         from the WhatsApp handoff: this now navigates to /checkout in the same
+         tab, and checkout owns the acknowledgement. -->
+    <a class="btn btn--primary" id="checkout" href="#"
+       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Checkout</a>
+  </div>
+</aside>
+
+<a class="wa" href="https://wa.me/573164114411" data-wa="wa.hello" target="_blank" rel="noopener" aria-label="Message us on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.4.2-.6.1-1.5-.6-2.8-1.9-3.4-3.4-.1-.2 0-.4.1-.6l1.1-.9c.2-.2.2-.4.1-.7-.1-.3-.8-1.9-1-2.2-.2-.4-.5-.4-.8-.4h-.7c-.3 0-.7.2-1 .5-.9.9-1.2 2.1-1 3.3.4 2.3 1.7 4.4 3.4 6 1.7 1.7 3.8 2.9 6 3.4 1.2.2 2.5-.1 3.3-1 .3-.3.5-.7.5-1v-.7c0-.3 0-.6-.4-.8zM12 2a10 10 0 0 0-8.6 15.1L2 22l4.9-1.3A10 10 0 1 0 12 2z"/></svg>
+</a>
+
+<script src="/assets/i18n.js"></script>
+<script src="/assets/data.js"></script>
+<script src="/assets/data.es.js"></script>
+<script src="/assets/markets.js"></script>
+<script src="/assets/explore.js"></script>
+<script src="/assets/quality.js"></script>
+<script src="/assets/site.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ascent Compounds — design system
+   Ascent Labs — design system
    Palette: golden off-white ground, black-and-gold product as the only contrast
    Type: Inter (matches the app and the geometric wordmark)
    Composition: Apple-inspired — one idea per screen, generous air, product-led
@@ -45,6 +45,9 @@
 
   --ease: cubic-bezier(.22,.61,.36,1);
   --nav-h: 70px;   /* room to breathe around the larger wordmark */
+  /* The content gutter, as a token rather than a literal, because the catalog's
+     filter row bleeds past it by exactly this much to scroll edge-to-edge */
+  --wrap-pad: clamp(24px, 4vw, 48px);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -91,11 +94,93 @@ h3 { font-size: clamp(19px, 1.7vw, 25px); letter-spacing: -.02em; line-height: 1
 .tabular { font-variant-numeric: tabular-nums; }
 
 /* ---------- layout ---------- */
-.wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(24px, 4vw, 48px); }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--wrap-pad); }
 .sec { padding: var(--s-7) 0; position: relative; }
 .sec--cream { background: var(--cream); }
 .sec--paper { background: var(--paper); }
 .sec--tight { padding: var(--s-6) 0; }
+/* Ink, in a page that otherwise alternates cream and off-white. The app is a
+   different kind of thing from everything around it, and inserting another
+   cream or paper band would have left it reading as one more product row. */
+.sec--ink { background: var(--ink); color: rgba(247, 244, 236, .74); }
+.sec--ink h2 { color: var(--cream); }
+.sec--ink .eyebrow { color: var(--gold); }
+.sec--ink .lead { color: rgba(247, 244, 236, .74); }
+
+/* ---- app section ---- */
+.app-icon { width: 84px; height: 84px; border-radius: 20px; display: block;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .38); }
+.app-points { display: grid; gap: 10px; margin-top: var(--s-2); }
+.app-point { display: grid; grid-template-columns: auto 1fr; gap: 10px;
+  align-items: start; font-size: 14.5px; line-height: 1.5; }
+.app-point svg { width: 17px; height: 17px; margin-top: 2px; color: var(--gold); flex: none; }
+.app-cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: var(--s-3); }
+/* Placeholder until the app ships. Apple's badge may only be used for an app
+   that is actually on the store, and the artwork has to be their file,
+   unmodified — so this is deliberately NOT a lookalike. */
+.app-soon { display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 18px; border: 1px solid rgba(247, 244, 236, .26);
+  border-radius: var(--pill); font-size: 14px; font-weight: 600;
+  color: var(--cream); }
+.app-soon::before { content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--gold); flex: none; }
+.app-badge { height: 52px; width: auto; display: block; }
+.app-note { font-size: 12.5px; color: rgba(247, 244, 236, .5); }
+
+/* ---- live date on the phone ----
+   Offsets are percentages of the capture, so the overlay tracks the image at
+   any width. cqw sizes the type against the image box rather than the viewport;
+   without a container the text would drift out of scale on every resize.
+
+   Measured from assets/img/app.webp (928x1152):
+     headline left edge   x=139   -> 14.98%
+     cap top / baseline   y=367 / 406
+     cap height           40px    -> 55px Inter at 928 wide -> 5.93cqw
+     ink colour           rgb(33,31,27)
+     surface behind it    rgb(250,248,244), stdev 0.0 across the whole band */
+.app-shot { position: relative; container-type: inline-size; }
+.app-date {
+  position: absolute;
+  /* The cover starts LEFT of the ink and pads the text back to 14.98%. Starting
+     it exactly on the first ink pixel left a hairline of the baked "T" showing,
+     because that glyph's antialiasing begins a fraction before x=139. */
+  left: 13.9%;
+  padding-left: 1.08%;
+  top: 30.30%;
+  /* out to the card's right edge, so a long date has the room the app gives it */
+  width: 71.58%;
+  box-sizing: border-box;
+  height: 6.2%;
+  /* The fill STOPS before the "+" button. The box has to stay wide enough for a
+     long date, but the button's soft shadow reaches down to y=379 over
+     x=704-803 — a full-width fill erased 30px of it and left the button
+     looking cut off. Hard stop at x=665: past the baked ink (ends 631), clear
+     of the shadow (starts 704). No visible edge, because the fill colour is
+     the background colour. */
+  background: linear-gradient(to right,
+    rgb(250, 248, 244) 0 80.72%, rgba(250, 248, 244, 0) 80.72%);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.app-date b {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 5.93cqw;
+  font-weight: 700;
+  /* -0.011, not the -0.02 the site's headings use: overlaid on the capture at
+     1:1 the tighter value ran the string 9px short over 492px, which showed as
+     drift by the last word. 9px / 16 gaps / 55px = 0.010em back. */
+  letter-spacing: -0.011em;
+  line-height: 1;
+  color: rgb(33, 31, 27);
+  /* renderAppDate() shrinks from the left when a locale runs long — Spanish
+     spells out "miércoles, 24 de septiembre" where English has "Wednesday,
+     September 24" */
+  transform-origin: left center;
+}
+.sec--ink .row-media { box-shadow: 0 24px 60px rgba(0, 0, 0, .45); }
 .center { text-align: center; }
 .center .lead { margin-inline: auto; }
 .stack > * + * { margin-top: var(--s-3); }
@@ -334,17 +419,19 @@ body.gate-locked { overflow: hidden; }
 }
 body.menu-open { overflow: hidden; }
 
-/* ---------- hero (scroll-scrubbed sequence) ----------
-   Height is tuned to the footage: the fall occupies frames 62-88 of 100, so at
-   300vh the vial lands right as the hero releases into the page. Longer than
-   this and you scroll through a static vial. */
-#hero { position: relative; height: 230vh; }
+/* ---------- hero ----------
+   Height comes from the IMAGE on desktop, not the viewport, so the hero is
+   shown whole rather than cropped to fit. At 16:9 that lands at 99% of a 16:9
+   display and 86-89% of a squarer laptop — the sliver of the next section
+   showing under it is a feature, not a gap.
+
+   max-height caps it so an ultrawide short window (2560x1080 would want a
+   1429px hero) falls back to a centred cover crop instead of pushing the
+   product below the fold. */
+#hero { position: relative; }
 #hero-pin {
-  position: sticky; top: 0; height: 100vh; height: 100dvh;
+  position: relative;
   overflow: hidden; background: var(--sand);
-  /* JS lifts and fades this during the handoff window so the page reads as
-     already moving while the vial is still falling */
-  will-change: transform, opacity;
 }
 /* The footage is 16:9 and the vial reaches the frame edges as it falls, so
    cropping to fill would cut the product off. Instead the frame lives in a
@@ -368,22 +455,36 @@ body.menu-open { overflow: hidden; }
   /* own stacking context: without it the still's z-index escapes and paints
      over the hero copy */
   z-index: 0; isolation: isolate;
+  /* clips the parallax drift; the image is scaled slightly so drifting never
+     exposes an edge */
+  overflow: hidden;
 }
 .hero-frame img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover; object-position: 50% 50%;
   display: block;
+  object-fit: cover; object-position: 50% 50%;
 }
-/* the sharp still sits on top until the sequence takes over */
-#hero-still { z-index: 1; will-change: opacity; }
+/* No transform. A parallax drift was tried and removed: the source is 1.79:1
+   in a 1.6:1 box, so object-fit:cover already fits it vertically with zero
+   headroom — any scale to create drift room cropped the cap and the base off
+   the product. On a hero whose whole job is the product, that is the wrong
+   trade for motion nobody asked to see. */
+#hero-still { z-index: 1; }
 
 /* Desktop: full-bleed, copy overlays the image.
    Keyed to width, not aspect ratio. The old `min-aspect-ratio: 16/9` gate
    missed every common desktop below 1.778 (1440x900 and 1280x800 are 1.6), so
    the frame rendered at 56.25vw and left a sand strip under the nav. */
 @media (min-width: 721px) {
-  .hero-frame { inset: 0; height: auto; }
+  /* relative, so the frame's own aspect ratio drives the hero's height and the
+     image is never cropped; the copy and scrim still overlay it via inset:0 */
+  .hero-frame {
+    position: relative; inset: auto;
+    width: 100%; height: auto;
+    aspect-ratio: 5504 / 3072;
+    max-height: 100vh; max-height: 100dvh;
+  }
   .hero-frame img { object-position: 50% 50%; }
   /* The vial lands at roughly x40-60% of the viewport once the frame is
      full-bleed; unconstrained, the headline ran ~387px straight across the
@@ -396,17 +497,31 @@ body.menu-open { overflow: hidden; }
     max-width: min(430px, 26vw);
   }
   #hero-pin .hero-beat .lead { max-width: min(340px, 22vw); }
+  /* --muted on the new hero measured 2.03:1 at its worst pixel, against a 4.5
+     floor for body text — the old pale hero was hiding a real failure. --ink-2
+     only reached 3.68:1, so the lead takes full --ink here. Hierarchy is
+     carried by size and weight instead of colour (66px/700 against 21.6px/400),
+     which is the stronger typographic move anyway.
+
+     Scoped to this breakpoint: below 721px the copy sits ABOVE the image on the
+     sand page, where --muted has plenty of contrast and is the right weight. */
+  #hero-pin .hero-beat .lead { color: var(--ink); }
 }
 
-.hero-scrim {
-  position: absolute; inset: 0; pointer-events: none; z-index: 1;
-  background: radial-gradient(ellipse 130% 100% at 50% 62%, transparent 72%, rgba(237,232,217,.5) 100%);
-}
+/* No wash. This laid 50% sand over the outer 28% of the frame to feather the
+   image into the page, but measured against the new hero it does not achieve
+   that and costs real depth: the vial's shadow went #D8B587 -> #E2CEB0, and the
+   bottom edge only reached #D8C4A6 against a #FCFAF5 next section — still a
+   delta of R36/G54/B79, so nothing was actually being blended. It was hazing
+   the image for no gain. A crisp boundary reads as a deliberate image panel,
+   which is the same reasoning already applied to the frame's top edge. */
+.hero-scrim { display: none; }
 
-/* The pinned hero lifts as you scroll; without this the space it vacates shows
-   as a sand band above the next section. Pulling the next section up by the
-   same distance keeps them glued. Must match LIFT_VH in site.js. */
-#standard { margin-top: -24vh; }
+/* NO negative margin here. This used to be -24vh to close the gap left by the
+   pinned hero lifting as you scrolled. That animation was removed with the
+   scroll sequence and LIFT_VH no longer exists in site.js, but the margin
+   stayed — silently pulling this section up over the bottom 24% of the hero and
+   cutting the vial's base off at every viewport. */
 .hero-copy { position: absolute; inset: 0; display: grid; align-content: center;
   padding: 0 clamp(20px, 5vw, 96px); pointer-events: none; z-index: 2; }
 .hero-beat { position: absolute; inset: 0; display: grid; align-content: center;
@@ -475,6 +590,105 @@ body.menu-open { overflow: hidden; }
 #count { margin: var(--s-3) 0; }
 
 /* ---------- product grid ---------- */
+.shop-search {
+  display: flex; align-items: center; gap: 10px;
+  max-width: 480px; margin: 0 0 var(--s-2);
+  padding: 0 14px; min-height: 52px;
+  background: var(--paper); border: 1px solid var(--line);
+  border-radius: var(--pill);
+  transition: border-color .18s var(--ease);
+}
+.shop-search:focus-within { border-color: var(--gold); }
+.shop-search > svg { width: 19px; height: 19px; color: var(--muted); flex: none; }
+.shop-search input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: none;
+  font: inherit; font-size: 16px; color: var(--ink); padding: 14px 0;
+}
+/* 16px, not smaller: iOS zooms the whole page when a focused input is under
+   16px, which on a search field means the page jumps on every tap */
+.shop-search input::placeholder { color: var(--faint); }
+.shop-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+#cat-search-clear {
+  width: 32px; height: 32px; display: grid; place-items: center; flex: none;
+  border: 0; background: none; color: var(--muted); cursor: pointer;
+  border-radius: 50%; opacity: 0; pointer-events: none;
+  transition: opacity .15s var(--ease), background .15s var(--ease);
+}
+.shop-search input:not(:placeholder-shown) ~ #cat-search-clear { opacity: 1; pointer-events: auto; }
+#cat-search-clear:hover { background: var(--line-2); color: var(--ink); }
+#cat-search-clear svg { width: 15px; height: 15px; }
+.shop-empty { max-width: 46ch; color: var(--muted); padding: var(--s-4) 0; }
+
+/* ---------- catalog page: sticky control bar ----------
+   63 cards is roughly 7,000px of page. Search and filters that scroll away
+   after the first screen are search and filters you have to scroll back up to
+   reach, so the whole control group pins under the nav instead.
+
+   Every rule here is scoped to body[data-page="shop"]. The home page renders
+   the same #filters markup through the same renderFilters(), but it only ever
+   shows a three-card preview — pinning there would be chrome with nothing left
+   to control. */
+body[data-page="shop"] .shop-intro { max-width: 60ch; margin-bottom: var(--s-4); }
+
+body[data-page="shop"] .shop-bar {
+  position: sticky; top: var(--nav-h); z-index: 20;
+  padding: 14px 0; margin-bottom: var(--s-2);
+  /* Translucent so cards visibly pass underneath — the cue that the bar is
+     pinned rather than simply sitting there. The fallback below matters: with
+     no backdrop-filter support this must be opaque, or the grid scrolls
+     straight through the filter labels. */
+  background: var(--cream);
+  border-bottom: 1px solid var(--line-2);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  body[data-page="shop"] .shop-bar {
+    background: color-mix(in srgb, var(--cream) 82%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+  }
+}
+body[data-page="shop"] .shop-bar-inner {
+  display: flex; align-items: center; gap: var(--s-2);
+}
+body[data-page="shop"] .shop-search {
+  margin: 0; flex: 0 0 300px; min-height: 46px;
+}
+body[data-page="shop"] .shop-search input { padding: 10px 0; }
+
+/* One line, scrolled — not wrapped. Nine chips wrap to three rows on a phone,
+   which would leave the pinned bar taller than the first row of cards it is
+   meant to sit above. A chip sliced by the right edge is its own affordance:
+   it says the list continues without needing an arrow or a fade. */
+body[data-page="shop"] .shop-bar .chips {
+  flex: 1 1 auto; min-width: 0;
+  flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: none; -ms-overflow-style: none;
+  /* the chips carry a 1px border; without this their outline is shaved off */
+  padding-block: 1px;
+}
+body[data-page="shop"] .shop-bar .chips::-webkit-scrollbar { display: none; }
+body[data-page="shop"] .shop-bar .chip { flex: none; }
+
+body[data-page="shop"] #count { margin: 0 0 var(--s-2); }
+
+/* A little more air between cards than the home preview's three get, since
+   here they tile four across and eight deep */
+body[data-page="shop"] .grid-p { gap: 20px; }
+
+@media (max-width: 860px) {
+  /* Below this the search field and nine chips cannot share a line without
+     the chips being reduced to a peephole, so they stack */
+  body[data-page="shop"] .shop-bar-inner { display: block; }
+  body[data-page="shop"] .shop-search { flex: none; max-width: none; margin-bottom: 10px; }
+  body[data-page="shop"] .shop-bar { padding: 12px 0; }
+  /* Now that the chips own a full row, let them scroll past the gutter so the
+     row reads as continuing off-screen rather than ending at an inset */
+  body[data-page="shop"] .shop-bar .chips {
+    margin-inline: calc(var(--wrap-pad) * -1);
+    padding-inline: var(--wrap-pad);
+  }
+}
+
 .grid-p { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: var(--s-2); }
 .p {
   background: var(--paper); border: 1px solid var(--line-2); border-radius: var(--r);
@@ -485,6 +699,9 @@ body.menu-open { overflow: hidden; }
 .p-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
 .p-name { font-size: 17px; font-weight: 600; letter-spacing: -.015em; }
 .p-size { font-size: 12px; font-weight: 600; color: var(--gold-deep); letter-spacing: .06em; }
+/* Muted, not gold: gold in this slot means "this is the vial you are buying",
+   and a count is not a vial. The chips below carry the actual choice. */
+.p-size--multi { color: var(--muted); letter-spacing: .04em; }
 .p-cat {
   font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); background: rgba(26,24,21,.045);
@@ -499,6 +716,23 @@ body.menu-open { overflow: hidden; }
 }
 .p-more:hover { gap: 10px; }
 .p-more svg { width: 13px; height: 13px; }
+/* Vial sizes, on the 7 compounds that have more than one. Sized down from the
+   filter chips deliberately: these are a secondary control inside a card, and
+   at the filter chips' 44px a three-size compound would push Add below the
+   fold on a phone. 38px clears WCAG 2.5.8 Target Size (Minimum, AA, 24px)
+   with room to spare; it does not meet 2.5.5 (AAA, 44px), which the filter
+   chips do. */
+.p-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.p-size-chip {
+  min-height: 38px; padding: 8px 13px; border-radius: var(--pill);
+  border: 1px solid var(--line); background: transparent; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 600; letter-spacing: .01em;
+  color: var(--ink-2); font-variant-numeric: tabular-nums;
+  transition: background .18s var(--ease), border-color .18s var(--ease), color .18s var(--ease);
+}
+.p-size-chip:hover { border-color: var(--ink); }
+.p-size-chip[aria-checked="true"] { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+
 .p-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
 .p-price { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
 .p-price small { font-size: 12px; font-weight: 500; color: var(--faint); }
@@ -717,8 +951,24 @@ body.menu-open { overflow: hidden; }
   transition: background .2s var(--ease); }
 .icon-btn:hover { background: rgba(26,24,21,.055); }
 .icon-btn svg { width: 20px; height: 20px; }
-.cart-body { flex: 1; overflow-y: auto; padding: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); }
-.ci { display: flex; gap: 14px; align-items: start; padding-bottom: var(--s-2); border-bottom: 1px solid var(--line-2); }
+/* The scroller is the wrapper, not the item list, so the notes below the items
+   scroll with them instead of being pinned. */
+.cart-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.cart-body { flex: 1 0 auto; padding: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); }
+.cart-notes { padding: 0 var(--s-3) var(--s-3); display: grid; gap: var(--s-1); }
+/* Grid, not flex, so the plan block can span the whole row underneath the item
+   instead of sharing the middle column with the name and quantity. minmax(0,1fr)
+   rather than 1fr: a flex/grid track sized to its content refuses to shrink
+   below it, which pushed the price column off a phone screen. */
+/* Two columns, not three. The price moved into the main column beside the
+   name, which lets the name use the full width instead of being squeezed by a
+   price column that only ever held one short line. */
+.ci { display: grid; grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 14px; row-gap: 12px; align-items: start;
+  padding-bottom: var(--s-2); border-bottom: 1px solid var(--line-2); }
+.ci-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.ci-actions { display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; margin-top: 8px; }
 .ci:last-child { border-bottom: 0; }
 /* product thumbnail: the vial sits on a soft sand tile so the transparent
    PNG reads as a product shot rather than floating on the drawer */
@@ -735,9 +985,75 @@ body.menu-open { overflow: hidden; }
   max-width: 100%; max-height: 100%;
   width: auto; height: auto; display: block;
 }
-.ci-main { flex: 1; }
+.ci-main { min-width: 0; }
 .ci-name { font-weight: 600; font-size: 15px; }
 .ci-meta { font-size: 13px; color: var(--muted); }
+.ci-price { font-size: 15px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.ci-price small { font-size: .74em; font-weight: 500; opacity: .55; }
+/* Recedes until wanted. Removing a line is recoverable and rare; permanent red
+   beside the price competed with the number the reader is actually there for. */
+.ci-rm { min-height: 44px; padding: 0 2px; font-size: 12.5px; color: var(--faint);
+  background: none; border: 0; cursor: pointer; transition: color .18s ease; }
+.ci-rm:hover { color: var(--danger); }
+.ci-rm:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+
+/* ---- purchase option, per cart line ----
+   Two named choices, each with its own price, so the 10% is a comparison the
+   reader can make rather than a claim they have to take on faith.
+
+   ONE container, not three. Earlier this was two separately-bordered cards
+   plus a loose stepper plus two captions — four outlines and three control
+   shapes stacked under a product that already has a bordered quantity pill.
+   Now a single bordered group with hairline dividers, and the interval nested
+   inside the option it belongs to. */
+/* No margin-top: the grid row-gap already separates this from the block above,
+   and the two together were doubling the spacing. */
+/* A seventh of the old tint. Across a full-width row the 14% read as a
+   highlighter stripe; the radio and the border already carry the selection,
+   so the fill only has to group the row with its detail below. */
+
+/* Same tint as the selected row above it and no border of its own, so the two
+   read as one block rather than a card with something bolted underneath. The
+   left padding lines the control up with the option label, not the radio. */
+.ci-detail { background: rgba(201, 160, 85, 0.07); padding: 0 12px 12px 38px;
+  display: grid; gap: 8px; }
+.ci-every { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 12.5px; color: var(--muted); }
+/* Mirrors the quantity pill above it — same border, radius and 44px tap floor
+   — because it is the same kind of control and should not look like a second,
+   unrelated one. */
+.ci-step { display: inline-flex; align-items: center;
+  border: 1px solid var(--line); border-radius: var(--pill); background: var(--paper); }
+.ci-step button { width: 40px; height: 40px; display: grid; place-items: center;
+  font-size: 17px; color: var(--ink-2); border: 0; background: none; cursor: pointer; }
+.ci-step button:hover:not(:disabled) { color: var(--ink); }
+/* Dimmed rather than removed at the bounds: a control that vanishes reads as a
+   bug, one that greys out reads as a limit. */
+.ci-step button:disabled { color: var(--line); cursor: default; }
+/* value and unit as one centred unit, so "30 days" reads as a phrase instead
+   of a number and a word with a gap between them */
+.ci-step-v { display: inline-flex; align-items: baseline; gap: 3px; }
+.ci-step input { width: 2.2ch; padding: 0; border: 0; background: none;
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink);
+  text-align: right; -moz-appearance: textfield; }
+/* the native spinners duplicate the − / + buttons and shrink the typing area */
+.ci-step input::-webkit-outer-spin-button,
+.ci-step input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ci-step input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+.ci-step-u { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+
+/* ---- recurring summary, cart and checkout ----
+   A hairline and alignment rather than a filled box. The recurring amount is a
+   continuation of the total directly above it — same label-left/price-right
+   grammar, one weight quieter — so it belongs to that block instead of sitting
+   beside it as a grey slab. It stays adjacent to the total, which is what
+   makes it hard to miss; the box was doing nothing the position was not. */
+/* Quieter than the option group's gold: two gold emphases stacked in one
+   footer compete, and the price the reader is agreeing to should win. */
+.cart-saved { color: var(--gold-deep); font-weight: 600; font-size: 12.5px; }
+
+/* Catalogue hint. Advertises the option where price is compared; the choice
+   itself is made in the cart, so this stays text and not a second button. */
 .qty { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: var(--pill); }
 /* 44px is the tap-target floor. The visual pill stays compact — padding does
    the work, not a bigger circle — so the control looks the same and stops
@@ -745,7 +1061,9 @@ body.menu-open { overflow: hidden; }
 .qty button { width: 44px; height: 44px; display: grid; place-items: center; font-size: 17px; color: var(--ink-2); }
 .qty button:hover { color: var(--ink); }
 .qty span { min-width: 24px; text-align: center; font-size: 14px; font-weight: 600; }
-.cart-f { padding: var(--s-3); border-top: 1px solid var(--line-2); display: grid; gap: var(--s-2); }
+/* Tighter gap than the rest of the drawer: this block is now four short rows
+   that belong together, not four separate sections. */
+.cart-f { padding: var(--s-3); border-top: 1px solid var(--line-2); display: grid; gap: 12px; }
 .cart-total { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; }
 .cart-total b { font-size: 25px; letter-spacing: -.02em; }
 .empty { text-align: center; color: var(--muted); padding: var(--s-5) 0; }
@@ -822,7 +1140,7 @@ footer a:hover { color: var(--cream); }
   .card.tall { grid-row: auto; min-height: 400px; }
   .f-grid { grid-template-columns: 1fr; }
   /* the hero footage is 16:9; in portrait anchor it low and lift the copy above */
-  #hero { height: 210vh; }
+  #hero { height: 100vh; height: 100dvh; }
   /* Portrait: type sits ABOVE the footage, never over it.
      The frame is bled 9% past each edge so it renders taller (66.4vw instead of
      56.25vw). That absorbs the leftover vertical space rather than leaving it as
@@ -850,7 +1168,15 @@ footer a:hover { color: var(--cream); }
      the taller the frame the harder it zooms. Past ~1.28x the viewport width
      the window narrows below the fallen vial's 41.8% span and clips its cap.
      Only bites on large phones, where it costs ~20px of image. */
-  #hero-pin { --frame-h: clamp(240px, min(calc(95vh - 315px), 62vh, 126vw), 580px); }
+  /* The pin needs an explicit height here. On desktop .hero-frame is
+     position:relative and gives the pin its height, but in portrait the frame
+     is absolute (anchored to the bottom, copy above it) and so are the copy and
+     cue — with nothing in flow the pin collapsed to zero and the whole hero
+     rendered blank. */
+  #hero-pin {
+    height: 100vh; height: 100dvh;
+    --frame-h: clamp(240px, min(calc(95vh - 315px), 62vh, 126vw), 580px);
+  }
 
   /* Base stays centred — correct for the standing vial and for the sharp still.
      heroInit() pans the sequence right across the fall; see site.js. */
@@ -986,14 +1312,26 @@ footer a:hover { color: var(--cream); }
 .q-table td { color: rgba(247,244,236,.82); }
 
 .q-floor { margin-top: var(--s-4); max-width: 62ch; }
-.q-floor-bar {
-  --verified: 99%;
-  height: 14px; border-radius: var(--pill); margin: 12px 0 10px;
-  background: var(--line); overflow: hidden;
-}
-.q-floor-bar span { display: block; height: 100%; width: var(--verified);
-  background: var(--gold); border-radius: var(--pill); }
-.q-floor-note { color: var(--muted); }
+/* 10x10, so "out of a hundred" is the grid's shape and needs no explaining.
+   The 3px gutter is the surface showing through — it separates the cells
+   without drawing a border around each one. */
+.q-units { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px;
+  width: min(100%, 260px); margin: 4px 0 var(--s-2); }
+.q-units i { aspect-ratio: 1; border-radius: 2px; background: var(--cream); }
+.q-units i.is-v { background: var(--gold); }
+/* a fractional floor (99.5) splits its cell instead of rounding to a whole one */
+.q-units i.is-p { background: linear-gradient(to right,
+  var(--gold) 0 var(--p), var(--cream) var(--p)); }
+
+.q-key { display: flex; flex-wrap: wrap; gap: 6px var(--s-2);
+  color: rgba(247, 244, 236, .6); margin-bottom: 10px; }
+.q-key-i { display: inline-flex; align-items: center; gap: 7px; }
+/* the key carries a label beside each swatch, so the two classes are never
+   distinguished by colour alone */
+.q-key-i i { width: 11px; height: 11px; border-radius: 2px;
+  background: var(--cream); flex: none; }
+.q-key-i i.is-v { background: var(--gold); }
+.q-floor-note { color: rgba(247, 244, 236, .66); }
 
 .q-legend { display: flex; align-items: center; gap: 8px; margin-top: 10px;
   color: rgba(247,244,236,.6); }
@@ -1009,8 +1347,23 @@ footer a:hover { color: var(--cream); }
 .fx small { font-weight: 500; opacity: .62; }
 .fx--inline { flex-direction: row; flex-wrap: wrap; gap: 0 6px; align-items: baseline; }
 .fx--inline > :last-child { font-size: .88em; }
-.fx--total > :last-child { font-size: .72em; }
+/* The total's second line is the sum actually charged to the card. Secondary,
+   but not shrunk to a footnote: Colombian consumer rules expect the amount
+   debited to be legible before purchase, not discovered on the statement. */
+.fx--total > :last-child { font-size: .8em; }
 .cart .fx > :last-child, .cart .fx small { color: var(--muted); }
+.ci--na .ci-name, .ci--na .ci-meta { opacity: .55; }
+.ci-na { color: var(--faint); font-weight: 500; font-size: 12.5px; }
+.cart-blocked { margin-top: 6px; color: var(--faint); line-height: 1.5; }
+
+.co-fixed { display: block; padding: 12px 0; color: var(--ink); font-weight: 500; }
+
+.policy { max-width: 68ch; margin-top: 40px; }
+.policy h2 { margin: 34px 0 10px; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+.policy p { margin: 0; color: var(--muted); line-height: 1.75; }
+.policy-note { margin-top: 40px !important; padding: 18px 20px; border: 1px solid var(--line);
+  border-radius: 12px; font-size: 13.5px; color: var(--faint); }
+
 .fx-note { margin-top: 8px; color: var(--faint); font-size: 12.5px; line-height: 1.5; }
 
 /* ---------- research explorer -> catalogue ---------- */
@@ -1062,7 +1415,19 @@ footer a:hover { color: var(--cream); }
   border-radius: var(--r); padding: var(--s-3); position: sticky; top: calc(var(--nav-h) + 16px); }
 .co-line { display: flex; justify-content: space-between; gap: var(--s-2);
   padding: 10px 0; border-bottom: 1px solid var(--line-2); }
+/* The price column must never be the one that shrinks, or it steals width from
+   the name and "100mg · ×2" breaks across two lines on a phone. */
+.co-line > :first-child { flex: 1 1 auto; min-width: 0; }
+.co-line > :last-child { flex: 0 0 auto; text-align: right; white-space: nowrap; }
+.co-line-p { font-size: 15px; font-weight: 600; color: var(--ink); }
+.co-line-p small { font-size: .74em; font-weight: 500; opacity: .55; }
+/* The two agreements read as one decision point, so they sit together with a
+   tighter gap than the sections around them. */
+.co-agrees { display: grid; gap: 8px; }
 .co-line-n { font-weight: 600; font-size: 15px; }
+/* Marks which lines recur, in the summary where the buyer scans what they are
+   about to agree to. Gold because it is the one thing on this line that
+   changes what happens after today. */
 .co-total { display: flex; justify-content: space-between; align-items: baseline;
   margin-top: var(--s-2); font-size: 18px; font-weight: 700; }
 .co-secure { margin-top: 10px; color: var(--faint); font-size: 12.5px; }
@@ -1101,3 +1466,197 @@ footer a:hover { color: var(--cream); }
   border-radius: var(--r-sm); margin-bottom: var(--s-2); display: block;
 }
 @media (max-width: 860px) { .co-banner { height: 112px; } }
+
+/* ---------- order status ----------
+   One card, centred. The state colours the mark only: a full-page red on a
+   declined payment reads as an error the buyer caused, when usually their bank
+   simply said no and they can just try again. */
+.or-card {
+  max-width: 46rem; margin: 0 auto; text-align: center;
+  background: var(--paper); border: 1px solid var(--line-2);
+  border-radius: var(--r-lg); padding: clamp(28px, 5vw, 56px);
+  box-shadow: var(--shadow-1);
+}
+.or-mark {
+  width: 64px; height: 64px; margin: 0 auto var(--s-3);
+  border-radius: var(--pill); display: grid; place-items: center;
+}
+.or-mark svg { width: 30px; height: 30px; }
+.or-card[data-state="approved"] .or-mark { background: rgba(47,122,79,.12); color: var(--ok); }
+.or-card[data-state="pending"]  .or-mark { background: var(--gold-tint);    color: var(--gold-deep); }
+.or-card[data-state="declined"] .or-mark { background: rgba(179,69,47,.10); color: var(--danger); }
+.or-card[data-state="error"]    .or-mark { background: var(--line-2);       color: var(--muted); }
+.or-card h1 { margin-bottom: var(--s-2); }
+.or-card .lead { margin-inline: auto; }
+.or-meta {
+  display: flex; justify-content: center; gap: var(--s-4);
+  flex-wrap: wrap; margin-top: var(--s-3);
+  padding-top: var(--s-3); border-top: 1px solid var(--line-2);
+}
+.or-meta[hidden] { display: none; }
+.or-meta dt { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+.or-meta dd { font-weight: 600; margin-top: 2px; }
+.or-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: var(--s-4); }
+.or-help { margin-top: var(--s-3); color: var(--muted); }
+.or-help a { color: var(--gold-deep); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 560px) { .or-actions .btn { width: 100%; } }
+
+/* ---------- newsletter signup ----------
+   Deliberately lighter chrome than the age gate. The gate is a wall the reader
+   has to answer; this is an offer they can walk past, so it dims rather than
+   blacks out, it does not lock scroll, and Escape closes it. */
+.nl {
+  position: fixed; inset: 0; z-index: 200;
+  display: grid; place-items: center;
+  padding: var(--wrap-pad);
+  opacity: 0; transition: opacity .22s var(--ease);
+}
+.nl.is-open { opacity: 1; }
+.nl-scrim { position: absolute; inset: 0; background: rgba(26,24,21,.42); }
+/* Same liquid glass as the age-gate card, so the two dialogs read as one
+   family, but denser: .92/.84 rather than the gate's .86/.72. The gate carries
+   large ink text and gets away with a thinner pane; this card has 12 to 14px
+   supporting copy, and at the gate's opacity that copy measured 3.73:1 over a
+   cream page and 2.55:1 over a dark one. Even at .84 the body had to move off
+   --muted, which would have needed 99% opacity to clear 4.5:1 -- at which
+   point it is not glass at all. See .nl-body .small below. */
+.nl-card {
+  position: relative; width: min(440px, 100%);
+  border-radius: 28px;
+  padding: var(--s-4) var(--s-3) var(--s-3);
+  background: linear-gradient(165deg, rgba(252,250,245,.92), rgba(237,232,217,.84));
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255,255,255,.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 0 -1px 0 rgba(26,24,21,.05),
+    0 30px 80px rgba(26,24,21,.22),
+    0 4px 16px rgba(26,24,21,.08);
+  transform: translateY(10px) scale(.985);
+  transition: transform .26s var(--ease);
+}
+/* No backdrop-filter means no blur, and a translucent pane over unblurred
+   catalogue rows is unreadable. Fall back to the opaque surface. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nl-card { background: var(--paper); box-shadow: var(--shadow-2); }
+}
+
+/* The offer, sized to be the first thing read. Measured on the glass at
+   10.48:1 in the worst case. Deliberately --ink rather than gold: gold only
+   reaches 2.39:1 here, and the darkest gold that clears the 3:1 large-text
+   floor (#8B662E, 3.08:1) sits too close to the line and reads muddy. */
+.nl-offer { display: flex; flex-direction: column; gap: 6px; }
+.nl-pct {
+  /* Measured: this line renders 3.575px wide per px of font-size, so at the
+     78px ceiling it is 279px inside a 390px card, and at the floor it clears
+     a 320px phone's 224px with room to spare. The floor is 52 rather than 58
+     to leave headroom for the fallback face that renders before Inter swaps
+     in, which is wider; without it a 320px screen could break "10% off"
+     across two lines. */
+  font-size: clamp(52px, 15vw, 78px); font-weight: 700;
+  letter-spacing: -.045em; line-height: .9; color: var(--ink);
+  /* the ceiling; fitBigLine() in site.js takes it down when the translated
+     phrase is too wide, and only then */
+  font-variant-numeric: tabular-nums;
+}
+.nl-rest {
+  font-size: clamp(19px, 2.6vw, 22px); font-weight: 600;
+  letter-spacing: -.02em; line-height: 1.15; color: var(--ink);
+}
+/* the success state has no figure to lead with, so it stays a plain heading */
+.nl-offer--done { display: block; font-size: clamp(23px, 3.4vw, 28px); }
+.nl.is-open .nl-card { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .nl, .nl-card { transition: none; }
+}
+.nl-body { display: flex; flex-direction: column; gap: 12px; }
+.nl-card h2 { font-size: clamp(23px, 3.4vw, 28px); letter-spacing: -.02em; }
+.nl-x {
+  position: absolute; top: 10px; right: 10px;
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; background: none; color: var(--muted); cursor: pointer;
+  border-radius: 50%; transition: background .15s var(--ease), color .15s var(--ease);
+}
+.nl-x:hover { background: var(--line-2); color: var(--ink); }
+.nl-x svg { width: 17px; height: 17px; }
+
+.nl-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.nl-form input {
+  flex: 1 1 190px; min-width: 0; min-height: 48px; padding: 12px 15px;
+  border: 1px solid var(--line); border-radius: var(--pill);
+  background: var(--cream); font: inherit; font-size: 16px; color: var(--ink);
+  /* 16px, not smaller: iOS zooms the page on a focused input under 16px, and
+     a popup that jerks the viewport on tap is a popup people close */
+  transition: border-color .18s var(--ease);
+}
+.nl-form input:focus { outline: none; border-color: var(--gold); }
+/* There is no visible <label>, so the placeholder is the field's label and
+   has to be legible: --faint is 2.83:1 on --cream, --muted is 5.14:1. */
+.nl-form input::placeholder { color: var(--muted); }
+.nl-go { flex: 0 0 auto; min-height: 48px; }
+.nl-go:disabled { opacity: .6; cursor: default; }
+/* --danger is 3.26:1 on the glass. This is the same hue carried darker. */
+.nl-err { font-size: 13.5px; color: #992B15; }
+/* --ink-2, re-measured once the card became glass. --faint was 2.98:1 and
+   --muted 3.93:1 on the translucent surface; --ink-2 is 6.04:1 in the worst
+   case. This is where the consent and unsubscribe terms live. */
+.nl-fine { font-size: 12px; line-height: 1.5; color: var(--ink-2); }
+/* .small is --muted globally, which does not survive the glass */
+.nl-body .small, .nl-card .eyebrow { color: var(--ink-2); }
+/* 3.54:1 on its own tint, which clears the 3:1 floor because 21px at weight
+   700 is "large text" under WCAG (14pt bold). Do not shrink it below 18.66px
+   without darkening the ink. */
+.nl-code {
+  font-size: 21px; font-weight: 700; letter-spacing: .08em;
+  /* Opaque, not a tint: a translucent fill would inherit whatever the glass
+     is sitting over, and the code's contrast would depend on the page behind
+     it. Fixed at 3.33:1, which the 21px/700 type clears as large text. */
+  color: var(--gold-deep); background: #F3E8D2;
+  border: 1px dashed rgba(157,120,64,.55); border-radius: var(--r-sm);
+  padding: 14px; text-align: center;
+  /* selectable on purpose: someone will want to paste this somewhere */
+  user-select: all;
+}
+
+/* the code, named next to the saving it is responsible for */
+.promo-chip {
+  display: inline-block; margin-right: 7px;
+  font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  /* A darker gold than --gold-deep: at 11px this is normal-size text and
+     needs 4.5:1, which --gold-deep misses on its own tint (3.48:1). This
+     lands at 4.60:1 and stays in the same hue family. */
+  color: #89642C; background: rgba(201,160,85,.14);
+  border-radius: var(--pill); padding: 3px 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- market picker ----------
+   Same pill grammar as the language toggle beside it, one step quieter: the
+   market matters, but it is not a thing most visitors will touch. */
+.mkt { display: flex; gap: 2px; background: rgba(26,24,21,.05); border-radius: var(--pill); padding: 3px; }
+.mkt button {
+  min-height: 30px; padding: 4px 9px; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 11.5px; font-weight: 600; letter-spacing: .04em;
+  color: var(--muted); border-radius: var(--pill);
+  transition: background .18s var(--ease), color .18s var(--ease);
+}
+.mkt button:hover { color: var(--ink); }
+.mkt button.is-on { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(26,24,21,.06); }
+
+/* ---------- out of stock ----------
+   Dimmed, not hidden: the line is carried and coming back, and someone who
+   came looking for it should learn that rather than conclude it was dropped.
+   Opacity alone would be ambiguous, so the label says it in words. */
+.p--out { opacity: .62; }
+.p--out:hover { transform: none; box-shadow: none; border-color: var(--line-2); }
+.btn-add.is-out {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--line); cursor: not-allowed;
+}
+.btn-add.is-out:hover { transform: none; background: transparent; }
+.p-size-chip.is-out {
+  opacity: .45; text-decoration: line-through;
+  text-decoration-thickness: 1px; cursor: not-allowed;
+}
+.p-size-chip.is-out:hover { border-color: var(--line); }

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investigación dermatológica · Ascent Labs</title>
+<meta name="description" content="Lo que reporta la investigación publicada y preclínica sobre compuestos estudiados en investigación dermatológica. Resúmenes con fuentes, niveles de evidencia y citas. Solo para investigación de laboratorio.">
+<link rel="canonical" href="https://ascentcompounds.com/investigacion-area/dermatologica/">
+<link rel="alternate" hreflang="es" href="https://ascentcompounds.com/investigacion-area/dermatologica/">
+<link rel="alternate" hreflang="en" href="https://ascentcompounds.com/research/dermal/">
+<link rel="icon" href="/assets/img/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="area">
+
+<!-- ============ AGE / RESEARCH-USE GATE ============ -->
+<div class="gate" id="gate" hidden>
+  <div class="gate-backdrop" id="gate-backdrop"></div>
+  <div class="gate-card" role="dialog" aria-modal="true"
+       aria-labelledby="gate-title" aria-describedby="gate-desc">
+    <img class="gate-mark" src="assets/img/logo-mark.png" alt="" aria-hidden="true">
+    <h2 id="gate-title" data-i18n="gate.title">Before you enter</h2>
+    <p id="gate-desc" class="gate-lead" data-i18n="gate.lead">Please confirm the following to continue to the Ascent Labs catalog.</p>
+
+    <ul class="gate-list">
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-i18n-html="gate.age">I am <strong>21 years of age or older</strong>.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-i18n-html="gate.use">I understand these compounds are supplied <strong>for laboratory research</strong>, and that research is their only intended use.</span>
+      </li>
+    </ul>
+
+    <div class="gate-actions">
+      <button class="btn btn--primary" id="gate-accept" data-i18n="gate.accept">I confirm</button>
+      <button class="btn btn--ghost" id="gate-decline" data-i18n="gate.decline">Leave site</button>
+    </div>
+    <p class="gate-fine" data-i18n="gate.fine">Nothing on this site is medical advice.</p>
+  </div>
+
+  <!-- shown if the visitor declines -->
+  <div class="gate-card gate-card--declined" id="gate-declined" hidden role="alertdialog" aria-labelledby="gate-dtitle">
+    <h2 id="gate-dtitle" data-i18n="gate.dtitle">Thanks for stopping by</h2>
+    <p class="gate-lead" data-i18n="gate.dlead">This catalog is limited to research professionals aged 21 or over. You are welcome back any time.</p>
+    <button class="btn btn--ghost" id="gate-back" data-i18n="gate.back">Go back</button>
+  </div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Ascent Labs, home" data-i18n-aria="aria.home">
+      <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
+    </a>
+    <nav class="nav-links" aria-label="Main" data-i18n-aria="aria.main">
+      <a href="/#standard" data-i18n="nav.standard">Standard</a>
+      <a href="/catalog" data-i18n="nav.catalog">Catalog</a>
+      <a href="/explore" data-i18n="nav.explore" aria-current="page">Explore</a>
+      <a href="/#app" data-i18n="nav.app">App</a>
+      <a href="/#faq" data-i18n="nav.faq">FAQ</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language" data-i18n-aria="aria.lang">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+    <button class="nav-cta" id="cart-open" aria-label="Open order" data-i18n-aria="cart.open">
+      <span data-i18n="nav.order">Order</span> <span class="count" id="cart-count">0</span>
+    </button>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="burger-box" aria-hidden="true">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+  <nav aria-label="Mobile" data-i18n-aria="aria.mobile">
+    <a href="/#standard" style="--i:0" data-i18n="nav.standard">Standard</a>
+    <a href="/catalog"  style="--i:1" data-i18n="nav.catalog">Catalog</a>
+    <a href="/explore"  style="--i:2" data-i18n="nav.explore">Explore</a>
+    <a href="/#app"      style="--i:3" data-i18n="nav.app">App</a>
+    <a href="/#faq"      style="--i:5" data-i18n="nav.faq">FAQ</a>
+    <a href="https://wa.me/573164114411" target="_blank" rel="noopener" style="--i:6" data-i18n="nav.support">Support</a>
+  </nav>
+</div>
+
+<main id="top">
+<section class="sec sec--cream ex-page">
+  <div class="wrap">
+    <div class="stack" style="max-width:62ch;margin-bottom:var(--s-5)">
+      <p class="eyebrow">Área de investigación</p>
+      <h1>Investigación dermatológica</h1>
+      <p class="lead">Compuestos estudiados en investigación de investigación dermatológica: qué midió cada ensayo y enlaces a las fuentes.</p>
+    </div>
+
+    <div class="ex-card">
+
+      <article class="ex-item">
+        <div class="ex-item-h">
+          <h2>GHK-Cu</h2>
+          <span class="ex-tier ex-tier--clinical">Evidencia clínica</span>
+        </div>
+        <p class="ex-sum">Evidencia sólida y repetida de ensayos clínicos en piel y cicatrización (ver Reparación y recuperación); ensayos humanos más pequeños también muestran mejoras reales en conteo capilar y densidad folicular con uso tópico, apoyadas en ensayos más pequeños que los de piel.</p>
+        <div class="ex-det"><p>Para piel: ver la entrada completa de GHK-Cu en Reparación y recuperación. Los ensayos de reducción de cicatriz, cierre de herida y aumento de colágeno de allí aplican directamente al uso en piel y estética, extendiéndose más allá de la reparación de heridas hacia la estimulación de colágeno y la calidad visible de la piel. Para cabello en particular la evidencia es real y más delgada: un ensayo aleatorizado de 2016 con una formulación de péptido GHK encontró aumentos significativos de conteo capilar tras 6 meses de uso tópico frente a placebo en hombres con alopecia de patrón, y un estudio de 2015 que combinó GHK-Cu con otros péptidos activos para cabello superó al placebo en densidad y diámetro folicular. El mecanismo (regulación al alza de VEGF, supresión de TGF-β1, activación de Wnt/β-catenina en células de la papila dérmica) está bien caracterizado en investigación de laboratorio. Resumen honesto: un mecanismo bien entendido, datos animales positivos y un conjunto de estudios humanos positivos más pequeños. Los ensayos aleatorizados a gran escala están por realizarse.</p>
+        <p class="ex-src-t">Fuentes</p>
+        <ul class="ex-src"><li><a href="https://www.gethealthspan.com/research/article/ghk-cu-hair-growth-evidence-review" target="_blank" rel="noopener noreferrer nofollow">Hair growth evidence review</a></li><li><a href="https://www.researchgate.net/publication/6135527_The_effect_of_tripeptide-copper_complex_on_human_hair_growth_in_vitro" target="_blank" rel="noopener noreferrer nofollow">In vitro hair growth study</a></li></ul></div>
+      </article>
+
+      <article class="ex-item">
+        <div class="ex-item-h">
+          <h2>GLOW (GHK-Cu + TB-500 + BPC-157)</h2>
+          <span class="ex-tier ex-tier--community">Evidencia de comunidad</span>
+        </div>
+        <p class="ex-sum">Una mezcla construida a partir de compuestos investigados individualmente. Existe evidencia para cada ingrediente por separado; la combinación como conjunto está por evaluarse en ensayos.</p>
+        <div class="ex-det"><p>Un producto combinado (GHK-Cu + TB-500 + BPC-157) construido a partir de compuestos investigados individualmente; ver la entrada propia de cada uno (GHK-Cu aquí y en Reparación y recuperación; BPC-157 y TB-500 en Reparación y recuperación). Esta combinación específica está por evaluarse en ensayos como conjunto, la misma advertencia que aplica a la mezcla CJC-1295+Ipamorelin en Rendimiento físico. La confianza en los ingredientes individuales aplica a esos ingredientes: combinar compuestos puede cambiar la absorción, los efectos de interacción y los desenlaces de formas que los ensayos de ingrediente único dejan abiertas.</p></div>
+      </article>
+
+      <article class="ex-item">
+        <div class="ex-item-h">
+          <h2>KLOW (GHK-Cu + BPC-157 + TB-500 + KPV)</h2>
+          <span class="ex-tier ex-tier--community">Evidencia de comunidad</span>
+        </div>
+        <p class="ex-sum">Una mezcla construida a partir de compuestos investigados individualmente. Existe evidencia para cada ingrediente por separado; la combinación como conjunto está por evaluarse en ensayos.</p>
+        <div class="ex-det"><p>Un producto combinado (GHK-Cu + BPC-157 + TB-500 + KPV) construido a partir de compuestos investigados individualmente; ver la entrada propia de cada uno (GHK-Cu aquí y en Reparación y recuperación; BPC-157, TB-500 y KPV en Reparación y recuperación). Esta combinación específica está por evaluarse en ensayos como conjunto, la misma advertencia que aplica a la mezcla CJC-1295+Ipamorelin en Rendimiento físico. La confianza en los ingredientes individuales aplica a esos ingredientes: combinar compuestos puede cambiar la absorción, los efectos de interacción y los desenlaces de formas que los ensayos de ingrediente único dejan abiertas.</p></div>
+      </article>
+      <div class="ex-legal"><p>Este es un resumen de investigación publicada y preclínica, no es asesoría médica. Cada entrada describe lo que encontró un estudio, no lo que deberías hacer. Estos compuestos se suministran únicamente para investigación de laboratorio.</p></div>
+    </div>
+
+    <p style="margin-top:var(--s-4)">
+      <a class="cat-explore" href="/investigacion">
+        <span>Todas las áreas de investigación</span>
+      </a>
+    </p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
+        <p class="small" style="color:rgba(247,244,236,.6);max-width:34ch"><span data-i18n="foot.blurb">Research-grade peptides, with a certificate of analysis for every batch. Active distribution in Colombia, Mexico and the USA.</span></p>
+      </div>
+      <div>
+        <h4 data-i18n="foot.catalog">Catalog</h4>
+        <div class="f-list">
+          <a href="/#catalog" data-i18n="foot.all">All compounds</a>
+          <a href="/#standard" data-i18n="foot.ourStandard">Our standard</a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="foot.support">Support</h4>
+        <div class="f-list">
+          <a href="/#faq" data-i18n="nav.faq">FAQ</a>
+          <a href="/returns" data-i18n="foot.returns">Returns and refunds</a>
+          <a href="https://wa.me/573164114411" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+      <div>
+        <h4 data-i18n="foot.payment">Payment</h4>
+        <div class="f-list">
+          <span>Bancolombia · Nequi · Wompi</span>
+          <span>Zelle · USDT</span>
+          <span>Payment link</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- The single explicit legal statement on the site. Everything else uses
+         softer positive framing; this one place says it plainly. -->
+    <div class="disclaimer" id="legal">
+      <strong data-i18n="foot.legalStrong">For research use only.</strong>
+      <span data-i18n="foot.legal">All compounds listed on this site are supplied strictly for laboratory research.</span>
+      <strong data-i18n="foot.legalStrong2">They are not medicines, are not dietary supplements, and are not intended for human or veterinary use.</strong>
+      <span data-i18n="foot.legalSupplier">Ascent is a chemical supplier. It is not a compounding pharmacy, and it is not an outsourcing facility as defined under section 503B of the Federal Food, Drug, and Cosmetic Act.</span>
+      <span data-i18n="foot.legalFda">The statements on this website have not been evaluated by the U.S. Food and Drug Administration.</span>
+      <span data-i18n="foot.legal2">They have not been approved by any regulatory authority for the diagnosis, treatment, cure or prevention of any condition. Nothing on this site is medical advice or a recommendation to use any compound. By purchasing, you confirm you are a qualified buyer aged 21 or over and that these compounds will be handled in an appropriate research setting.</span>
+    </div>
+
+    <div class="f-bottom">
+      <span data-i18n="foot.rights">© 2026 Ascent Labs</span>
+      <span>Colombia · Mexico · USA</span>
+    </div>
+  </div>
+</footer>
+
+<!-- The compound sheet and both scrims are wired unguarded in site.js, and
+     the cart drawer needs its scrim to dim the page, so this chrome ships on
+     every page that loads site.js. -->
+<!-- ============ COMPOUND DETAIL ============ -->
+<div class="scrim" id="sheet-scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-name" aria-hidden="true">
+  <div class="cart-h">
+    <div style="margin-right:auto">
+      <p class="eyebrow" id="sheet-cat"></p>
+      <h3 id="sheet-name" style="margin-top:4px"></h3>
+    </div>
+    <button class="icon-btn" id="sheet-close" aria-label="Close compound details" data-i18n-aria="sheet.close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-body" id="sheet-body"></div>
+</aside>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="cart" id="cart" aria-label="Your order" data-i18n-aria="cart.title" aria-hidden="true">
+  <div class="cart-h">
+    <h3 data-i18n="cart.title">Your order</h3>
+    <button class="icon-btn" id="cart-close" aria-label="Close order" data-i18n-aria="cart.close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <!-- The notes scroll WITH the items. Pinned in the footer they cost 128px of
+       a phone screen permanently, which had squeezed the order itself into a
+       291px window — smaller than a single line. The footer pins only what a
+       buyer must be able to see at the moment they tap Checkout: what they are
+       paying now, and what recurs. -->
+  <div class="cart-scroll">
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-notes" id="cart-notes" hidden>
+      <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico.</p>
+      <!-- Stated plainly rather than buried: a precise USD figure that then
+           does not match the buyer's statement generates support tickets and
+           chargebacks, and chargebacks are what threaten a high-risk account. -->
+      <p class="small fx-note" data-i18n="fx.note">Charged in Colombian pesos at the official TRM rate. Your bank applies its own conversion, so your statement may differ slightly.</p>
+    </div>
+  </div>
+  <div class="cart-f">
+    <div class="cart-total"><span id="cart-total-label" data-i18n="cart.total">Total</span><b class="tabular" id="cart-total">$0.00</b></div>
+    <p class="cart-saved small" id="cart-saved" hidden></p>
+    <p class="cart-blocked small" id="cart-blocked" hidden></p>
+    <!-- Stays pinned with the total rather than scrolling with the notes. A
+         pinned label reading "Total today" while the "then" scrolled out of
+         sight would be worse than pinning neither. -->
+    <!-- No target="_blank" and no research-use tick here. Both are leftovers
+         from the WhatsApp handoff: this now navigates to /checkout in the same
+         tab, and checkout owns the acknowledgement. -->
+    <a class="btn btn--primary" id="checkout" href="#"
+       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Checkout</a>
+  </div>
+</aside>
+
+<a class="wa" href="https://wa.me/573164114411" data-wa="wa.hello" target="_blank" rel="noopener" aria-label="Message us on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.4.2-.6.1-1.5-.6-2.8-1.9-3.4-3.4-.1-.2 0-.4.1-.6l1.1-.9c.2-.2.2-.4.1-.7-.1-.3-.8-1.9-1-2.2-.2-.4-.5-.4-.8-.4h-.7c-.3 0-.7.2-1 .5-.9.9-1.2 2.1-1 3.3.4 2.3 1.7 4.4 3.4 6 1.7 1.7 3.8 2.9 6 3.4 1.2.2 2.5-.1 3.3-1 .3-.3.5-.7.5-1v-.7c0-.3 0-.6-.4-.8zM12 2a10 10 0 0 0-8.6 15.1L2 22l4.9-1.3A10 10 0 1 0 12 2z"/></svg>
+</a>
+
+<script src="/assets/i18n.js"></script>
+<script src="/assets/data.js"></script>
+<script src="/assets/data.es.js"></script>
+<script src="/assets/markets.js"></script>
+<script src="/assets/explore.js"></script>
+<script src="/assets/quality.js"></script>
+<script src="/assets/site.js"></script>
+</body>
+</html>

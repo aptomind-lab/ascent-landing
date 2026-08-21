@@ -1,8 +1,139 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/checkout", "destination": "/checkout.html" },
-    { "source": "/explore", "destination": "/explore.html" },
-    { "source": "/investigacion", "destination": "/explore.html" }
+    {
+      "source": "/order",
+      "destination": "/order.html"
+    },
+    {
+      "source": "/checkout",
+      "destination": "/checkout.html"
+    },
+    {
+      "source": "/explore",
+      "destination": "/explore.html"
+    },
+    {
+      "source": "/investigacion",
+      "destination": "/explore.html"
+    },
+    {
+      "source": "/catalog",
+      "destination": "/shop.html"
+    },
+    {
+      "source": "/catalogo",
+      "destination": "/shop.html"
+    },
+    {
+      "source": "/returns",
+      "destination": "/returns.html"
+    },
+    {
+      "source": "/devoluciones",
+      "destination": "/returns.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/research/weight-metabolic",
+      "destination": "/research/metabolic/",
+      "permanent": true
+    },
+    {
+      "source": "/research/weight-metabolic/",
+      "destination": "/research/metabolic/",
+      "permanent": true
+    },
+    {
+      "source": "/research/physical-performance",
+      "destination": "/research/performance/",
+      "permanent": true
+    },
+    {
+      "source": "/research/physical-performance/",
+      "destination": "/research/performance/",
+      "permanent": true
+    },
+    {
+      "source": "/research/healing-recovery",
+      "destination": "/research/regenerative/",
+      "permanent": true
+    },
+    {
+      "source": "/research/healing-recovery/",
+      "destination": "/research/regenerative/",
+      "permanent": true
+    },
+    {
+      "source": "/research/skin-hair",
+      "destination": "/research/dermal/",
+      "permanent": true
+    },
+    {
+      "source": "/research/skin-hair/",
+      "destination": "/research/dermal/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/peso-metabolismo",
+      "destination": "/investigacion-area/metabolica/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/peso-metabolismo/",
+      "destination": "/investigacion-area/metabolica/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/cognitivo",
+      "destination": "/investigacion-area/cognitiva/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/cognitivo/",
+      "destination": "/investigacion-area/cognitiva/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/rendimiento-fisico",
+      "destination": "/investigacion-area/rendimiento/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/rendimiento-fisico/",
+      "destination": "/investigacion-area/rendimiento/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/reparacion-recuperacion",
+      "destination": "/investigacion-area/regenerativa/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/reparacion-recuperacion/",
+      "destination": "/investigacion-area/regenerativa/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/inmunidad",
+      "destination": "/investigacion-area/inmunologica/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/inmunidad/",
+      "destination": "/investigacion-area/inmunologica/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/piel-cabello",
+      "destination": "/investigacion-area/dermatologica/",
+      "permanent": true
+    },
+    {
+      "source": "/investigacion-area/piel-cabello/",
+      "destination": "/investigacion-area/dermatologica/",
+      "permanent": true
+    }
   ]
 }

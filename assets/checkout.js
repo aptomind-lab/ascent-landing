@@ -18,8 +18,16 @@
   if (!form) return;
 
   const T = () => (typeof I18N !== 'undefined' ? I18N : { en: {} });
-  const LANG = document.documentElement.lang === 'es' ? 'es' : 'en';
-  const t = k => (T()[LANG] && T()[LANG][k]) || T().en[k] || k;
+  // read per call, not captured at load: the reader can switch language on
+  // this page and everything below is rendered by script, not by data-i18n
+  const LANG = () => (document.documentElement.lang === 'es' ? 'es' : 'en');
+  /* Same {{var}} interpolation site.js does. Without it the subscription
+     strings render the literal placeholder, which is worse than an untranslated
+     string because it looks like a bug in the price. */
+  const t = (k, vars) => {
+    const s = (T()[LANG()] && T()[LANG()][k]) || T().en[k] || k;
+    return vars ? s.replace(/\{\{(\w+)\}\}/g, (m, v) => (v in vars ? vars[v] : m)) : s;
+  };
 
   /* ---- the cart, read from the same store site.js writes ---- */
   function order() {
@@ -39,8 +47,29 @@
     US: { region: 'co.regionUS', postal: true },
   };
 
+  /* The destination is the market, full stop. It used to be guessed from the
+     reading language and then left editable, which made where an order ships
+     independent of which price list it was built from — so Colombian stock at
+     Colombian prices could be sent to a US address, and the market split that
+     the whole catalogue rests on came apart at the last step.
+
+     Language is no longer consulted. A Spanish-reading visitor in the US is in
+     the US market and ships to the US; that they prefer Spanish says nothing
+     about where they live. */
+  const destination = () => {
+    const mk = window.AscentMarket;
+    return (mk && mk.config().ship[0]) || 'US';
+  };
+
+  function syncCountryDefault() {
+    const c = destination();
+    const label = (window.AscentMarket && window.AscentMarket.config().label) || c;
+    $('#co-country').textContent = label;
+    $('#co-country-value').value = c;
+  }
+
   function applyCountry() {
-    const c = $('#co-country').value;
+    const c = destination();
     const rule = RULES[c] || RULES.CO;
     $('#co-region-label').textContent = t(rule.region);
     const postal = $('#co-postal');
@@ -80,13 +109,14 @@
       syncPay();
     });
   });
-  $('#co-country').addEventListener('change', () => { applyCountry(); syncPay(); });
+  addEventListener('ascent:market', () => { syncCountryDefault(); applyCountry(); syncPay(); });
 
   /* ---- the research-use acknowledgement gates payment, same as the cart ---- */
   const ruo = $('#co-ruo');
   const pay = $('#co-pay');
   const formValid = () =>
     $$('#co-form input, #co-form select').every(el => !fieldError(el));
+
 
   function syncPay() {
     const ok = ruo.checked && formValid() && order().length > 0;
@@ -95,28 +125,41 @@
   }
   ruo.addEventListener('change', syncPay);
 
-  /* ---- summary ---- */
+  /* ---- summary ----
+     Pricing rules come from site.js rather than being reimplemented here. A
+     subscription line discounted in the drawer and charged at full price at
+     payment is exactly the kind of mismatch that becomes a dispute. */
+  const pricing = () => window.AscentPricing;
+  const unit = i => (pricing() ? pricing().unitPrice(i) : i.price);
+
   function renderSummary() {
     const items = order();
     const empty = items.length === 0;
     $('#co-empty').hidden = !empty;
     $('#co-grid').hidden = empty;
-    if (empty) return;
+    if (empty) { syncPay(); return; }
 
-    const total = items.reduce((a, i) => a + i.price * i.qty, 0);
-    /* Both currencies, from site.js's formatter, so this total can never
-       disagree with the one in the cart drawer. */
-    const fx = window.AscentFX;
-    const price = v => fx ? fx.priceHTML(v, 'fx--inline') : money(v);
+    const total = items.reduce((a, i) => a + unit(i) * i.qty, 0);
+    /* The market's currency, from site.js's formatter, so this total can never
+       disagree with the one in the cart drawer. unit() already returns the
+       local amount, so formatting is all that is left to do here. */
+    const mk = window.AscentMarket;
+    const price = v => (mk ? mk.format(v) : `${money(v)}<small> USD</small>`);
     $('#co-lines').innerHTML = items.map(i => `
       <div class="co-line">
         <div>
           <div class="co-line-n">${i.name}</div>
           <div class="co-line-m small">${i.size} · ×${i.qty}</div>
         </div>
-        <div class="tabular">${price(i.price * i.qty)}</div>
+        <div class="co-line-p tabular">${price(unit(i) * i.qty)}</div>
       </div>`).join('');
-    $('#co-total').innerHTML = fx ? fx.priceHTML(total, 'fx--total') : money(total);
+    /* The total is where the peso figure has to appear, because it is the
+       amount Wompi debits. The lines above stay in the market's own currency. */
+    const ch = window.AscentCharge;
+    $('#co-total').innerHTML = ch ? ch.html(total, 'fx--total') : price(total);
+    if (ch) ch.syncNotes();
+    $('#co-total-label').textContent = t('cart.total');
+
   }
 
   form.addEventListener('submit', e => {
@@ -125,7 +168,8 @@
     if (pay.getAttribute('aria-disabled') === 'true') {
       const first = $('#co-form .is-invalid');
       if (first) { first.focus(); return; }
-      $('[data-err="form"]').textContent = ruo.checked ? t('co.fixErrors') : t('co.needAck');
+      $('[data-err="form"]').textContent =
+        !ruo.checked ? t('co.needAck') : t('co.fixErrors');
       return;
     }
     $('[data-err="form"]').textContent = '';
@@ -143,15 +187,37 @@
        Until that is decided, collect and hold.
        --------------------------------------------------------------------- */
     const payload = Object.fromEntries(new FormData(form));
+    const mk = window.AscentMarket;
     payload.items = order();
-    payload.total = payload.items.reduce((a, i) => a + i.price * i.qty, 0);
+    payload.total = payload.items.reduce((a, i) => a + unit(i) * i.qty, 0);
+    /* total alone is ambiguous and dangerously so: it is dollars in the US and
+       Mexico and pesos in Colombia, and a server that assumes dollars would
+       multiply a Colombian order by the TRM and charge it three thousand times
+       over. The currency travels with the number so that cannot be guessed
+       wrong, and the market travels with it because it is what decided both
+       the price and the destination. */
+    payload.market = mk ? mk.code() : 'US';
+    payload.currency = mk ? mk.config().currency : 'USD';
     console.info('[checkout] validated order, awaiting payment backend', payload);
     $('[data-err="form"]').textContent = t('co.notWired');
   });
 
+  syncCountryDefault();
   applyCountry();
   renderSummary();
   syncPay();
   // the real exchange rate arrives after first paint; redraw when it does
   addEventListener('ascent:fx-ready', renderSummary);
+  /* A market change is a price change, so this page has to redraw for the same
+     reason it redraws on a language change. Without it the summary keeps the
+     currency it was first painted in while the drawer behind it has moved. */
+  addEventListener('ascent:market', renderSummary);
+  /* applyI18n has already run by the time this fires and will have reset the
+     total's label from its data-i18n default, so re-rendering after it is what
+     keeps "Total today" from reverting to "Total". */
+  addEventListener('ascent:lang', () => {
+    syncCountryDefault();
+    applyCountry();
+    renderSummary();
+  });
 })();

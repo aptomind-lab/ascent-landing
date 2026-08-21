@@ -3,14 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ascent Compounds · Research-grade peptides, verified to 99%+ HPLC</title>
-<meta name="description" content="Research-grade peptides with every batch purity-verified to a 99%+ HPLC standard. 63 documented compounds, technical support in English and Spanish, active distribution in Colombia, Mexico and the USA.">
+<title>Ascent Labs · Research-grade peptides, with a certificate of analysis for every batch</title>
+<meta name="description" content="Research-grade peptides, with a certificate of analysis required on every batch. 47 documented compounds, technical support in English and Spanish, active distribution in Colombia, Mexico and the USA.">
 <link rel="icon" href="assets/img/logo-mark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
-<link rel="preload" as="image" href="assets/frames/f001.webp">
+<!-- preload matches the <picture> in the hero: media-scoped so a phone does
+     not fetch the landscape crop it will never display -->
+<link rel="preload" as="image" media="(max-width: 720px)"
+      imagesrcset="assets/img/hero-still-portrait-sm.webp?v=cd7ca5d6 800w, assets/img/hero-still-portrait.webp?v=81f7a6c4 1200w"
+      imagesizes="100vw" fetchpriority="high">
+<link rel="preload" as="image" media="(min-width: 721px)"
+      href="assets/img/hero-still.webp?v=0391593c"
+      imagesrcset="assets/img/hero-still-sm.webp?v=f0cc5b11 1600w, assets/img/hero-still.webp?v=0391593c 2880w"
+      imagesizes="100vw" fetchpriority="high">
 </head>
 <body>
 
@@ -21,7 +29,7 @@
        aria-labelledby="gate-title" aria-describedby="gate-desc">
     <img class="gate-mark" src="assets/img/logo-mark.png" alt="" aria-hidden="true">
     <h2 id="gate-title" data-i18n="gate.title">Before you enter</h2>
-    <p id="gate-desc" class="gate-lead" data-i18n="gate.lead">Please confirm the following to continue to the Ascent Compounds catalog.</p>
+    <p id="gate-desc" class="gate-lead" data-i18n="gate.lead">Please confirm the following to continue to the Ascent Labs catalog.</p>
 
     <ul class="gate-list">
       <li>
@@ -56,14 +64,14 @@
 <!-- ============ NAV ============ -->
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="Ascent Compounds, home" data-i18n-aria="aria.home">
-      <img src="assets/img/logo-wordmark.png" alt="Ascent Compounds">
+    <a class="brand" href="#top" aria-label="Ascent Labs, home" data-i18n-aria="aria.home">
+      <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
     </a>
     <nav class="nav-links" aria-label="Main" data-i18n-aria="aria.main">
       <a href="#standard" data-i18n="nav.standard">Standard</a>
-      <a href="#catalog" data-i18n="nav.catalog">Catalog</a>
+      <a href="/catalog" data-i18n="nav.catalog">Catalog</a>
       <a href="/explore" data-i18n="nav.explore">Explore</a>
-      <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
+      <a href="#app" data-i18n="nav.app">App</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
     </nav>
     <div class="lang" role="group" aria-label="Language" data-i18n-aria="aria.lang">
@@ -86,37 +94,49 @@
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
   <nav aria-label="Mobile" data-i18n-aria="aria.mobile">
     <a href="#standard" style="--i:0" data-i18n="nav.standard">Standard</a>
-    <a href="#catalog"  style="--i:1" data-i18n="nav.catalog">Catalog</a>
+    <a href="/catalog"  style="--i:1" data-i18n="nav.catalog">Catalog</a>
     <a href="/explore" style="--i:2" data-i18n="nav.explore">Explore</a>
-    <a href="#reviews"  style="--i:3" data-i18n="nav.reviews">Reviews</a>
-    <a href="#faq"      style="--i:4" data-i18n="nav.faq">FAQ</a>
-    <a href="https://wa.me/573164114411" target="_blank" rel="noopener" style="--i:5" data-i18n="nav.support">Support</a>
+    <a href="#app"      style="--i:3" data-i18n="nav.app">App</a>
+    <a href="#faq"      style="--i:5" data-i18n="nav.faq">FAQ</a>
+    <a href="https://wa.me/573164114411" target="_blank" rel="noopener" style="--i:6" data-i18n="nav.support">Support</a>
   </nav>
 </div>
 
 <!-- ============ HERO ============ -->
 <main id="top">
-<section id="hero" aria-label="Ascent Compounds">
+<section id="hero" aria-label="Ascent Labs">
   <div id="hero-pin">
     <div class="hero-frame">
-      <!-- The scroll sequence is sourced from 720p footage, which is soft at
-           rest on a retina display. This still is a 4K render of the same
-           opening frame (vial position matches within 0.1%), shown before any
-           scrolling and cross-faded out the moment the sequence starts. -->
-      <img id="hero-still" src="assets/img/hero-still.webp"
-           srcset="assets/img/hero-still-sm.webp 1600w, assets/img/hero-still.webp 2880w"
-           sizes="100vw" alt="An Ascent Compounds vial" fetchpriority="high">
-      <img id="hero-seq" src="assets/frames/f001.webp" alt="" aria-hidden="true">
+      <!-- THE hero image. The scroll-scrubbed fall that lived here was removed
+           on purpose — see the note in heroInit() in site.js.
+
+           TWO CROPS, not one file at two sizes. The frame is landscape on
+           desktop and PORTRAIT on mobile (--frame-h, copy above rather than
+           over), and object-fit:cover crops from the centre — measured against
+           the master, a centred crop at the mobile ratio pushed the vial to 92%
+           and clipped it. Both are cut from assets/img/hero-master.png by
+           scripts/build-hero-still.py; re-run it to change either.
+
+           The vial sits at 69% because the headline overlays the LEFT on
+           desktop. The old still had it dead centre, so type sat on it. -->
+      <picture>
+        <source media="(max-width: 720px)"
+                srcset="assets/img/hero-still-portrait-sm.webp?v=cd7ca5d6 800w, assets/img/hero-still-portrait.webp?v=81f7a6c4 1200w"
+                sizes="100vw">
+        <img id="hero-still" src="assets/img/hero-still.webp?v=0391593c"
+             srcset="assets/img/hero-still-sm.webp?v=f0cc5b11 1600w, assets/img/hero-still.webp?v=0391593c 2880w"
+             sizes="100vw" alt="An Ascent Labs vial" fetchpriority="high">
+      </picture>
     </div>
     <div class="hero-scrim"></div>
     <div class="hero-copy">
       <!-- One statement only. Rotating headlines competed with the vial for
            attention and neither won; the product carries the hero. -->
       <!-- no eyebrow: the wordmark is in the nav and on the vial label directly
-           below, so "Ascent Compounds" a third time is noise -->
+           below, so "Ascent Labs" a third time is noise -->
       <div class="hero-beat" data-in="0" data-out="1.01">
         <h1 data-i18n="hero.h1">Precision is the product.</h1>
-        <p class="lead" data-i18n="hero.lead">Research-grade peptides, verified batch by batch.</p>
+        <p class="lead" data-i18n="hero.lead">Research-grade peptides, with a certificate of analysis for every batch.</p>
       </div>
     </div>
     <p class="scroll-cue" id="cue" data-i18n="hero.scroll">Scroll</p>
@@ -128,8 +148,8 @@
   <div class="wrap">
     <div class="center stack rise" style="max-width:70ch;margin:0 auto var(--s-5)">
       <p class="eyebrow" data-i18n="std.eyebrow">The standard</p>
-      <h2 data-i18n="std.h2">How do you know what's in the vial is what's on the label?</h2>
-      <p class="lead" data-i18n="std.lead">That question is the whole business. Here is our answer, stated plainly.</p>
+      <h2 data-i18n="std.h2">Every batch comes with its certificate.</h2>
+      <p class="lead" data-i18n="std.lead">Purity, handling and coverage. What we hold to, stated plainly.</p>
     </div>
 
     <div class="bento">
@@ -141,12 +161,12 @@
       <div class="card span-2 rise">
         <p class="eyebrow" data-i18n="std.purity">Purity</p>
         <div class="metric">99<span>%+</span></div>
-        <p class="small" data-i18n="std.purityBody">HPLC-verified on every batch before distribution. Below standard, it does not ship.</p>
+        <p class="small" data-i18n="std.purityBody">We require a certificate of analysis on every batch before it ships. Our technical team can talk you through the specifications of any compound.</p>
       </div>
       <div class="card span-2 rise">
         <p class="eyebrow" data-i18n="std.catalog">Catalog</p>
-        <div class="metric">63</div>
-        <p class="small" data-i18n="std.catalogBody">Documented compounds across nine research categories, plus laboratory supplies.</p>
+        <div class="metric">47</div>
+        <p class="small" data-i18n="std.catalogBody">Documented compounds across seven research categories.</p>
       </div>
 
       <div class="card span-2 rise">
@@ -155,9 +175,9 @@
         <p class="small" data-i18n="std.supportBody">A technical team that answers mechanism questions, in either language.</p>
       </div>
       <div class="card card--dark span-2 rise">
-        <p class="eyebrow" data-i18n="std.cold">Cold chain</p>
-        <h3 style="color:var(--cream)" data-i18n="std.coldH">Handled cold, start to finish.</h3>
-        <p class="small" data-i18n="std.coldBody">Thermal packaging and cold-chain handling so the compound arrives as it left.</p>
+        <p class="eyebrow" data-i18n="std.cold">Presentation</p>
+        <h3 style="color:var(--cream)" data-i18n="std.coldH">Shipped lyophilized.</h3>
+        <p class="small" data-i18n="std.coldBody">Every vial leaves lyophilized. Cold storage matters after reconstitution.</p>
       </div>
 
       <div class="card span-2 rise">
@@ -184,7 +204,7 @@
       <div class="stack">
         <p class="eyebrow" data-i18n="klow.eyebrow">The KLOWUP stack</p>
         <h2 data-i18n="klow.h2">Four pathways. One vial.</h2>
-        <p class="lead" data-i18n="klow.lead">BPC-157, GHK-Cu, TB-500 and KPV at 20mg each. Signaling and angiogenesis, ECM and collagen, cell migration, and experimental anti-inflammatory activity, brought together in a single lyophilized 80mg vial. Exclusive to the Ascent catalog.</p>
+        <p class="lead" data-i18n="klow.lead">BPC-157, GHK-Cu, TB-500 and KPV at 20mg each. Signaling and angiogenesis, ECM and collagen, cell migration, and experimental anti-inflammatory activity, brought together in a single lyophilized 80mg vial. One reconstitution covers all four.</p>
         <div class="cta-row">
           <a class="btn btn--primary" href="#catalog" data-i18n="klow.cta1">See the catalog</a>
           <a class="btn btn--ghost" href="https://wa.me/573164114411" data-wa="wa.klow" target="_blank" rel="noopener" data-i18n="klow.cta2">Ask a technical question</a>
@@ -205,7 +225,7 @@
     <div class="stack rise" style="max-width:62ch;margin-bottom:var(--s-5)">
       <p class="eyebrow" data-i18n="q.eyebrow">Verification</p>
       <h2 data-i18n="q.h2">Every batch is measured before it ships.</h2>
-      <p class="lead" data-i18n="q.lead">Purity is the one thing a research buyer cannot check by looking. So we test it, publish the floor we hold to, and show the results.</p>
+      <p class="lead" data-i18n="q.lead">Purity is the one thing a research buyer cannot check by looking. So we require a certificate of analysis for every batch, and publish what those certificates say.</p>
     </div>
 
     <figure class="q-card rise" id="q-purity" hidden>
@@ -229,11 +249,23 @@
       </details>
     </figure>
 
-    <div class="q-floor rise" id="q-floor">
-      <p class="eyebrow" data-i18n="q.floorTitle">What the floor means</p>
-      <div class="q-floor-bar" aria-hidden="true"><span></span></div>
+    <!-- A hundred cells, not a progress bar. The bar this replaced was a 99%
+         fill: the 1% it was meant to show came out ~6px wide on a 600px bar and
+         the pill's corner radius ate most of that, so it read as a solid line.
+         The quantity the figure exists to show was the one thing invisible in
+         it. Ink surface for the same reason the batch chart is on one — gold
+         measures 2.33:1 against cream, under the 3:1 floor for data marks. -->
+    <figure class="q-card q-floor rise" id="q-floor">
+      <figcaption class="q-cap">
+        <span class="eyebrow" data-i18n="q.floorTitle">What the floor means</span>
+      </figcaption>
+      <div class="q-units" id="q-units" role="img"></div>
+      <p class="q-key small">
+        <span class="q-key-i"><i class="is-v"></i><span data-i18n="q.keyVerified">Verified compound</span></span>
+        <span class="q-key-i"><i></i><span data-i18n="q.keyRest">Everything else</span></span>
+      </p>
       <p class="q-floor-note small"></p>
-    </div>
+    </figure>
   </div>
 </section>
 
@@ -245,7 +277,7 @@
     <div class="stack rise" style="max-width:64ch;margin-bottom:var(--s-5)">
       <p class="eyebrow" data-i18n="cat.eyebrow">Catalog</p>
       <h2 data-i18n="cat.h2">Sixty-three documented compounds.</h2>
-      <p class="lead" data-i18n="cat.lead">Filter by research category, or open any compound for its technical sheet. Every price includes shipping within Colombia and Mexico.</p>
+      <p class="lead" data-i18n="cat.lead">Filter by research category, or open any compound for its technical sheet.</p>
       <!-- 63 compounds is a lot to land in cold; this is the way through -->
       <a class="cat-explore" href="/explore">
         <span data-i18n="cat.exploreLink">Not sure where to start? Explore by research area</span>
@@ -259,8 +291,11 @@
     <p class="small tabular" id="count" aria-live="polite"></p>
     <div class="grid-p" id="products"></div>
 
+    <!-- A link now, not a toggle. Home shows three; the full 63 live on their
+         own searchable page rather than expanding in place, which used to drop
+         a 60-card grid under the fold with no way to search it. -->
     <div class="cat-more">
-      <button class="btn btn--ghost" id="show-all" aria-controls="products" aria-expanded="false" hidden></button>
+      <a class="btn btn--ghost" id="show-all" href="/catalog" hidden></a>
     </div>
 
     <!-- Technical sheets rendered into the DOM at load so they stay crawlable
@@ -268,58 +303,59 @@
          content on click. Visually hidden, not display:none. -->
     <div id="sheet-data" class="sr-only" aria-hidden="true">
 <!-- prerender:catalog -->
-<section><h3>BPC-157 — Tissue Regeneration &amp; Repair</h3><p>The most-researched recovery peptide in models of soft-tissue, tendon and ligament repair, and gastrointestinal integrity.</p><dl><dt>Sequence</dt><dd>GEPPPGKPADDAGLV</dd><dt>Molecular mass</dt><dd>1419.53 Da</dd><dt>Formula</dt><dd>C62H98N16O22</dd><dt>CAS</dt><dd>137525-51-0</dd></dl><p>Documented research areas: FAK-paxillin and cell migration, VEGFR2-NO and endothelial signaling, Angiogenesis and perfusion, Extracellular matrix and collagen, TGF-β/Smad in repair, HO-1/Nrf2 antioxidant, Experimental re-epithelialization, Tendon and ligament support, Preclinical GI integrity, Oxidative cytoprotection.</p><p>Available presentations: 10mg (US$181.82), 20mg (US$180.00), 40mg (US$279.76).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Cartalax — Regeneration</h3><p>Bioregulator peptide studied in models of articular cartilage, connective tissue and joint-surface repair.</p><p>Available presentations: 20mg (US$184.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>GHK-Cu — Tissue Regeneration &amp; Repair</h3><p>A copper tripeptide occurring naturally in human plasma. Studied in skin longevity, collagen synthesis and ECM remodeling.</p><dl><dt>Sequence</dt><dd>GHK·Cu²⁺</dd><dt>Molecular mass</dt><dd>402.92 Da</dd><dt>Formula</dt><dd>C14H24CuN6O4</dd><dt>CAS</dt><dd>89030-95-5</dd></dl><p>Documented research areas: MMP/TIMP and remodeling, Type I/III collagen and dermis, Tissue TGF-β/Smad, HO-1/Nrf2 antioxidant, Copper homeostasis, Chemotaxis and migration, Angiogenesis, Hair follicle and dermis, Wound re-epithelialization, Anti-glycation and oxidation.</p><p>Available presentations: 100mg (US$194.08).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>KLOWUP — Proprietary Ascent Stack</h3><p>A proprietary Ascent stack. Four complementary molecular pathways in a single lyophilized vial: BPC-157 + GHK-Cu + TB-500 + KPV, 20mg each.</p><dl><dt>Composition</dt><dd>4 compounds</dd><dt>Total load</dt><dd>80mg lyophilized</dd><dt>Pathways</dt><dd>Integrated repair</dd><dt>Purity</dt><dd>99%+ HPLC</dd></dl><p>Documented research areas: FAK/paxilina (BPC-157), Type I/III collagen and ECM (GHK-Cu), Actin and migration (TB-500), Anti-inflammatory (KPV), Angiogenesis, Re-epithelialization, Synergy across complementary pathways.</p><p>Available presentations: 80mg (US$247.33).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>KPV — Regeneration</h3><p>α-MSH tripeptide studied in experimental anti-inflammatory signaling via the MC1R receptor. A component of the KLOWUP stack.</p><p>Available presentations: 10mg (US$150.00), 30mg (US$262.50).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>TB-500 — Tissue Regeneration &amp; Repair</h3><p>Synthetic Ac-LKKTETQ fragment of Thymosin β-4. Studied in cell migration, cytoskeletal organization and systemic recovery.</p><dl><dt>Sequence</dt><dd>Ac-LKKTETQ</dd><dt>Molecular mass</dt><dd>889.00 Da</dd><dt>Formula</dt><dd>C38H68N10O14</dd><dt>CAS</dt><dd>885340-08-9</dd></dl><p>Documented research areas: Actin and cytoskeleton, Cell migration, Preclinical repair, Peripheral angiogenesis, ECM remodeling, Integrin signaling, Fibroblasts and re-epithelialization, Tendon and ligament.</p><p>Available presentations: 10mg (US$216.98).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>5-Amino-1mq — Metabolic</h3><p>NNMT inhibitor. Studied in adipogenesis, insulin sensitivity and mitochondrial energy metabolism.</p><p>Available presentations: 50mg (US$140.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>AICAR — Metabolic</h3><p>AMPK activator. Studied in muscular endurance, mitochondrial biogenesis and metabolic signaling.</p><p>Available presentations: 50mg (US$130.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>AOD-9604 — Metabolic</h3><p>GH fragment 177-191, without anabolic activity. Studied in lipolysis, visceral adiposity and fatty-acid metabolism.</p><p>Available presentations: 5mg (US$188.12).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Eloratlintide — Metabolic</h3><p>Second-generation amylin analog. Studied in satiety, gastric emptying and advanced glycemic control.</p><p>Available presentations: 10mg (US$300.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>MOTS-c — Metabolic</h3><p>Mitochondrial peptide produced during exercise. Studied in energy homeostasis, insulin sensitivity and longevity.</p><p>Available presentations: 40mg (US$231.82).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Retatrutide — Metabolic Optimization</h3><p>The triple GLP-1R/GIPR/GCGR agonist with the most notable Phase II clinical trial results, for advanced metabolic research.</p><dl><dt>Designation</dt><dd>LY3437943</dd><dt>Molecular mass</dt><dd>4894.58 Da</dd><dt>Formula</dt><dd>C228H350N48O66</dd><dt>CAS</dt><dd>2381089-83-2</dd></dl><p>Documented research areas: Triple GCGR/GIPR/GLP-1R agonism, Incretin cAMP signaling, Central satiety and appetite, Gastric emptying, Glycemic control, Energy expenditure and thermogenesis, Lipid metabolism, Adiposity and substrates, Hepatic steatosis, Cardiometabolic homeostasis.</p><p>Available presentations: 10mg (US$170.21), 30mg (US$243.33), 50mg (US$318.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>SLU-PP-332 — Metabolic</h3><p>ERRα/β/γ receptor agonist. Studied in fatty-acid oxidation, mitochondrial biogenesis and metabolic endurance.</p><p>Available presentations: 5mg (US$187.06).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Tensity I — Metabolic</h3><p>Combination formulation for broad metabolic research, with simultaneous signaling across multiple energy pathways.</p><p>Available presentations: 20mg (US$246.67).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Tesamorelin — Metabolic</h3><p>FDA-approved GHRH analog (Egrifta). Studied in visceral adiposity reduction, GH/IGF-1 signaling and body composition.</p><p>Available presentations: 10mg (US$172.33), 20mg (US$227.59).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Tirzepatide — Metabolic</h3><p>Dual GLP-1R/GIPR agonist (Mounjaro/Zepbound). Studied in glycemic control, satiety and body composition.</p><p>Available presentations: 5mg (US$161.76), 10mg (US$186.90), 30mg (US$258.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>CJC-1295 noDAC — Growth Hormone Axis</h3><p>A GHRH analog with high pituitary affinity. Combined with Ipamorelin it activates two pathways of the GH axis for a more robust release profile.</p><dl><dt>Type</dt><dd>GHRH analog</dd><dt>Presentation</dt><dd>10mg lyophilized</dd><dt>Stack</dt><dd>with Ipamorelin</dd><dt>Purity</dt><dd>99%+ HPLC</dd></dl><p>Documented research areas: Pituitary GHRH signaling, Pulsatile GH release, GH/IGF-1 axis modulation, Secretagogue synergy, Body composition, Recovery and sleep.</p><p>Available presentations: 10mg (US$180.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>GHRP-2 — GH Axis</h3><p>First-generation GH secretagogue. GHSR-1a agonist with a strong GH-release signal. Studied in somatotropic pulses.</p><p>Available presentations: 5mg (US$156.63).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>HCG — GH Axis</h3><p>Human chorionic gonadotropin. Studied in the hypothalamic-pituitary-gonadal axis, steroidogenesis and fertility models.</p><p>Available presentations: 5000IU (US$187.50), 10000IU (US$228.16).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>HGH — GH Axis</h3><p>Recombinant 191-amino-acid HGH. Studied in somatotropic signaling, IGF-1, body composition and energy metabolism.</p><p>Available presentations: 30IU (US$165.81), 36IU (US$287.36), 50IU (US$172.50).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>IGF1-LR3 — GH Axis</h3><p>IGF-1 with an LR3 extension that lengthens half-life. Studied in anabolic signaling, muscle differentiation and proliferation.</p><p>Available presentations: 1mg (US$207.50).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Ipamorelin — GH Axis</h3><p>Selective GHSR-1a agonist with minimal impact on cortisol and prolactin. The cleanest secretagogue in the research literature.</p><p>Available presentations: 10mg (US$174.42).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Kisspeptin — GH Axis</h3><p>Neuropeptide regulating the HPG axis. Studied in GnRH, LH and FSH signaling, central to fertility and reproductive function research.</p><p>Available presentations: 10mg (US$168.49).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Synergy II — GH Axis</h3><p>CJC-1295 + Ipamorelin in a single vial. Activates both GHRH and GHSR-1a for more robust somatotropic signaling.</p><p>Available presentations: 10mg/10mg (US$224.95).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>ARA-290 — Longevity</h3><p>Non-erythropoietic EPO analog. Studied in neuroprotection, anti-inflammatory signaling and peripheral neuropathy.</p><p>Available presentations: 10mg (US$174.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Cardiogen — Longevity</h3><p>Cardiac tetramer bioregulator peptide. Studied in cardiomyocyte function and cardiovascular protection.</p><p>Available presentations: 20mg (US$177.06).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Coherence — Longevity</h3><p>Combination formulation for broad longevity research, signaling across multiple cellular-aging pathways.</p><p>Available presentations: 50mg (US$214.86).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Cortagen — Longevity</h3><p>Lung-tissue bioregulator peptide. Studied in respiratory function, bronchial epithelium and pulmonary regeneration.</p><p>Available presentations: 20mg (US$193.01).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Epithalon — Longevity</h3><p>Pineal tetrapeptide (AEDG). Studied in telomere regulation, telomerase expression and cellular longevity. Heavily cited in aging research.</p><p>Available presentations: 50mg (US$177.76).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>FOX-04 — Longevity</h3><p>Experimental senolytic peptide. Studied in selective apoptosis of senescent cells. Among the most advanced in longevity research.</p><p>Available presentations: 10mg (US$333.17).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Glutathione — Longevity</h3><p>Endogenous tripeptide (Glu-Cys-Gly), the principal intracellular antioxidant. Studied in oxidative stress and hepatic detoxification.</p><p>Available presentations: 1500mg (US$206.35).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>NAD+ — Longevity</h3><p>NAD+ coenzyme. Studied in mitochondrial metabolism, sirtuins (SIRT1-7), DNA repair and cellular longevity.</p><p>Available presentations: 1000mg (US$210.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Oxytocin — Longevity</h3><p>Hypothalamic neuropeptide. Studied in trust, prosocial behavior, social anxiety and stress recovery.</p><p>Available presentations: 10mg (US$125.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Pinealon — Longevity</h3><p>Brain trimer bioregulator peptide. Studied in neuroprotection, cognitive function and neuronal signaling in aging.</p><p>Available presentations: 20mg (US$179.19).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Prostamax — Longevity</h3><p>Prostate-tissue bioregulator peptide. Studied in glandular function and male reproductive tissue.</p><p>Available presentations: 20mg (US$250.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>PT-141 — Longevity</h3><p>α-MSH analog (Bremelanotide). MC3R/MC4R agonist. Studied in central signaling of sexual desire.</p><p>Available presentations: 10mg (US$186.67).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>SS-31 — Longevity</h3><p>Szeto-Schiller 31 mitochondrial peptide. Studied in mitochondrial membrane protection, cardioprotection and oxidative stress.</p><p>Available presentations: 50mg (US$303.28).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Thymosin A — Longevity</h3><p>Thymosin alpha fraction 5. Studied in T-lymphocyte modulation and immunomodulation in viral infection models.</p><p>Available presentations: 10mg (US$225.95).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Thymulin — Longevity</h3><p>Immunomodulatory thymic nonapeptide. Studied in zinc-thymic signaling and T-lymphocyte modulation.</p><p>Available presentations: 20mg (US$261.19).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Vesugen — Longevity</h3><p>Vascular trimer bioregulator peptide. Studied in endothelial integrity and vascular cell function in aging.</p><p>Available presentations: 20mg (US$242.50).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Vilon — Longevity</h3><p>Bioregulator dipeptide (Lys-Glu). Studied in immune function, cytokine production and lymphocyte modulation.</p><p>Available presentations: 20mg (US$244.19).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>VIP — Longevity</h3><p>28-amino-acid vasoactive neuropeptide. Studied in neuroprotection, immunomodulation and intestinal inflammation.</p><p>Available presentations: 10mg (US$236.20).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>DSIP — Cognition</h3><p>Delta nonapeptide. Studied in delta sleep induction, circadian regulation and stress response.</p><p>Available presentations: 15mg (US$150.33).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Selank — Cognition</h3><p>Tuftsin analog. Studied in anxiety, cognitive function and nootropic signaling, with no documented sedative effect.</p><p>Available presentations: 30mg (US$154.75).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Semax — Cognition</h3><p>ACTH(4-7) fragment with a Pro-Gly-Pro extension. Studied in neuroplasticity, neuronal protection and cognitive performance.</p><p>Available presentations: 30mg (US$150.75).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Melanotan I — Aesthetics</h3><p>Linear α-MSH analog (Afamelanotide). Studied in melanogenesis, melanin synthesis and photoprotection.</p><p>Available presentations: 10mg (US$133.75).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Melanotan II — Aesthetics</h3><p>Cyclic α-MSH analog. MC1R/MC4R agonist. Studied in melanogenesis and sexual function. Handle with particular care.</p><p>Available presentations: 10mg (US$131.25).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Bacteriostatic Water — Supplies</h3><p>Sterile water with 0.9% benzyl alcohol. The laboratory standard for reconstituting lyophilized peptides.</p><p>Available presentations: 3ml (US$5.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Pfizer · Hospira Water — Supplies</h3><p>Pharmaceutical-grade water for injection, for reconstitution requiring maximum solvent purity.</p><p>Available presentations: 30mL (US$30.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Cartridge — Supplies</h3><p>Replacement cartridge compatible with Insulin Pen I and II. Enables precise reuse across laboratory protocols.</p><p>Available presentations: 1 unidad (US$1.50).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Insulin Pen I — Supplies</h3><p>Reusable dosing pen with 1-unit increments, for precision in research protocols.</p><p>Available presentations: 1 unidad (US$35.00).</p><p>For research use only. Not for human consumption.</p></section>
-<section><h3>Insulin Pen II · Savvio — Supplies</h3><p>High-precision Savvio pen with adjustable increments, for protocols requiring exact and reproducible measurement.</p><p>Available presentations: 1 unidad (US$120.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>BPC-157 — Regeneration</h3><p>Synthetic pentadecapeptide, a partial sequence of a protein found in gastric juice.</p><dl><dt>Sequence</dt><dd>GEPPPGKPADDAGLV</dd><dt>Molecular mass</dt><dd>1419.53 Da</dd><dt>Formula</dt><dd>C62H98N16O22</dd><dt>CAS</dt><dd>137525-51-0</dd></dl><p>Documented research areas: FAK-paxillin and cell migration, VEGFR2-NO and endothelial signaling, Angiogenesis and perfusion, Extracellular matrix and collagen, TGF-β/Smad in repair, HO-1/Nrf2 antioxidant, Experimental re-epithelialization, Preclinical GI integrity, Oxidative cytoprotection.</p><p>Available presentations: 10mg (US$181.82), 20mg (US$180.00), 40mg (US$279.76).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cartalax — Regeneration</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$184.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>GHK-Cu — Regeneration</h3><p>Copper-binding tripeptide (Gly-His-Lys) occurring naturally in human plasma.</p><dl><dt>Sequence</dt><dd>GHK·Cu²⁺</dd><dt>Molecular mass</dt><dd>402.92 Da</dd><dt>Formula</dt><dd>C14H24CuN6O4</dd><dt>CAS</dt><dd>89030-95-5</dd></dl><p>Documented research areas: MMP/TIMP and remodeling, Type I/III collagen and dermis, Tissue TGF-β/Smad, HO-1/Nrf2 antioxidant, Copper homeostasis, Chemotaxis and migration, Angiogenesis, Wound re-epithelialization, Anti-glycation and oxidation.</p><p>Available presentations: 50mg (US$50.00), 100mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>KLOWUP — Combination</h3><p>Four compounds in a single lyophilized vial: BPC-157, GHK-Cu, TB-500 and KPV, 20mg each.</p><dl><dt>Composition</dt><dd>4 compounds</dd><dt>Total load</dt><dd>80mg lyophilized</dd><dt>Components</dt><dd>BPC-157, GHK-Cu, TB-500, KPV</dd><dt>Purity</dt><dd>Manufacturer COA per batch</dd></dl><p>Documented research areas: FAK/paxillin (BPC-157), Type I/III collagen and ECM (GHK-Cu), Actin and migration (TB-500), MC1R signaling (KPV), Angiogenesis, Re-epithelialization.</p><p>Available presentations: 80mg (US$247.33).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>BPC-157 / TB-500 — Regeneration</h3><p>BPC-157 and TB-500 in a single lyophilized vial, 10mg each.</p><p>Available presentations: 20mg (US$120.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>KPV — Regeneration</h3><p>Tripeptide (Lys-Pro-Val), the C-terminal fragment of alpha-MSH. Agonist at the MC1R melanocortin receptor.</p><p>Available presentations: 10mg (US$80.00), 30mg (US$262.50).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>TB-500 — Regeneration</h3><p>Synthetic Ac-LKKTETQ fragment of thymosin beta-4.</p><dl><dt>Sequence</dt><dd>Ac-LKKTETQ</dd><dt>Molecular mass</dt><dd>889.00 Da</dd><dt>Formula</dt><dd>C38H68N10O14</dd><dt>CAS</dt><dd>885340-08-9</dd></dl><p>Documented research areas: Actin and cytoskeleton, Cell migration, Preclinical repair, Peripheral angiogenesis, ECM remodeling, Integrin signaling, Fibroblasts and re-epithelialization.</p><p>Available presentations: 10mg (US$216.98).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>5-Amino-1MQ — Metabolic</h3><p>Small-molecule inhibitor of nicotinamide N-methyltransferase (NNMT).</p><p>Available presentations: 50mg (US$140.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>AICAR — Metabolic</h3><p>AMP analog and activator of AMP-activated protein kinase (AMPK).</p><p>Available presentations: 50mg (US$130.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>AOD-9604 — Metabolic</h3><p>Synthetic fragment of human growth hormone, residues 177 to 191.</p><p>Available presentations: 5mg (US$110.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Eloratlintide — Metabolic</h3><p>Synthetic peptide. Agonist at the amylin receptor.</p><p>Available presentations: 10mg (US$300.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>MOTS-c — Metabolic</h3><p>Peptide encoded in mitochondrial DNA.</p><p>Available presentations: 10mg (US$80.00), 40mg (US$220.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Retatrutide — Metabolic</h3><p>Synthetic triple agonist peptide with affinity for the GLP-1, GIP and glucagon receptors.</p><dl><dt>Designation</dt><dd>LY3437943</dd><dt>Molecular mass</dt><dd>4894.58 Da</dd><dt>Formula</dt><dd>C228H350N48O66</dd><dt>CAS</dt><dd>2381089-83-2</dd></dl><p>Documented research areas: Triple GCGR/GIPR/GLP-1R agonism, Incretin cAMP signaling.</p><p>Available presentations: 10mg (US$170.21), 20mg (US$125.00), 30mg (US$243.33), 50mg (US$318.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>SLU-PP-332 — Metabolic</h3><p>Synthetic pan-agonist of the estrogen-related receptors ERR alpha, beta and gamma.</p><p>Available presentations: 5mg (US$187.06).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tensity I — Metabolic</h3><p>Combination formulation supplied in a single vial.</p><p>Available presentations: 20mg (US$246.67).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tesamorelin — Metabolic</h3><p>Synthetic analog of growth-hormone-releasing hormone.</p><p>Available presentations: 5mg (US$100.00), 10mg (US$180.00), 20mg (US$227.59).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Tirzepatide — Metabolic</h3><p>Synthetic peptide. Dual agonist at the GLP-1 and GIP receptors.</p><p>Available presentations: 5mg (US$161.76), 10mg (US$186.90), 30mg (US$258.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HGH Fragment 176-191 — Metabolic</h3><p>Synthetic fragment of human growth hormone, residues 176 to 191.</p><p>Available presentations: 5mg (US$110.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cagrilintide — Metabolic</h3><p>Synthetic peptide. Long-acting agonist at the amylin receptor.</p><p>Available presentations: 5mg (US$110.00), 10mg (US$180.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>CJC-1295 noDAC — GH Axis</h3><p>Synthetic analog of growth-hormone-releasing hormone, without the drug affinity complex modification.</p><dl><dt>Type</dt><dd>GHRH analog</dd><dt>Presentation</dt><dd>10mg lyophilized</dd><dt>Purity</dt><dd>Manufacturer COA per batch</dd></dl><p>Documented research areas: Pituitary GHRH signaling, Pulsatile GH release, GH/IGF-1 axis modulation.</p><p>Available presentations: 10mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>GHRP-2 — GH Axis</h3><p>Synthetic hexapeptide. Agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$156.63).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HCG — GH Axis</h3><p>Human chorionic gonadotropin, a glycoprotein hormone.</p><p>Available presentations: 5000IU (US$95.00), 10000IU (US$160.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HGH — GH Axis</h3><p>Recombinant human growth hormone, 191 amino acids.</p><p>Available presentations: 10IU (US$60.00), 12IU (US$75.00), 15IU (US$95.00), 24IU (US$130.00), 30IU (US$165.81), 36IU (US$170.00), 50IU (US$230.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>IGF1-LR3 — GH Axis</h3><p>Analog of insulin-like growth factor 1 with an N-terminal extension.</p><p>Available presentations: 0.1mg (US$45.00), 1mg (US$230.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Ipamorelin — GH Axis</h3><p>Synthetic pentapeptide. Selective agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$50.00), 10mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Kisspeptin — GH Axis</h3><p>Neuropeptide encoded by the KISS1 gene. Ligand at the KISS1R receptor.</p><p>Available presentations: 10mg (US$95.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Synergy II — GH Axis</h3><p>CJC-1295 and Ipamorelin in a single vial. A GHRH analog and a GHSR-1a agonist.</p><p>Available presentations: 10mg/10mg (US$224.95).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>HMG — GH Axis</h3><p>Human menopausal gonadotropin, carrying follicle-stimulating and luteinising activity.</p><p>Available presentations: 75IU (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Sermorelin — GH Axis</h3><p>Synthetic analog of growth-hormone-releasing hormone, residues 1 to 29.</p><p>Available presentations: 5mg (US$95.00), 10mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Hexarelin — GH Axis</h3><p>Synthetic hexapeptide. Agonist at the GHSR-1a receptor.</p><p>Available presentations: 5mg (US$95.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>ARA-290 — Longevity</h3><p>Eleven-amino-acid peptide derived from the B helix of erythropoietin.</p><p>Available presentations: 10mg (US$174.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cardiogen — Longevity</h3><p>Synthetic bioregulator tetrapeptide.</p><p>Available presentations: 20mg (US$177.06).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Coherence — Longevity</h3><p>Combination formulation supplied in a single vial.</p><p>Available presentations: 50mg (US$214.86).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Cortagen — Longevity</h3><p>Synthetic bioregulator tetrapeptide.</p><p>Available presentations: 20mg (US$193.01).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Epithalon — Longevity</h3><p>Synthetic tetrapeptide (Ala-Glu-Asp-Gly).</p><p>Available presentations: 10mg (US$60.00), 40mg (US$160.00), 50mg (US$177.76).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>FOX-04 — Longevity</h3><p>Experimental peptide targeting the FOXO4 and p53 interaction.</p><p>Available presentations: 10mg (US$333.17).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Glutathione — Longevity</h3><p>Endogenous tripeptide (Glu-Cys-Gly).</p><p>Available presentations: 1500mg (US$206.35).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>NAD+ — Longevity</h3><p>Nicotinamide adenine dinucleotide. Coenzyme in cellular redox reactions.</p><p>Available presentations: 100mg (US$50.00), 500mg (US$80.00), 1000mg (US$150.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Oxytocin — Longevity</h3><p>Nonapeptide hormone produced in the hypothalamus.</p><p>Available presentations: 10mg (US$125.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Pinealon — Longevity</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$179.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Prostamax — Longevity</h3><p>Synthetic bioregulator peptide.</p><p>Available presentations: 20mg (US$250.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>PT-141 — Longevity</h3><p>Cyclic analog of alpha-MSH. Agonist at the MC3R and MC4R melanocortin receptors.</p><p>Available presentations: 10mg (US$80.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>SS-31 — Longevity</h3><p>Synthetic tetrapeptide, also known as elamipretide.</p><p>Available presentations: 10mg (US$120.00), 50mg (US$380.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Thymosin A — Longevity</h3><p>Thymic peptide preparation, fraction 5.</p><p>Available presentations: 5mg (US$100.00), 10mg (US$180.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Thymulin — Longevity</h3><p>Zinc-bound thymic nonapeptide.</p><p>Available presentations: 20mg (US$261.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Vesugen — Longevity</h3><p>Synthetic bioregulator tripeptide.</p><p>Available presentations: 20mg (US$242.50).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Vilon — Longevity</h3><p>Synthetic bioregulator dipeptide (Lys-Glu).</p><p>Available presentations: 20mg (US$244.19).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>VIP — Longevity</h3><p>Vasoactive intestinal peptide, 28 amino acids.</p><p>Available presentations: 10mg (US$236.20).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>DSIP — Cognition</h3><p>Nonapeptide, known as delta sleep-inducing peptide.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 15mg (US$100.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Selank — Cognition</h3><p>Synthetic heptapeptide analog of tuftsin.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 30mg (US$154.75).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Semax — Cognition</h3><p>Heptapeptide: the ACTH(4-7) fragment with a Pro-Gly-Pro extension.</p><p>Available presentations: 5mg (US$60.00), 10mg (US$80.00), 30mg (US$150.75).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Melanotan I — Aesthetics</h3><p>Linear analog of alpha-melanocyte-stimulating hormone.</p><p>Available presentations: 10mg (US$60.00).</p><p>For research use only. Not for human consumption.</p></section>
+<section><h3>Melanotan II — Aesthetics</h3><p>Cyclic analog of alpha-MSH. Agonist at the MC1R and MC4R melanocortin receptors.</p><p>Available presentations: 10mg (US$60.00).</p><p>For research use only. Not for human consumption.</p></section>
 <!-- /prerender:catalog --></div>
   </div>
 </section>
@@ -328,7 +364,7 @@
 <section class="sec sec--cream">
   <div class="wrap">
     <div class="row row--flip rise">
-      <div class="row-media"><img src="assets/img/ritual.webp" width="928" height="1152" alt="Two Ascent vials and bacteriostatic water on linen" loading="lazy"></div>
+      <div class="row-media"><img src="assets/img/ritual.webp" width="928" height="1152" alt="Three Ascent vials on linen" loading="lazy"></div>
       <div class="stack">
         <p class="eyebrow" data-i18n="rit.eyebrow">Reconstitution</p>
         <h2 data-i18n="rit.h2">One line of math.</h2>
@@ -339,14 +375,70 @@
   </div>
 </section>
 
-<!-- ============ REVIEWS ============ -->
-<section class="sec" id="reviews">
+<!-- ============ APP ============
+     Sits directly after Reconstitution on purpose: that section explains the
+     math, this one says the app does it for you. Ink rather than another cream
+     or paper band — the app is a different kind of thing from the compounds
+     around it, and an alternating band would have read as one more product row.
+
+     The store badge is NOT here yet. Apple's badge may only be used for an app
+     that is actually on the store, and it has to be their artwork unmodified,
+     so nothing here imitates it. When the app ships: drop Apple's official SVG
+     at assets/img/app-store-badge.svg, swap the .app-soon span for the
+     commented anchor below, and set the URL. Nothing else changes. -->
+<section class="sec sec--ink" id="app">
   <div class="wrap">
-    <div class="center stack rise" style="max-width:56ch;margin:0 auto var(--s-5)">
-      <p class="eyebrow" data-i18n="rev.eyebrow">Reviews</p>
-      <h2 data-i18n="rev.h2">What researchers say.</h2>
+    <div class="row rise">
+      <div class="stack">
+        <img class="app-icon" src="assets/img/app-icon.webp" width="512" height="512"
+             alt="Ascent app icon" loading="lazy">
+        <p class="eyebrow" data-i18n="app.eyebrow">The Ascent app</p>
+        <h2 data-i18n="app.h2">Your records, in one place.</h2>
+        <p class="lead" data-i18n="app.lead">A companion for keeping a research protocol organised: build the schedule, run the concentration math once, and keep a dated record of the work.</p>
+
+        <div class="app-points">
+          <div class="app-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="app.p1">Concentration calculator. Vial size and diluent in, concentration out.</span>
+          </div>
+          <div class="app-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="app.p2">Schedules. Daily, specific days, or a custom interval.</span>
+          </div>
+          <div class="app-point">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="app.p3">A dated record. Every entry logged against its day in the protocol.</span>
+          </div>
+        </div>
+
+        <div class="app-cta">
+          <span class="app-soon" data-i18n="app.soon">Coming soon to the App Store</span>
+          <!-- <a href="APP_STORE_URL" target="_blank" rel="noopener">
+                 <img class="app-badge" src="assets/img/app-store-badge.svg"
+                      alt="Download on the App Store" width="180" height="52">
+               </a> -->
+        </div>
+        <p class="app-note" data-i18n="app.note">For research record-keeping. Nothing in the app is medical guidance.</p>
+      </div>
+      <!-- App artwork, 928x1152 to match every other .row-media image. Built by
+           ~/Claude/ascent-social/scripts/build_artwork_flat.py from a real
+           capture of the app's home screen; rerun that to refresh it. -->
+      <!-- The date on the phone is LIVE — see renderAppDate() in site.js. The
+           capture bakes in one day's headline; the span below covers it and
+           reprints today's, in the same format and locale the app itself uses.
+
+           It works because the surface behind that headline is a perfectly flat
+           rgb(250,248,244), stdev 0.0, so a solid fill leaves no seam. Every
+           offset in .app-date was measured off THIS capture. If build_artwork_flat.py
+           is rerun and the headline moves, re-measure or delete the span — a
+           stale offset would leave a visible patch. -->
+      <div class="row-media app-shot">
+        <img src="assets/img/app.webp" width="928" height="1152"
+             alt="The Ascent app on an iPhone, showing a protocol schedule"
+             loading="lazy">
+        <span class="app-date" aria-hidden="true"><b id="app-date-text">Tuesday, August 4</b></span>
+      </div>
     </div>
-    <div class="grid-p" id="rv-grid"></div>
   </div>
 </section>
 
@@ -395,8 +487,8 @@
   <div class="wrap">
     <div class="f-grid">
       <div class="f-brand">
-        <img src="assets/img/logo-wordmark.png" alt="Ascent Compounds">
-        <p class="small" style="color:rgba(247,244,236,.6);max-width:34ch"><span data-i18n="foot.blurb">Research-grade peptides, verified batch by batch. Active distribution in Colombia, Mexico and the USA.</span></p>
+        <img src="assets/img/logo-wordmark.png" alt="Ascent Labs">
+        <p class="small" style="color:rgba(247,244,236,.6);max-width:34ch"><span data-i18n="foot.blurb">Research-grade peptides, with a certificate of analysis for every batch. Active distribution in Colombia, Mexico and the USA.</span></p>
       </div>
       <div>
         <h4 data-i18n="foot.catalog">Catalog</h4>
@@ -410,8 +502,8 @@
         <h4 data-i18n="foot.support">Support</h4>
         <div class="f-list">
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
+          <a href="/returns" data-i18n="foot.returns">Returns and refunds</a>
           <a href="https://wa.me/573164114411" target="_blank" rel="noopener">WhatsApp</a>
-          <a href="#reviews" data-i18n="nav.reviews">Reviews</a>
         </div>
       </div>
       <div>
@@ -430,11 +522,13 @@
       <strong data-i18n="foot.legalStrong">For research use only.</strong>
       <span data-i18n="foot.legal">All compounds listed on this site are supplied strictly for laboratory research.</span>
       <strong data-i18n="foot.legalStrong2">They are not medicines, are not dietary supplements, and are not intended for human or veterinary use.</strong>
+      <span data-i18n="foot.legalSupplier">Ascent is a chemical supplier. It is not a compounding pharmacy, and it is not an outsourcing facility as defined under section 503B of the Federal Food, Drug, and Cosmetic Act.</span>
+      <span data-i18n="foot.legalFda">The statements on this website have not been evaluated by the U.S. Food and Drug Administration.</span>
       <span data-i18n="foot.legal2">They have not been approved by any regulatory authority for the diagnosis, treatment, cure or prevention of any condition. Nothing on this site is medical advice or a recommendation to use any compound. By purchasing, you confirm you are a qualified buyer aged 21 or over and that these compounds will be handled in an appropriate research setting.</span>
     </div>
 
     <div class="f-bottom">
-      <span data-i18n="foot.rights">© 2026 Ascent Compounds</span>
+      <span data-i18n="foot.rights">© 2026 Ascent Labs</span>
       <span>Colombia · Mexico · USA</span>
     </div>
   </div>
@@ -468,24 +562,29 @@
       </svg>
     </button>
   </div>
-  <div class="cart-body" id="cart-body"></div>
+  <!-- The notes scroll WITH the items. Pinned in the footer they cost 128px of
+       a phone screen permanently, which had squeezed the order itself into a
+       291px window — smaller than a single line. The footer pins only what a
+       buyer must be able to see at the moment they tap Checkout: what they are
+       paying now, and what recurs. -->
+  <div class="cart-scroll">
+    <div class="cart-body" id="cart-body"></div>
+    <div class="cart-notes" id="cart-notes" hidden>
+      <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico.</p>
+      <!-- Stated plainly rather than buried: a precise USD figure that then
+           does not match the buyer's statement generates support tickets and
+           chargebacks, and chargebacks are what threaten a high-risk account. -->
+      <p class="small fx-note" data-i18n="fx.note">Charged in Colombian pesos at the official TRM rate. Your bank applies its own conversion, so your statement may differ slightly.</p>
+    </div>
+  </div>
   <div class="cart-f">
-    <div class="cart-total"><span data-i18n="cart.total">Total</span><b class="tabular" id="cart-total">$0.00</b></div>
-    <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico. We confirm every order over WhatsApp before payment.</p>
-    <!-- Stated plainly rather than buried: a precise USD figure that then does
-         not match the buyer's statement generates support tickets and
-         chargebacks, and chargebacks are what threaten a high-risk account. -->
-    <p class="small fx-note" data-i18n="fx.note"></p>
-
-    <!-- point-of-purchase acknowledgement: compliance guidance treats a
-         checkout confirmation as the meaningful one, not the footer -->
-    <label class="ruo-check" for="ruo-ack">
-      <input type="checkbox" id="ruo-ack">
-      <span data-i18n-html="cart.ack">I confirm this order is <strong>for research use only</strong> and that these compounds are not for human consumption.</span>
-    </label>
-
-    <a class="btn btn--primary" id="checkout" href="#" target="_blank" rel="noopener"
-       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Confirm over WhatsApp</a>
+    <div class="cart-total"><span id="cart-total-label" data-i18n="cart.total">Total</span><b class="tabular" id="cart-total">$0.00</b></div>
+    <p class="cart-saved small" id="cart-saved" hidden></p>
+    <!-- Stays pinned with the total rather than scrolling with the notes. A
+         pinned label reading "Total today" while the "then" scrolled out of
+         sight would be worse than pinning neither. -->
+    <a class="btn btn--primary" id="checkout" href="#"
+       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Checkout</a>
   </div>
 </aside>
 
@@ -496,6 +595,7 @@
 <script src="assets/i18n.js"></script>
 <script src="assets/data.js"></script>
 <script src="assets/data.es.js"></script>
+<script src="assets/markets.js"></script>
 <script src="assets/quality.js"></script>
 <script src="assets/site.js"></script>
 </body>
