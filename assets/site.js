@@ -107,8 +107,36 @@
   /* Two WhatsApp lines, picked by language: the US number for English, the
      Colombia/Mexico number for Spanish. Every wa.me href on the page is
      rewritten from here, so the number lives in exactly one place. */
-  const WA = { en: '12138292807', es: '573164114411' };
-  const waNum = () => WA[LANG] || WA.en;
+  /* Keyed by market, not by language. It was language before, which put a
+     Mexican buyer through to the Colombian line because both read Spanish, and
+     sent a US buyer reading Spanish there too. Where someone is ordering from
+     decides who should answer; which language they read decides how the
+     message is written. Those are different questions.
+
+     Mexico and Colombia share a line on purpose, confirmed rather than left as
+     a placeholder: the same people answer both. Two entries pointing at one
+     number rather than one entry covering two markets, so giving Mexico its
+     own number later is a one-line change and not a restructure. */
+  const WA = { US: '12138292807', CO: '573164114411', MX: '573164114411' };
+  const waNum = () => WA[MARKET] || WA[MARKET_DEFAULT];
+
+  /* Every WhatsApp link, not just the ones carrying a prefilled message: the
+     number changes with the market and the message with the language, so bare
+     links (nav Support, footer, the float button) have to be rewritten too.
+     Called from both applyI18n and setMarket, since either can change it. */
+  function syncWaLinks() {
+    $$('a[href*="wa.me/"]').forEach(a => {
+      const key = a.dataset.wa;
+      if (key) {
+        a.href = 'https://wa.me/' + waNum() + '?text=' + encodeURIComponent(t(key));
+      } else {
+        // links that build their own message (the compound sheet's "Ask about
+        // X") keep it — only the number is swapped
+        const q = a.href.split('?')[1];
+        a.href = 'https://wa.me/' + waNum() + (q ? '?' + q : '');
+      }
+    });
+  }
 
   /* One canonical research-use line, reused at every commercial surface.
      Compliance guidance is explicit that this has to be conspicuous at the
@@ -472,20 +500,7 @@
     // the site whose placeholder is real copy rather than a format hint
     $$('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
 
-    /* Every WhatsApp link, not just the ones carrying a prefilled message:
-       the number itself changes with the language, so bare links (nav Support,
-       footer) have to be rewritten too. */
-    $$('a[href*="wa.me/"]').forEach(a => {
-      const key = a.dataset.wa;
-      if (key) {
-        a.href = 'https://wa.me/' + waNum() + '?text=' + encodeURIComponent(t(key));
-      } else {
-        // links that build their own message (the compound sheet's "Ask about
-        // X") keep it — only the number is swapped
-        const q = a.href.split('?')[1];
-        a.href = 'https://wa.me/' + waNum() + (q ? '?' + q : '');
-      }
-    });
+    syncWaLinks();
     const waFloat = $('.wa');
     if (waFloat) waFloat.setAttribute('aria-label', t('wa.aria'));
 
@@ -512,6 +527,7 @@
     renderFilters();
     renderProducts();
     renderCart();
+    syncWaLinks();
     if (openSheetName) fillSheet(openSheetName);
     dispatchEvent(new CustomEvent('ascent:market', { detail: MARKET }));
   }
@@ -997,8 +1013,11 @@
        back when every visitor saw the same dollar price and the peso was a
        conversion of it. Now the market decides which is real, and showing both
        would be showing a converted figure next to an actual one. */
-    $('#cart-total').innerHTML = chargeHTML(total(), 'fx--total');
-    syncFxNotes();
+    /* One currency again. The second figure existed because Wompi settled in
+       pesos whatever the buyer was quoted, so the peso amount was the one that
+       hit the card. Nothing charges a card now, so a converted number beside
+       the real one is a conversion nobody performs. */
+    $('#cart-total').innerHTML = fmtMoney(total(), market().currency, market().locale);
     const sv = $('#cart-saved');
     if (sv) {
       const s = saved();
@@ -1024,8 +1043,8 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <img class="cart-empty-img" src="assets/img/cart-sm.webp" width="560" height="695"
-             alt="" aria-hidden="true" loading="lazy">
+          <!-- The photograph used to live here. It now sits at the top of the
+               drawer permanently, so an empty cart was showing it twice. -->
         <p>${t('cart.empty')}</p>
         </div>`;
     } else {
@@ -1067,11 +1086,31 @@
         </div>`).join('');
     }
 
+    /* Back to WhatsApp. The card processor did not land, so /checkout has
+       nothing to hand an order to and the drawer talks to a person again.
+
+       The total goes in the market's own currency, formatted the same way it
+       is on screen, so the figure someone sends is the figure they were
+       quoted. A dollar total sent to a Colombian number, or a peso one to a US
+       buyer, is a conversation that starts with a correction.
+
+       fmtMoney returns markup for USD, since the price on a card renders the
+       "USD" suffix in a <small>. A chat message cannot carry markup, so it is
+       stripped here rather than teaching fmtMoney about a caller it otherwise
+       has nothing to do with. */
     const lines = order.map(i => `${i.qty}x ${i.name} ${i.size}`).join(', ');
-    /* Orders go to the checkout page now, not to WhatsApp. The WhatsApp links
-       in the nav, footer and float button stay: those are support, not
-       ordering. */
-    $('#checkout').href = '/checkout';
+    const plain = h => String(h).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    const totalText = plain(fmtMoney(total(), market().currency, market().locale));
+    // the code, not just the amount: whoever answers has to be able to honour it
+    const promoText = promo && saved() > 0 ? ` (${t('wa.code')} ${promo.code})` : '';
+    /* Nothing sendable while the cart is blocked. The click handler already
+       stops a disabled button, but the href survives a middle-click or a copied
+       link, and a blocked cart totals zero — "Total COP 0" is not a message
+       anyone should be able to send by accident. */
+    $('#checkout').href = stranded().length || !order.length ? '#'
+      : 'https://wa.me/' + waNum() + '?text=' +
+        encodeURIComponent(
+          `${t('wa.order')} ${lines}. ${t('wa.total')} ${totalText}${promoText}. ` + t('wa.ruo'));
     syncCheckout();
     save();
   }
@@ -1081,11 +1120,14 @@
   function syncCheckout() {
     const btn = $('#checkout');
     if (!btn) return;
-    /* An empty cart, or one holding something this market does not sell.
-       Letting the second through would hand the payment step a line with no
-       price in the charging currency. */
+    /* An empty cart, one holding something this market does not sell, or an
+       unticked research-use box. The third moved to the checkout page when that
+       page existed; with it unreachable the acknowledgement would have vanished
+       entirely, which is the one control on this site that must not quietly
+       stop being asked. */
     const blocked = stranded();
-    const ok = order.length > 0 && !blocked.length;
+    const ruo = $('#cart-ruo');
+    const ok = order.length > 0 && !blocked.length && (!ruo || ruo.checked);
     btn.setAttribute('aria-disabled', String(!ok));
     btn.classList.toggle('is-disabled', !ok);
     const why = $('#cart-blocked');
@@ -1096,6 +1138,8 @@
     }
   }
 
+
+  $('#cart-ruo') && $('#cart-ruo').addEventListener('change', syncCheckout);
 
   $('#checkout') && $('#checkout').addEventListener('click', e => {
     if ($('#checkout').getAttribute('aria-disabled') === 'true') e.preventDefault();

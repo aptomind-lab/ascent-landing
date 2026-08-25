@@ -554,6 +554,15 @@
 <!-- ============ CART ============ -->
 <div class="scrim" id="scrim"></div>
 <aside class="cart" id="cart" aria-label="Your order" data-i18n-aria="cart.title" aria-hidden="true">
+  <!-- The cart photograph, at the top of the drawer rather than only inside the
+       empty state, where it was seen once and then never again by anyone who
+       actually put something in the cart. The landscape crop is used here on
+       purpose: the portrait version is 560x695 and would push the first line
+       item below the fold on a phone. -->
+  <img class="cart-banner" src="/assets/img/cart-banner.webp"
+       srcset="/assets/img/cart-banner-sm.webp 460w, /assets/img/cart-banner.webp 920w"
+       sizes="(max-width: 480px) 100vw, 420px"
+       width="920" height="483" alt="" aria-hidden="true" loading="lazy">
   <div class="cart-h">
     <h3 data-i18n="cart.title">Your order</h3>
     <button class="icon-btn" id="cart-close" aria-label="Close order" data-i18n-aria="cart.close">
@@ -571,20 +580,30 @@
     <div class="cart-body" id="cart-body"></div>
     <div class="cart-notes" id="cart-notes" hidden>
       <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico.</p>
-      <!-- Stated plainly rather than buried: a precise USD figure that then
-           does not match the buyer's statement generates support tickets and
-           chargebacks, and chargebacks are what threaten a high-risk account. -->
-      <p class="small fx-note" data-i18n="fx.note">Charged in Colombian pesos at the official TRM rate. Your bank applies its own conversion, so your statement may differ slightly.</p>
+      <!-- The exchange-rate note went with the card processor. It described a
+           charge landing on a statement at the day's TRM, and nothing charges a
+           card now: the order is confirmed and paid for over WhatsApp, so the
+           amount and the method are agreed with a person. -->
+      <p class="small" data-i18n="cart.payNote">Payment is arranged over WhatsApp once we confirm stock and shipping with you.</p>
     </div>
   </div>
   <div class="cart-f">
     <div class="cart-total"><span id="cart-total-label" data-i18n="cart.total">Total</span><b class="tabular" id="cart-total">$0.00</b></div>
     <p class="cart-saved small" id="cart-saved" hidden></p>
+    <!-- Was missing here. index.html keeps its own copy of this drawer rather
+         than taking it from explore.html, so the out-of-market notice added to
+         the shared chrome never reached the home page and its cart disabled
+         itself with nothing on screen saying why. -->
+    <p class="cart-blocked small" id="cart-blocked" hidden></p>
     <!-- Stays pinned with the total rather than scrolling with the notes. A
          pinned label reading "Total today" while the "then" scrolled out of
          sight would be worse than pinning neither. -->
-    <a class="btn btn--primary" id="checkout" href="#"
-       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Checkout</a>
+    <label class="ruo-check" for="cart-ruo">
+      <input type="checkbox" id="cart-ruo">
+      <span data-i18n-html="cart.ack">I confirm this order is <strong>for research use only</strong> and that these compounds are not for human consumption.</span>
+    </label>
+    <a class="btn btn--primary" id="checkout" href="#" target="_blank" rel="noopener"
+       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Confirm over WhatsApp</a>
   </div>
 </aside>
 

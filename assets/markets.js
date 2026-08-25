@@ -346,7 +346,7 @@ function inStock(marketCode, name, size) {
    quietly become a permanent omission.
 --------------------------------------------------------------------------- */
 const PENDING = [
-  // empty: Retatrutide 20mg landed at 125.00 and is on the US shelf
+  // empty: Mexico sharing Colombia's WhatsApp line is deliberate, not a gap
 ];
 
 const marketKey = (name, size) => `${name}|${size}`;
