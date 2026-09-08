@@ -104,20 +104,14 @@
   }
   bindData();
 
-  /* Two WhatsApp lines, picked by language: the US number for English, the
-     Colombia/Mexico number for Spanish. Every wa.me href on the page is
-     rewritten from here, so the number lives in exactly one place. */
-  /* Keyed by market, not by language. It was language before, which put a
-     Mexican buyer through to the Colombian line because both read Spanish, and
-     sent a US buyer reading Spanish there too. Where someone is ordering from
-     decides who should answer; which language they read decides how the
-     message is written. Those are different questions.
+  /* One WhatsApp line for every market — US, Colombia and Mexico all reach
+     the same Colombia number. Every wa.me href on the page is rewritten from
+     here, so the number lives in exactly one place.
 
-     Mexico and Colombia share a line on purpose, confirmed rather than left as
-     a placeholder: the same people answer both. Two entries pointing at one
-     number rather than one entry covering two markets, so giving Mexico its
-     own number later is a one-line change and not a restructure. */
-  const WA = { US: '12138292807', CO: '573164114411', MX: '573164114411' };
+     Kept as three keys rather than collapsed to a single constant, so giving
+     a market its own number later is a one-line change and not a
+     restructure. */
+  const WA = { US: '573164114411', CO: '573164114411', MX: '573164114411' };
   const waNum = () => WA[MARKET] || WA[MARKET_DEFAULT];
 
   /* Every WhatsApp link, not just the ones carrying a prefilled message: the
