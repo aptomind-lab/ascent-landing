@@ -1439,6 +1439,30 @@ footer a:hover { color: var(--cream); }
 .co-total { display: flex; justify-content: space-between; align-items: baseline;
   margin-top: var(--s-2); font-size: 18px; font-weight: 700; }
 .co-secure { margin-top: 10px; color: var(--faint); font-size: 12.5px; }
+
+/* Discount code: sits between the order lines and the total. */
+.co-code { margin-top: var(--s-3); padding-top: var(--s-2); border-top: 1px solid var(--line-2); }
+.co-code label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.co-code-row { display: flex; gap: var(--s-1); }
+.co-code-row input {
+  flex: 1; min-width: 0; min-height: 48px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--paper); font: inherit; color: var(--ink);
+  text-transform: uppercase; letter-spacing: .04em;
+  transition: border-color .2s var(--ease);
+}
+.co-code-row input:focus-visible { border-color: var(--gold-deep); }
+.co-code-row input.is-invalid { border-color: var(--danger); }
+.co-code-row .btn { min-height: 48px; padding-inline: var(--s-3); }
+.co-code-msg { margin-top: 8px; }
+.co-code-msg.is-ok { color: var(--ink-2); }
+.co-code-msg.is-err { color: var(--danger); }
+
+/* Subtotal and discount, shown once a code is applied. */
+.co-breakdown { margin-top: var(--s-2); display: grid; gap: 6px; font-size: 15px; color: var(--ink-2); }
+.co-breakdown > div { display: flex; justify-content: space-between; gap: var(--s-2); }
+.co-breakdown .is-discount { color: var(--gold-deep); font-weight: 600; }
+.co-charge { margin-top: 6px; display: flex; justify-content: space-between; gap: var(--s-2); }
 .co-empty { display: grid; gap: var(--s-3); justify-items: start; }
 .btn.is-disabled { opacity: .45; cursor: not-allowed; }
 

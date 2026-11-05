@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Administración · Ascent</title>
+<link rel="icon" href="/assets/img/logo-mark.png">
+<link rel="stylesheet" href="/assets/admin.css">
+</head>
+<body>
+
+<!-- Sign-in. The page is static and public; everything it can do goes through
+     /api/admin, which refuses every request that has no valid session. -->
+<main id="login" class="login" hidden>
+  <form id="login-form" class="card login-card" autocomplete="on">
+    <h1>Administración</h1>
+    <p class="muted">Ingresa tu contraseña para continuar.</p>
+    <label for="pw">Contraseña</label>
+    <input id="pw" name="password" type="password" autocomplete="current-password" required autofocus>
+    <p class="msg err" id="login-msg" role="alert" hidden></p>
+    <button class="btn primary" type="submit">Entrar</button>
+  </form>
+</main>
+
+<div id="app" hidden>
+  <header class="top">
+    <strong class="brand">Ascent · Administración</strong>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Secciones">
+      <button role="tab" data-tab="orders">Pedidos</button>
+      <button role="tab" data-tab="affiliates">Afiliados</button>
+      <button role="tab" data-tab="stock">Stock</button>
+      <button role="tab" data-tab="settings">Ajustes</button>
+    </nav>
+    <button class="btn ghost" id="logout">Salir</button>
+  </header>
+  <main id="view" class="view" tabindex="-1"></main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script src="/assets/admin.js"></script>
+</body>
+</html>

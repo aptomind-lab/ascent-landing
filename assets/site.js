@@ -1007,11 +1007,13 @@
        back when every visitor saw the same dollar price and the peso was a
        conversion of it. Now the market decides which is real, and showing both
        would be showing a converted figure next to an actual one. */
-    /* One currency again. The second figure existed because Wompi settled in
-       pesos whatever the buyer was quoted, so the peso amount was the one that
-       hit the card. Nothing charges a card now, so a converted number beside
-       the real one is a conversion nobody performs. */
-    $('#cart-total').innerHTML = fmtMoney(total(), market().currency, market().locale);
+    /* Wompi charges pesos in every market, so the peso figure is the one that
+       hits the card and has to be visible before the buyer commits. In a peso
+       market this is one figure; in a dollar market it is dollars first with the
+       peso amount beside it (see chargeHTML). The authoritative number is the
+       server's, shown on the checkout page; this is the browser's estimate. */
+    $('#cart-total').innerHTML = chargeHTML(total(), 'fx--total');
+    syncFxNotes();
     const sv = $('#cart-saved');
     if (sv) {
       const s = saved();
@@ -1080,37 +1082,20 @@
         </div>`).join('');
     }
 
-    /* Back to WhatsApp. The card processor did not land, so /checkout has
-       nothing to hand an order to and the drawer talks to a person again.
-
-       The total goes in the market's own currency, formatted the same way it
-       is on screen, so the figure someone sends is the figure they were
-       quoted. A dollar total sent to a Colombian number, or a peso one to a US
-       buyer, is a conversation that starts with a correction.
-
-       fmtMoney returns markup for USD, since the price on a card renders the
-       "USD" suffix in a <small>. A chat message cannot carry markup, so it is
-       stripped here rather than teaching fmtMoney about a caller it otherwise
-       has nothing to do with. */
-    const lines = order.map(i => `${i.qty}x ${i.name} ${i.size}`).join(', ');
-    const plain = h => String(h).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-    const totalText = plain(fmtMoney(total(), market().currency, market().locale));
-    // the code, not just the amount: whoever answers has to be able to honour it
-    const promoText = promo && saved() > 0 ? ` (${t('wa.code')} ${promo.code})` : '';
-    /* Nothing sendable while the cart is blocked. The click handler already
-       stops a disabled button, but the href survives a middle-click or a copied
-       link, and a blocked cart totals zero — "Total COP 0" is not a message
-       anyone should be able to send by accident. */
-    $('#checkout').href = stranded().length || !order.length ? '#'
-      : 'https://wa.me/' + waNum() + '?text=' +
-        encodeURIComponent(
-          `${t('wa.order')} ${lines}. ${t('wa.total')} ${totalText}${promoText}. ` + t('wa.ruo'));
+    /* The drawer hands the order to /checkout, which collects the shipping
+       address and the research-use acknowledgement, has the server price the
+       order, and sends the buyer to Wompi. Nothing is sendable while the cart
+       is empty or holds a line this market does not sell: the click handler
+       stops a disabled button, but an href survives a middle-click or a copied
+       link, so it is withheld here as well. */
+    $('#checkout').href = stranded().length || !order.length ? '#' : '/checkout';
     syncCheckout();
     save();
   }
 
-  /* The WhatsApp handoff stays inert until the research-use box is ticked, and
-     an empty order can't be sent either. */
+  /* The checkout button stays inert for an empty cart or one holding something
+     this market does not sell. The research-use acknowledgement is asked on the
+     checkout page itself, where the buyer is also shown the final total. */
   function syncCheckout() {
     const btn = $('#checkout');
     if (!btn) return;
@@ -2206,6 +2191,16 @@
   };
   loadTRM().then(() => dispatchEvent(new Event('ascent:fx-ready')));
   loadGeo();
+
+  /* The admin panel can switch a product off while a page is open. stock.js
+     swaps in the live list and announces it; everything that shows stock
+     redraws, so a card goes to Out of stock without a reload. */
+  addEventListener('ascent:stock', () => {
+    renderFilters();
+    renderProducts();
+    renderCart();
+    if (openSheetName) fillSheet(openSheetName);
+  });
 
   exInit();
   observe();

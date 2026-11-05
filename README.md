@@ -1,8 +1,9 @@
 # Ascent Labs website
 
-Static pages plus one small serverless function. Everything the visitor
-interacts with is plain HTML, CSS and JavaScript; there is no database and no
-build step to run.
+Static pages plus a small serverless backend in `api/`: the Wompi checkout, a
+Postgres database (Neon) and the admin panel at `/admin`. The storefront itself
+is plain HTML, CSS and JavaScript with no build step. Setup, business rules and
+the admin guide are in **BACKEND.md**.
 
 ## Hosting: this needs a host that runs functions
 
@@ -39,6 +40,7 @@ in `vercel.json`, included here, and nothing needs doing.
     /catalog  /catalogo       ->  /shop.html
     /checkout                 ->  /checkout.html
     /order                    ->  /order.html
+    /admin                    ->  /admin.html
 
 On Netlify the same rules go in a `_redirects` file with a 200 status. On
 Apache, the equivalent RewriteRules.
@@ -55,17 +57,15 @@ comparison between them. `?market=CO`, `?market=MX` and `?market=US`
 force a market for demos, testing and support, and `?market=auto` hands the
 visitor back to geolocation. An override sticks until `auto` clears it.
 
-## Payment is not connected yet
+## Payments and the admin panel
 
-The cart, quantities, the research-use acknowledgement, address capture,
-validation and totals all work. The final step does not: submitting the
-checkout form validates everything, then shows a "not connected" message.
+Checkout is live code but needs credentials before it can take a payment: a Neon
+database, the Wompi keys and an admin password, all set as Vercel environment
+variables. Until they are set, `/checkout` tells the buyer online payment is
+unavailable and offers WhatsApp instead, so nothing dead-ends.
 
-**Sequence the launch around this.** Put the build up, wire Wompi, then point
-the public at it. A buyer reaching the live site before the last step is
-connected will fill in the whole form and hit a dead end.
-
-See PAYMENT-HANDOFF.md.
+**Sequence the launch around this.** Configure it, test in Wompi's sandbox, then
+switch to production keys. See BACKEND.md for every step.
 
 ## What is in here
 

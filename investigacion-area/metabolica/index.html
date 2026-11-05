@@ -281,11 +281,7 @@
     <div class="cart-body" id="cart-body"></div>
     <div class="cart-notes" id="cart-notes" hidden>
       <p class="small" data-i18n="cart.note">Shipping included in Colombia and Mexico.</p>
-      <!-- The exchange-rate note went with the card processor. It described a
-           charge landing on a statement at the day's TRM, and nothing charges a
-           card now: the order is confirmed and paid for over WhatsApp, so the
-           amount and the method are agreed with a person. -->
-      <p class="small" data-i18n="cart.payNote">Payment is arranged over WhatsApp once we confirm stock and shipping with you.</p>
+      <p class="small fx-note" data-i18n="fx.note">Charged in Colombian pesos at the official TRM rate. Your bank applies its own conversion, so your statement may differ slightly.</p>
     </div>
   </div>
   <div class="cart-f">
@@ -295,15 +291,8 @@
     <!-- Stays pinned with the total rather than scrolling with the notes. A
          pinned label reading "Total today" while the "then" scrolled out of
          sight would be worse than pinning neither. -->
-    <!-- The acknowledgement lives here again. It had moved to the checkout page,
-         and with that page unreachable it would simply have disappeared, which
-         is the one thing on this site that must not quietly stop being asked. -->
-    <label class="ruo-check" for="cart-ruo">
-      <input type="checkbox" id="cart-ruo">
-      <span data-i18n-html="cart.ack">I confirm this order is <strong>for research use only</strong> and that these compounds are not for human consumption.</span>
-    </label>
-    <a class="btn btn--primary" id="checkout" href="#" target="_blank" rel="noopener"
-       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Confirm over WhatsApp</a>
+<a class="btn btn--primary" id="checkout" href="/checkout"
+       aria-disabled="true" style="width:100%" data-i18n="cart.checkout">Checkout</a>
   </div>
 </aside>
 
@@ -315,6 +304,7 @@
 <script src="/assets/data.js"></script>
 <script src="/assets/data.es.js"></script>
 <script src="/assets/markets.js"></script>
+<script src="/assets/stock.js"></script>
 <script src="/assets/explore.js"></script>
 <script src="/assets/quality.js"></script>
 <script src="/assets/site.js"></script>
