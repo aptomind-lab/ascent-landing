@@ -1099,6 +1099,16 @@ footer a:hover { color: var(--cream); }
 .wa:hover { transform: scale(1.06); }
 .wa svg { width: 26px; height: 26px; }
 
+/* "Questions?" link in the cart and on the checkout page. WhatsApp is for
+   talking to us, not for buying, so this is deliberately a quiet text link
+   beside the payment button and never competes with it. */
+.help-wa {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; margin-top: 8px; font-size: 14px; font-weight: 600; color: var(--ink-2);
+}
+.help-wa svg { width: 18px; height: 18px; color: var(--gold-deep); flex-shrink: 0; }
+.help-wa:hover { color: var(--ink); text-decoration: underline; }
+
 /* ---------- reveal on scroll ---------- */
 .rise { opacity: 0; transform: translateY(22px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .rise.in { opacity: 1; transform: none; }

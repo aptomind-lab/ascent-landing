@@ -278,6 +278,8 @@ const I18N = {
     'wa.total': 'Total',
     'wa.ruo': 'I confirm this order is for research use only.',
     'wa.aria': 'Message us on WhatsApp',
+    'help.wa': 'Questions? Message us on WhatsApp',
+    'wa.help': 'Hi, I have a question before I order.',
     'aria.home': 'Ascent Labs, home', 'aria.main': 'Main', 'aria.lang': 'Language',
     'aria.mobile': 'Mobile', 'aria.filters': 'Filter by category',
     'cart.dec': 'Reduce quantity of', 'cart.inc': 'Increase quantity of'
@@ -546,6 +548,8 @@ const I18N = {
     'wa.total': 'Total',
     'wa.ruo': 'Confirmo que este pedido es solo para uso en investigación.',
     'wa.aria': 'Escríbenos por WhatsApp',
+    'help.wa': '¿Dudas? Escríbenos por WhatsApp',
+    'wa.help': 'Hola, tengo una duda antes de hacer mi pedido.',
     'aria.home': 'Ascent Labs, inicio', 'aria.main': 'Principal', 'aria.lang': 'Idioma',
     'aria.mobile': 'Móvil', 'aria.filters': 'Filtrar por categoría',
     'cart.dec': 'Reducir cantidad de', 'cart.inc': 'Aumentar cantidad de'
