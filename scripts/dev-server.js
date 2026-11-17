@@ -166,9 +166,12 @@ async function seedDemo() {
   const { createOrder, applyTransaction } = require('../api/_lib/orders');
 
   await query("INSERT INTO settings (key, value) VALUES ('trm_override', '4000') ON CONFLICT (key) DO NOTHING");
-  await query(`INSERT INTO codes (code, affiliate_name, affiliate_contact, discount_pct, commission_pct) VALUES
-    ('MARIA10', 'María Gómez', '@maria.fit', 10, 20),
-    ('CARLOS15', 'Carlos Ruiz', 'carlos@example.com', 15, 10)
+  await query("INSERT INTO settings (key, value) VALUES ('mxn_override', '18.5') ON CONFLICT (key) DO NOTHING");
+  // María: the standard escalating schedule, paid in COP. Carlos: a flat 10%, paid in USD.
+  await query(`INSERT INTO codes (code, affiliate_name, affiliate_contact, discount_pct, commission_pct, commission_mode, payout_currency) VALUES
+    ('MARIA10', 'María Gómez', '@maria.fit', 10, 0, 'tiers', 'COP'),
+    ('CARLOS15', 'Carlos Ruiz', 'carlos@example.com', 15, 10, 'fixed', 'USD'),
+    ('DIEGO12', 'Diego Hernández', 'diego@example.com', 12, 0, 'tiers', 'MXN')
     ON CONFLICT (code) DO NOTHING`);
   await query("INSERT INTO stock_off (key) VALUES ('BPC-157|10mg') ON CONFLICT (key) DO NOTHING");
 
@@ -192,4 +195,38 @@ async function seedDemo() {
       await applyTransaction({ id: `demo-tx-${++n}`, status: s.status, reference, amount_in_cents: q.chargeCop * 100, currency: 'COP' });
     }
   }
+
+  /* DEMO ONLY (this database lives in memory): older months so
+     there is history, one month already paid out, and a portal login for María.
+     The schedule is the standard one unless the owner changes it in Ajustes. */
+  const commission = require('../api/_lib/commission');
+  const { hashPassword } = require('../api/_lib/password');
+
+  const back = days => new Date(Date.now() - days * 86400000).toISOString();
+  const older = [
+    { days: 33, who: person('Mariana Cruz', 'mariana@example.com'), items: [{ name: 'BPC-157', size: '40mg', qty: 1 }] },
+    { days: 36, who: person('Felipe Duarte', 'felipe@example.com'), items: [{ name: 'BPC-157', size: '40mg', qty: 1 }] },
+    { days: 64, who: person('Natalia Ríos', 'natalia@example.com'), items: [{ name: 'Retatrutide', size: '10mg', qty: 1 }] },
+  ];
+  for (const o of older) {
+    const q = await quote({ market: 'CO', items: o.items, code: 'MARIA10' });
+    const reference = await createOrder(q, o.who, co);
+    await applyTransaction({ id: `demo-tx-${++n}`, status: 'APPROVED', reference, amount_in_cents: q.chargeCop * 100, currency: 'COP' });
+    await query('UPDATE orders SET created_at = $1, paid_at = $1 WHERE reference = $2', [back(o.days), reference]);
+  }
+  const [maria] = await query("SELECT id, commission_pct, commission_mode FROM codes WHERE code = 'MARIA10'");
+  const { byCode } = await commission.statements([maria], maria.id);
+  const oldest = byCode.get(maria.id).filter(m => !m.open && m.sales_cop > 0).pop();
+  if (oldest) {
+    await query(`INSERT INTO commission_payouts (code_id, month, sales_cop, rate_pct, amount_cop, currency, amount_local, fx_rate)
+                 VALUES ($1, $2, $3, $4, $5, 'COP', $6, 1) ON CONFLICT DO NOTHING`,
+      [maria.id, oldest.month, oldest.sales_cop, oldest.rate_pct, oldest.commission_cop, oldest.commission_cop]);
+  }
+  await query(`INSERT INTO affiliate_users (code_id, email, password_hash, must_change) VALUES ($1, 'maria@example.com', $2, false)
+               ON CONFLICT DO NOTHING`, [maria.id, await hashPassword('maria-demo-123')]);
+  const [carlos] = await query("SELECT id FROM codes WHERE code = 'CARLOS15'");
+  await query(`INSERT INTO affiliate_users (code_id, email, password_hash, must_change) VALUES ($1, 'carlos@example.com', $2, false)
+               ON CONFLICT DO NOTHING`, [carlos.id, await hashPassword('carlos-demo-123')]);
+  console.log('  Affiliate (USD)     carlos@example.com / carlos-demo-123');
+  console.log('  Affiliate portal    http://127.0.0.1:' + PORT + '/afiliados   (maria@example.com / maria-demo-123)');
 }

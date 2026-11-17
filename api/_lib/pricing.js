@@ -114,9 +114,6 @@ async function quote(input) {
   const discountCop = subtotalCop - chargeCop;
   if (chargeCop < MIN_CHARGE_COP) throw new QuoteError('below_minimum');
 
-  const commissionPct = codeRow ? Number(codeRow.commission_pct) : 0;
-  const commissionCop = Math.round(chargeCop * commissionPct / 100);
-
   return {
     market, currency,
     lines,
@@ -124,7 +121,6 @@ async function quote(input) {
     subtotalCop, discountCop, chargeCop,
     trm: inPesos ? null : rate, trmSource: source,
     code: codeRow ? { id: codeRow.id, code: codeRow.code } : null,
-    commissionPct, commissionCop,
   };
 }
 

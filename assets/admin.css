@@ -128,3 +128,13 @@ dialog .actions { display: flex; justify-content: flex-end; gap: 10px; margin-to
 .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-weight: 600; }
 .check input { min-height: auto; }
 .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Affiliate portal: progress toward the next commission level */
+.bar { height: 14px; background: #ece8dd; border-radius: 999px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: linear-gradient(90deg, #d8b45a, #b08a2e); border-radius: 999px; transition: width .5s ease; }
+.bar-ends { display: flex; justify-content: space-between; font-size: 13px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.levels { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 6px; }
+.levels li { display: grid; grid-template-columns: 110px 1fr auto; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; }
+.levels li.is-done { background: #faf8f3; }
+.levels li.is-current { background: var(--gold-bg); border-color: var(--gold); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }

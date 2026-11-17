@@ -154,7 +154,7 @@ test('stock: the public list is cacheable for seconds, not minutes', async () =>
 let codeId;
 
 test('codes: create, reject duplicates and bad values', async () => {
-  const ok = await adminPost('code_save', { code: 'maria10', affiliate_name: 'María Gómez', affiliate_contact: '@maria', discount_pct: 10, commission_pct: 20 });
+  const ok = await adminPost('code_save', { code: 'maria10', affiliate_name: 'María Gómez', affiliate_contact: '@maria', discount_pct: 10, commission_mode: 'fixed', commission_pct: 20 });
   assert.equal(ok.status, 200);
   codeId = ok.json.id;
   assert.equal((await adminPost('code_save', { code: 'MARIA10', affiliate_name: 'Otra', discount_pct: 5, commission_pct: 5 })).status, 409);
@@ -215,8 +215,7 @@ test('checkout: creates a pending order with the full breakdown and a signed Wom
   assert.equal(Number(o.subtotal_cop), 664000);
   assert.equal(Number(o.discount_cop), 66400);
   assert.equal(Number(o.charge_cop), 597600);
-  assert.equal(Number(o.commission_pct), 20);
-  assert.equal(Number(o.commission_cop), 119520);     // 20% of 597,600
+  assert.equal(Number(o.commission_cop), 0, 'commission is worked out per month, not stored on the order');
   assert.equal(o.code_text, 'MARIA10');
 });
 
@@ -243,7 +242,6 @@ test('checkout: a US order is recorded in dollars and charged in pesos', async (
   assert.equal(Number(o.charge_cop), 367200);         // toCop(90)
   assert.equal(Number(o.subtotal_cop), 408000);       // toCop(100)
   assert.equal(Number(o.discount_cop), 40800);        // exactly subtotal - charge
-  assert.equal(Number(o.commission_cop), 73440);      // 20% of 367,200
   assert.equal(Number(o.trm), TRM);
 });
 
@@ -328,8 +326,12 @@ test('report: counts customers and money by code, from paid orders only', async 
   assert.equal(maria.customers_paid, 1, 'one distinct paying customer');
   assert.ok(maria.orders_started >= 3, 'the unpaid attempt is visible as started');
   assert.equal(Number(maria.sales_cop), 597600 * 2);
-  assert.equal(Number(maria.commission_cop), 119520 * 2);
-  assert.equal(Number(maria.commission_paid_cop), 0);
+  // MARIA10 is on a flat 20%, so that is the rate on this month's sales
+  assert.equal(maria.current.sales_cop, 597600 * 2);
+  assert.equal(maria.current.rate_pct, 20);
+  assert.equal(maria.current.commission_cop, 239040);
+  assert.equal(maria.paid_cop, 0);
+  assert.equal(maria.owed_cop, 0, 'the current month is still open, so nothing is owed yet');
 });
 
 test('orders: the admin sees the breakdown, and totals count paid orders only', async () => {
@@ -345,19 +347,11 @@ test('orders: the admin sees the breakdown, and totals count paid orders only', 
   assert.equal(Number(r.json.paid.commission_cop), 119520 * 2);
 });
 
-test('payout: marking commissions paid settles every paid order once, and only those', async () => {
-  const pay = await adminPost('pay_commissions', { code_id: codeId });
-  assert.equal(pay.json.orders, 2);
-  assert.equal(pay.json.amount_cop, 119520 * 2);
-  assert.equal((await adminPost('pay_commissions', { code_id: codeId })).json.orders, 0, 'a second run finds nothing left to pay');
-
-  const { json } = await adminGet('affiliates');
-  const maria = json.affiliates.find(x => x.code === 'MARIA10');
-  assert.equal(Number(maria.commission_paid_cop), 119520 * 2);
-
-  // the unpaid attempt never earned anything
-  const pending = (await adminGet('orders', { status: 'PENDING', code_id: String(codeId) })).json.rows;
-  assert.ok(pending.every(o => o.commission_paid_at === null));
+test('payout: the current month is still open and cannot be paid out', async () => {
+  const month = (await adminGet('statement', { code_id: String(codeId) })).json.now;
+  const r = await adminPost('pay_month', { code_id: codeId, month });
+  assert.equal(r.status, 400);
+  assert.equal(r.json.error, 'month_open');
 });
 
 test('codes: a code with history cannot be deleted, only deactivated', async () => {

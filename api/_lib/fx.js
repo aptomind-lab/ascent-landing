@@ -61,4 +61,32 @@ async function getTrm() {
 
 const makeToCop = rate => usd => Math.round(usd * rate * (1 + BUFFER) / 100) * 100;
 
-module.exports = { getTrm, makeToCop, BUFFER, FALLBACK_RATE };
+/* ------------------------------------------------------------------- MXN
+   Mexican pesos per 1 USD, used ONLY to show an affiliate their commission in
+   their own currency (a customer is never charged through this rate). The
+   source is the European Central Bank's published reference rate, no key
+   needed. Same safety net as the TRM: an admin-pinned value wins, a stale live
+   value beats a constant, and it never throws. */
+const MXN_FALLBACK = 18.5;
+const MXN_URL = 'https://api.frankfurter.dev/v1/latest?base=USD&symbols=MXN';
+let mxnCached = { rate: null, at: 0 };
+
+async function getMxn() {
+  const pinned = parseFloat(await getSetting('mxn_override'));
+  if (isFinite(pinned) && pinned > 0) return { rate: pinned, source: 'pinned' };
+
+  if (mxnCached.rate && Date.now() - mxnCached.at < TTL_MS) return { rate: mxnCached.rate, source: 'live' };
+  try {
+    const res = await fetch(MXN_URL, { signal: AbortSignal.timeout(3500) });
+    if (!res.ok) throw new Error(`MXN source returned ${res.status}`);
+    const rate = Number((await res.json()).rates.MXN);
+    if (!isFinite(rate) || rate < 5 || rate > 60) throw new Error('MXN value out of range');
+    mxnCached = { rate, at: Date.now() };
+    return { rate, source: 'live' };
+  } catch (e) {
+    if (mxnCached.rate) return { rate: mxnCached.rate, source: 'stale' };
+    return { rate: MXN_FALLBACK, source: 'fallback' };
+  }
+}
+
+module.exports = { getTrm, getMxn, makeToCop, BUFFER, FALLBACK_RATE, MXN_FALLBACK };

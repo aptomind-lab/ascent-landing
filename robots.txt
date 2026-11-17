@@ -1,6 +1,8 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /afiliados
+Disallow: /affiliate
 Disallow: /api/
 Disallow: /checkout
 Disallow: /order

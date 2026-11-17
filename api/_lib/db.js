@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS codes (
   affiliate_contact  text,
   discount_pct       numeric(5,2) NOT NULL DEFAULT 0 CHECK (discount_pct >= 0 AND discount_pct <= 100),
   commission_pct     numeric(5,2) NOT NULL DEFAULT 0 CHECK (commission_pct >= 0 AND commission_pct <= 100),
+  commission_mode    text NOT NULL DEFAULT 'tiers' CHECK (commission_mode IN ('tiers', 'fixed')),
+  payout_currency    text NOT NULL DEFAULT 'COP' CHECK (payout_currency IN ('COP', 'MXN', 'USD')),
   active             boolean NOT NULL DEFAULT true,
   created_at         timestamptz NOT NULL DEFAULT now()
 );
@@ -76,6 +78,40 @@ CREATE INDEX IF NOT EXISTS orders_code_idx    ON orders (code_id);
 CREATE INDEX IF NOT EXISTS orders_status_idx  ON orders (status);
 CREATE INDEX IF NOT EXISTS orders_created_idx ON orders (created_at DESC);
 
+-- One portal login per affiliate code. The password is stored only as a scrypt
+-- hash; a temporary one is shown to the admin once and must be changed at first login.
+CREATE TABLE IF NOT EXISTS affiliate_users (
+  id             serial PRIMARY KEY,
+  code_id        integer NOT NULL UNIQUE REFERENCES codes(id),
+  email          text NOT NULL UNIQUE,
+  password_hash  text NOT NULL,
+  must_change    boolean NOT NULL DEFAULT true,
+  last_login_at  timestamptz,
+  created_at     timestamptz NOT NULL DEFAULT now()
+);
+
+-- A month of commission that has been paid out. The amount and rate are frozen
+-- here, so changing the tiers later never rewrites what was actually paid.
+CREATE TABLE IF NOT EXISTS commission_payouts (
+  id          serial PRIMARY KEY,
+  code_id     integer NOT NULL REFERENCES codes(id),
+  month       text NOT NULL,
+  sales_cop   bigint NOT NULL,
+  rate_pct    numeric(5,2) NOT NULL,
+  amount_cop  bigint NOT NULL,
+  currency      text NOT NULL DEFAULT 'COP',
+  amount_local  numeric(14,2),
+  fx_rate       numeric(16,6) NOT NULL DEFAULT 1,
+  paid_at     timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (code_id, month)
+);
+
+ALTER TABLE codes ADD COLUMN IF NOT EXISTS commission_mode text NOT NULL DEFAULT 'tiers';
+ALTER TABLE codes ADD COLUMN IF NOT EXISTS payout_currency text NOT NULL DEFAULT 'COP';
+ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS currency text NOT NULL DEFAULT 'COP';
+ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS amount_local numeric(14,2);
+ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS fx_rate numeric(16,6) NOT NULL DEFAULT 1;
+
 CREATE TABLE IF NOT EXISTS login_fail (
   ip  text NOT NULL,
   at  timestamptz NOT NULL DEFAULT now()
@@ -102,7 +138,9 @@ async function connect() {
 async function init() {
   const run = await connect();
   // one statement per call: the Neon HTTP driver does not accept a script
-  for (const stmt of SCHEMA.split(';').map(s => s.trim()).filter(Boolean)) {
+  // comments are removed first, so a semicolon inside one can never split a statement
+  const script = SCHEMA.split('\n').filter(line => !line.trim().startsWith('--')).join('\n');
+  for (const stmt of script.split(';').map(s => s.trim()).filter(Boolean)) {
     await run(stmt);
   }
   return run;

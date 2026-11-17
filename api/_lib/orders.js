@@ -38,7 +38,7 @@ async function createOrder(q, customer, shipping) {
       reference, q.market, q.currency, JSON.stringify(q.lines),
       q.subtotal, q.discountPct, q.discount, q.total, q.trm,
       q.subtotalCop, q.discountCop, q.chargeCop,
-      q.code ? q.code.id : null, q.code ? q.code.code : null, q.commissionPct, q.commissionCop,
+      q.code ? q.code.id : null, q.code ? q.code.code : null, 0, 0,   // commission is worked out per month, never stored per order
       customer.name, customer.email, customer.phone, JSON.stringify(shipping),
     ]
   );
