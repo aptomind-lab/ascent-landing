@@ -3,7 +3,7 @@
 
      public     terms (GET)  invite (GET)  register (POST)  forgot (POST)  reset (POST)
      session    login (POST)  logout (POST)  me (GET)  change_password (POST)
-     signed in  summary (GET)  team (GET)  accept_terms (POST)  set_language (POST)
+     signed in  summary (GET)  team (GET)  points (GET)  accept_terms (POST)  set_language (POST)
 
    An affiliate sees ONLY their own code's activity, and only what they need to
    follow their results:
@@ -30,6 +30,7 @@ const crypto = require('crypto');
 const plan = require('./_lib/plan');
 const terms = require('./_lib/terms');
 const mailer = require('./_lib/mailer');
+const points = require('./_lib/points');
 
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
 
@@ -146,6 +147,7 @@ async function summary(user) {
     out.owed_cop = out.owed_local = out.paid_cop = out.paid_local = 0;
     out.fx = { currency: cur, cop_per_unit: perUnit, source: null };
     out.orders = out.orders.map(o => { const { commission_cop, commission_local, ...rest } = o; return rest; });
+    out.plan = await points.portalView(user);
   }
   return out;
 }
@@ -210,7 +212,7 @@ async function register(req, res) {
       const r = await query(
         `INSERT INTO codes (code, affiliate_name, discount_pct, commission_pct, active, commission_mode, payout_currency)
          VALUES ($1, $2, $3, 0, true, 'plan', $4) RETURNING id`,
-        [plan.codeFromName(name), name, plan.PLAN_DISCOUNT_PCT, plan.COUNTRIES[country]]);
+        [plan.codeFromName(name), name, (await plan.getConfig()).discount_pct, plan.COUNTRIES[country]]);
       codeId = r[0].id;
     } catch (e) { if (!(e && e.code === '23505')) throw e; }
   }
@@ -365,18 +367,25 @@ module.exports = guard(async (req, res) => {
     return json(res, 200, { ok: true }, { 'Set-Cookie': aff.sessionCookie(req, { id: user.id, password_hash: hash }) });
   }
 
-  if ((a === 'summary' || a === 'team') && !isPost) {
+  if ((a === 'summary' || a === 'team' || a === 'points') && !isPost) {
     if (user.must_change) return json(res, 403, { error: 'must_change_password' });
     if (await terms.needed(user.id)) return json(res, 403, { error: 'terms_needed' });
     if (a === 'summary') return json(res, 200, await summary(user));
+    if (a === 'points') {
+      const [balance, rows] = await Promise.all([points.balance(user.id), points.history(user.id)]);
+      return json(res, 200, { balance, history: rows.map(r => ({
+        kind: r.kind, points: Number(r.points), month: r.month, available_at: r.available_at, created_at: r.created_at,
+        from: r.source_name ? maskName(r.source_name) : null })) });
+    }
 
     // "Afiliados por mí": the people this affiliate invited, one level only, name shortened
     const rows = await query(
       `SELECT au.name, au.country, au.created_at,
-              (SELECT count(*) FROM orders o WHERE o.code_id = au.code_id AND o.status = 'APPROVED')::int AS orders_paid
+              (SELECT count(*) FROM orders o WHERE o.code_id = au.code_id AND o.status = 'APPROVED')::int AS orders_paid,
+              (SELECT COALESCE(sum(l.points), 0) FROM points_ledger l WHERE l.user_id = $1 AND l.source_user_id = au.id AND l.kind = 'earn_referral')::bigint AS bonus_points
          FROM affiliate_users au WHERE au.sponsor_user_id = $1 ORDER BY au.created_at DESC LIMIT 500`, [user.id]);
     return json(res, 200, { people: rows.map(r => ({
-      name: maskName(r.name), country: r.country, since: r.created_at, has_sales: r.orders_paid > 0 })) });
+      name: maskName(r.name), country: r.country, since: r.created_at, has_sales: r.orders_paid > 0, bonus_points: Number(r.bonus_points) })) });
   }
 
   json(res, 404, { error: 'not_found' });

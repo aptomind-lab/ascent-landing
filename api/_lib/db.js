@@ -161,6 +161,59 @@ CREATE TABLE IF NOT EXISTS password_resets (
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 
+-- ---------------------------------------------------------------- Points plan (Stage 2)
+-- The value of an order in MXN, frozen the first time a month that counts it is closed.
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS amount_mxn numeric(14,2);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS amount_mxn_at timestamptz;
+
+-- One row per closed month. Months close in order, one at a time.
+CREATE TABLE IF NOT EXISTS monthly_closes (
+  month            text PRIMARY KEY,
+  status           text NOT NULL DEFAULT 'running' CHECK (status IN ('running', 'closed')),
+  closed_by        text,
+  closed_at        timestamptz NOT NULL DEFAULT now(),
+  orders           integer NOT NULL DEFAULT 0,
+  volume_mxn       numeric(16,2) NOT NULL DEFAULT 0,
+  points           bigint NOT NULL DEFAULT 0,
+  referral_points  bigint NOT NULL DEFAULT 0
+);
+
+-- What each affiliate did in a closed month: volume, level reached, percentage and Points.
+CREATE TABLE IF NOT EXISTS member_months (
+  user_id              integer NOT NULL REFERENCES affiliate_users(id),
+  month                text NOT NULL REFERENCES monthly_closes(month),
+  own_mxn              numeric(16,2) NOT NULL,
+  sales_mxn            numeric(16,2) NOT NULL,
+  volume_mxn           numeric(16,2) NOT NULL,
+  qualified            boolean NOT NULL,
+  floor_running        boolean NOT NULL,
+  rate_pct             numeric(5,2) NOT NULL,
+  level                integer NOT NULL,
+  points               bigint NOT NULL,
+  referral_points      bigint NOT NULL,
+  referral_volume_mxn  numeric(16,2) NOT NULL,
+  PRIMARY KEY (user_id, month)
+);
+
+-- The Points ledger. It only ever grows: the two rules below make the database ignore any
+-- attempt to change or delete a row. A mistake is fixed by adding an 'adjust' row.
+CREATE TABLE IF NOT EXISTS points_ledger (
+  id              bigserial PRIMARY KEY,
+  user_id         integer NOT NULL REFERENCES affiliate_users(id),
+  kind            text NOT NULL CHECK (kind IN ('earn_purchase', 'earn_referral', 'redeem', 'release', 'expire', 'adjust')),
+  points          integer NOT NULL,
+  order_id        integer REFERENCES orders(id),
+  month           text,
+  source_user_id  integer REFERENCES affiliate_users(id),
+  available_at    timestamptz NOT NULL DEFAULT now(),
+  note            text,
+  created_at      timestamptz NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS points_ledger_order_kind_idx ON points_ledger (order_id, kind) WHERE kind IN ('earn_purchase', 'earn_referral');
+CREATE INDEX IF NOT EXISTS points_ledger_user_idx ON points_ledger (user_id, id DESC);
+CREATE OR REPLACE RULE points_ledger_no_update AS ON UPDATE TO points_ledger DO INSTEAD NOTHING;
+CREATE OR REPLACE RULE points_ledger_no_delete AS ON DELETE TO points_ledger DO INSTEAD NOTHING;
+
 CREATE TABLE IF NOT EXISTS login_fail (
   ip  text NOT NULL,
   at  timestamptz NOT NULL DEFAULT now()

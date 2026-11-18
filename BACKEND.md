@@ -147,6 +147,53 @@ cierre de mes llegan en la Etapa 2.
   (efectivo)**. Los afiliados del plan no muestran cifras de comisión en efectivo.
 - `.vercelignore` evita que `*.md`, `tests/` y `scripts/` se publiquen en el sitio.
 
+## 3a-2. Programa de Puntos: Etapa 2 (motor de Puntos y cierre de mes)
+
+**Volumen del mes** = lo que el afiliado compró para sí mismo + lo que sus clientes compraron con
+su código, en MXN, por mes calendario (hora de Colombia, por fecha de aprobación del pago).
+
+| Volumen del mes (MXN) | Optimización | Puntos |
+|---|---|---|
+| menos de 20,000 | sin activar (o el piso, si sigue vigente) | 0 % |
+| 20,000 | 1 (piso) | 10 % |
+| 25,000 | 2 | 15 % |
+| 30,000 | 3 | 20 % |
+| 35,000 | 4 | 25 % |
+| 40,000 | 5 | 30 % |
+| 45,000 o más | 6 (tope) | 35 % |
+
+- **El piso:** al llegar a 20,000 en un mes, el 10 % queda asegurado 12 meses desde ese mes. Si en
+  ese año no repite un mes de 20,000, se pierde. Los niveles de arriba se ganan cada mes.
+- **Puntos:** 1 Punto = $1 MXN. Se calculan por pedido (porcentaje del mes x valor del pedido) y se
+  entregan **al cerrar el mes**. Se pueden usar **15 días después del cierre**. Solo se cambian por
+  productos.
+- **Bono de referidos:** el patrocinador recibe 5 % del valor de lo que compra y vende cada
+  afiliado que afilió directamente (un solo nivel), siempre que su propio piso esté vigente. Nunca
+  se paga de modo que descuento + porcentaje + bono pase del límite de negocio (48 %): si pasara,
+  se recorta el bono.
+- **Un pedido, un afiliado:** una compra de un afiliado sin código o con su propio código es su
+  compra propia; con el código de otro afiliado, es venta de ese otro (no se paga dos veces).
+  Solo participan los afiliados en **Plan de Puntos**; los de porcentaje fijo siguen en efectivo.
+- **Cierre de mes (pestaña Puntos):** muestra el mes que toca cerrar (se cierran en orden, uno a
+  uno, nunca el mes en curso). Primero hay una **vista previa** que no guarda nada. Al confirmar:
+  se congela el valor en MXN de cada pedido (con las tasas de ese momento), se guarda el mes de
+  cada afiliado y se agregan los Puntos al libro. Si se interrumpe, se puede volver a cerrar sin
+  duplicar nada.
+- **Libro de Puntos** (`points_ledger`): solo se agregan movimientos; la base de datos ignora
+  cualquier cambio o borrado. Las correcciones son **ajustes** con su motivo (botón *Ajustar* en
+  Puntos). Quien tiene Puntos o meses guardados no se puede borrar, solo desactivar.
+- **Ajustes > Plan de Puntos:** todos los números (activación, escalón, porcentajes, bono, descuento,
+  límite de negocio, días de espera, vencimiento, duración del piso, tope de compra propia opcional,
+  IVA). No deja guardar una combinación que pase del límite de negocio. Un cambio vale para los
+  meses que aún no se cierran.
+- **Portal del afiliado:** en Inicio ve "Cómo voy este mes" (volumen, barra, cuánto falta, cuántos
+  Puntos pagaría **todo el mes** si llega al siguiente nivel, días que quedan, hasta cuándo está
+  asegurado su piso) y en **Mis Puntos** su saldo disponible, en espera (con fecha) y su historial
+  por mes.
+- **Pendiente (Etapa 3):** canjear Puntos en la tienda y el vencimiento automático. La fecha de
+  vencimiento que se muestra hoy es informativa (12 meses desde su última compra o último ingreso
+  de Puntos).
+
 ## 3b. Portal de afiliados (`/afiliados`)
 
 Cada afiliado entra con **su correo y su contraseña** y ve únicamente lo suyo: quiénes

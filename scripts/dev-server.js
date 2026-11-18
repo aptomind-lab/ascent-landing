@@ -232,5 +232,35 @@ async function seedDemo() {
   await query(`INSERT INTO affiliate_users (code_id, email, password_hash, must_change) VALUES ($1, 'carlos@example.com', $2, false)
                ON CONFLICT DO NOTHING`, [carlos.id, await hashPassword('carlos-demo-123')]);
   console.log('  Affiliate (USD)     carlos@example.com / carlos-demo-123');
+
+  /* Points plan demo: Lucía (sponsor) and Pedro (invited by Lucía) sold in the two months before
+     this one. Nothing is closed yet, so "Puntos" in the admin panel offers the first month to close. */
+  const terms = require('../api/_lib/terms');
+  const plan = require('../api/_lib/plan');
+  const mk = async (name, email, sponsorId) => {
+    const [code] = await query(
+      `INSERT INTO codes (code, affiliate_name, discount_pct, commission_pct, active, commission_mode, payout_currency)
+       VALUES ($1, $2, 7, 0, true, 'plan', 'COP') RETURNING id, code`, [plan.codeFromName(name), name]);
+    const [u] = await query(
+      `INSERT INTO affiliate_users (code_id, email, password_hash, must_change, name, country, language, ref_code, sponsor_user_id, signup_source)
+       VALUES ($1, $2, $3, false, $4, 'CO', 'es', $5, $6, $7) RETURNING id`,
+      [code.id, email, await hashPassword('puntos-demo-123'), name, plan.refCode(), sponsorId, sponsorId ? 'invite' : 'self']);
+    await terms.record(u.id, { language: 'es', method: 'demo', ip: null });
+    return { id: u.id, code: code.code };
+  };
+  const lucia = await mk('Lucía Fernández', 'lucia@example.com', null);
+  const pedro = await mk('Pedro Gil', 'pedro@example.com', lucia.id);
+  const sell = async (who, count, days) => {
+    for (let i = 0; i < count; i++) {
+      const q = await quote({ market: 'CO', items: [{ name: 'BPC-157', size: '40mg', qty: 1 }], code: who.code });
+      const reference = await createOrder(q, person(`Cliente ${who.code}-${days}-${i}`, `c${who.code}${days}${i}@example.com`), co);
+      await applyTransaction({ id: `demo-tx-${++n}`, status: 'APPROVED', reference, amount_in_cents: q.chargeCop * 100, currency: 'COP' });
+      await query('UPDATE orders SET created_at = $1, paid_at = $1 WHERE reference = $2', [back(days + i), reference]);
+    }
+  };
+  await sell(lucia, 5, 62); await sell(pedro, 7, 62);      // two months ago: Lucía activates, Pedro reaches Optimización 3
+  await sell(lucia, 3, 33); await sell(pedro, 2, 33);      // last month: a slower month
+  await sell(lucia, 4, 2);                                  // this month so far
+  console.log('  Points affiliates   lucia@example.com and pedro@example.com / puntos-demo-123  (nothing closed yet)');
   console.log('  Affiliate portal    http://127.0.0.1:' + PORT + '/afiliados   (maria@example.com / maria-demo-123)');
 }

@@ -5,7 +5,7 @@
      stock       products (GET)  stock_set (POST)
      affiliates  affiliates (GET)  code_save (POST)  code_delete (POST)
                  statement (GET)  pay_month (POST)  unpay_month (POST)
-                 affiliate_user_save (POST)  affiliate_user_delete (POST)  sponsor_set (POST)
+                 affiliate_user_save (POST)  affiliate_user_delete (POST)  sponsor_set (POST)  plan_get/plan_set  close_status/close_preview/close_month  points_overview/points_adjust
                  tiers_set (POST)  mxn_set (POST)
      orders      orders (GET)  orders_csv (GET)
      settings    settings (GET)  settings_set (POST)
@@ -22,6 +22,8 @@ const { getTrm, getMxn } = require('./_lib/fx');
 const { hashPassword, tempPassword } = require('./_lib/password');
 const commission = require('./_lib/commission');
 const currency = require('./_lib/currency');
+const plan = require('./_lib/plan');
+const points = require('./_lib/points');
 const { json, body, guard } = require('./_lib/http');
 
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
@@ -167,6 +169,36 @@ async function setSponsor(b) {
   return { ok: true, sponsor: newName };
 }
 
+/* Everyone on the Points plan with their balance, for the owner's "Puntos" screen. */
+async function pointsOverview() {
+  const rows = await query(
+    `SELECT au.id AS user_id, c.id AS code_id, c.code, COALESCE(au.name, c.affiliate_name) AS name, au.email,
+            COALESCE(sum(l.points) FILTER (WHERE l.available_at <= now()), 0)::bigint AS available,
+            COALESCE(sum(l.points) FILTER (WHERE l.available_at >  now()), 0)::bigint AS waiting,
+            (SELECT m.level FROM member_months m WHERE m.user_id = au.id ORDER BY m.month DESC LIMIT 1) AS last_level,
+            (SELECT m.month FROM member_months m WHERE m.user_id = au.id ORDER BY m.month DESC LIMIT 1) AS last_month
+       FROM affiliate_users au JOIN codes c ON c.id = au.code_id
+       LEFT JOIN points_ledger l ON l.user_id = au.id
+      WHERE c.commission_mode = 'plan'
+      GROUP BY au.id, c.id
+      ORDER BY available DESC, name`);
+  return rows.map(r => ({ ...r, available: Number(r.available), waiting: Number(r.waiting) }));
+}
+
+/* A correction or a gift from the owner: a new ledger row, with the reason written down. */
+async function adjustPoints(b) {
+  const codeId = Number(b.code_id);
+  const pts = Number(b.points);
+  const note = String(b.note || '').trim().slice(0, 200);
+  if (!Number.isInteger(codeId)) return { error: 'bad_id' };
+  if (!Number.isInteger(pts) || pts === 0 || Math.abs(pts) > 1000000) return { error: 'bad_points' };
+  if (note.length < 3) return { error: 'note_required' };
+  const u = await query(`SELECT au.id FROM affiliate_users au JOIN codes c ON c.id = au.code_id WHERE au.code_id = $1 AND c.commission_mode = 'plan'`, [codeId]);
+  if (!u.length) return { error: 'no_plan_account' };
+  await query(`INSERT INTO points_ledger (user_id, kind, points, available_at, note) VALUES ($1, 'adjust', $2, now(), $3)`, [u[0].id, pts, note]);
+  return { ok: true, balance: await points.balance(u[0].id) };
+}
+
 async function payMonth(b) {
   const codeId = Number(b.code_id);
   const month = text(b.month, 7);
@@ -252,9 +284,14 @@ async function deleteCode(b) {
   // a code with history is deactivated, never deleted: its orders and the
   // commissions owed on them have to stay attributable
   if (used.length) return { error: 'has_orders' };
-  await query('DELETE FROM affiliate_users WHERE code_id = $1', [id]);
-  const gone = await query('DELETE FROM codes WHERE id = $1 RETURNING id', [id]);
-  return gone.length ? { ok: true } : { error: 'not_found' };
+  try {
+    await query('DELETE FROM affiliate_users WHERE code_id = $1', [id]);
+    const gone = await query('DELETE FROM codes WHERE id = $1 RETURNING id', [id]);
+    return gone.length ? { ok: true } : { error: 'not_found' };
+  } catch (e) {
+    if (e && e.code === '23503') return { error: 'has_orders' };     // Points, months or people they invited are on record: deactivate instead
+    throw e;
+  }
 }
 
 /* ------------------------------------------------------------------ orders */
@@ -437,9 +474,40 @@ module.exports = guard(async (req, res) => {
     const r = await setSponsor(body(req));
     return r.error ? json(res, r.error === 'no_access' ? 404 : 400, { error: r.error }) : json(res, 200, r);
   }
+  // ---- the Points plan: settings, month close, balances
+  if (a === 'plan_get' && !isPost) return json(res, 200, { config: await plan.getConfig(), defaults: plan.DEFAULTS });
+  if (a === 'plan_set' && isPost) {
+    const v = plan.validateConfig(body(req));
+    if (v.error) return json(res, 400, { error: v.error });
+    await plan.saveConfig(v.config);
+    return json(res, 200, { ok: true, config: v.config });
+  }
+  if (a === 'close_status' && !isPost) {
+    const closes = await query('SELECT month, status, closed_at, closed_by, orders, volume_mxn, points, referral_points FROM monthly_closes ORDER BY month DESC LIMIT 24');
+    return json(res, 200, { next: await points.nextToClose(), current: commission.monthNow(), closes });
+  }
+  if (a === 'close_preview' && !isPost) {
+    const month = String((req.query || {}).month || '');
+    if (!points.isMonth(month)) return json(res, 400, { error: 'bad_month' });
+    return json(res, 200, await points.previewMonth(month));
+  }
+  if (a === 'close_month' && isPost) {
+    try { return json(res, 200, await points.closeMonth(String(body(req).month || ''), 'admin')); }
+    catch (e) { if (e instanceof points.CloseError) return json(res, 409, { error: e.code }); throw e; }
+  }
+  if (a === 'points_overview' && !isPost) return json(res, 200, { people: await pointsOverview() });
+  if (a === 'points_adjust' && isPost) {
+    const r = await adjustPoints(body(req));
+    return r.error ? json(res, r.error === 'no_plan_account' ? 404 : 400, { error: r.error }) : json(res, 200, r);
+  }
   if (a === 'affiliate_user_delete' && isPost) {
-    const gone = await query('DELETE FROM affiliate_users WHERE code_id = $1 RETURNING id', [Number(body(req).code_id)]);
-    return gone.length ? json(res, 200, { ok: true }) : json(res, 404, { error: 'not_found' });
+    try {
+      const gone = await query('DELETE FROM affiliate_users WHERE code_id = $1 RETURNING id', [Number(body(req).code_id)]);
+      return gone.length ? json(res, 200, { ok: true }) : json(res, 404, { error: 'not_found' });
+    } catch (e) {
+      if (e && e.code === '23503') return json(res, 409, { error: 'has_history' });      // Points or months on record: the ledger is never erased
+      throw e;
+    }
   }
 
   if (a === 'orders' && !isPost) return json(res, 200, await listOrders(req.query || {}));

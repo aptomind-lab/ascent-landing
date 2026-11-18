@@ -60,6 +60,27 @@
       used: 'Personas que usaron tu código', bought: 'Personas que compraron', invited: 'Afiliados por mí',
       pointsSoon: 'Tus Puntos empezarán a sumarse cuando abra el programa de Puntos. Te avisaremos por correo.',
       pointsSoonTitle: 'Puntos',
+      navPoints: 'Mis Puntos',
+      planTitle: 'Cómo voy este mes', planSoFar: 'Este mes llevas', planOf: 'de {goal}',
+      planNone: 'Todavía no ganas Puntos este mes. Con {goal} empiezas a ganar {pct} %.',
+      planNow: 'Hoy ganas {pct} %', planNowPoints: 'Hoy tus Puntos del mes serían {pts}.',
+      planGap: 'Te faltan {missing} para ganar {pct} %.', planIf: 'Si llegas, tus Puntos del mes serían {pts} ({gain} más).',
+      planTop: '¡Llegaste al nivel más alto este mes! Ganas {pct} %.', planDays: 'Quedan {n} días del mes.', planDay: 'Queda 1 día del mes.', planLastDay: 'Hoy es el último día del mes.',
+      planFloor: 'Tu {pct} % está asegurado hasta el {date}.', planFloorHow: 'Para mantenerlo, vuelve a llegar a {goal} en un mes antes de esa fecha.',
+      planDisclaimer: 'Cálculo con tus cifras de hoy. No es una promesa de ingresos.',
+      planLevels: 'Ver todos los niveles', planLevel: 'Optimización {n}', planFrom: 'desde {amount} en el mes',
+      planWhat: 'Cada mes empieza de cero. Sube tu volumen vendiendo a más personas.',
+      planLocal: '≈ {amount}',
+      ptsAvailable: 'Puntos que puedes usar', ptsWaiting: 'Puntos en espera', ptsWaitingDate: 'Disponibles el {date}', ptsNone: 'Todavía no tienes Puntos.',
+      ptsExpire: 'Tus Puntos vencen el {date} si no compras ni vendes antes.',
+      ptsTitle: 'Mis Puntos', ptsSub: 'Los Puntos se cambian solo por productos. No son dinero. 1 Punto vale $1 MXN.',
+      ptsHow: 'Los Puntos de un mes llegan cuando el mes termina y se pueden usar {n} días después.',
+      ptsSoonUse: 'Muy pronto podrás cambiar tus Puntos por productos aquí mismo.',
+      ptsHistory: 'Lo que has ganado', ptsHistoryEmpty: 'Aquí aparecerá cada vez que ganes Puntos.',
+      ptsEarn: 'Por tus compras y ventas de {month}', ptsRef: 'Por las compras de {name} en {month}', ptsAdjust: 'Ajuste de Ascent', ptsRedeem: 'Usados en un pedido', ptsExpired: 'Vencidos', ptsRelease: 'Devueltos',
+      ptsWait: 'En espera hasta el {date}', ptsReady: 'Disponibles',
+      ptsNow: 'Mira cuánto te falta para subir de nivel en Inicio.',
+      teamBonus: 'Te dio {n} Puntos',
       monthTitle: 'Este mes', monthSales: 'Llevas vendido: {amount}', monthComm: 'Tu comisión es de {rate} % sobre tus ventas: {amount}',
       owed: 'Lo que te toca recibir', paid: 'Lo que ya te pagamos', approx: 'Monto aproximado. El monto exacto queda fijo cuando se te paga.',
       salesTitle: 'Mis ventas', salesSub: 'Personas que usaron tu código.', salesEmpty: 'Todavía nadie ha usado tu código. Compártelo para empezar.',
@@ -89,7 +110,7 @@
         bad_phone: 'El teléfono solo puede tener números.', terms_required: 'Para seguir, marca la casilla de aceptar.',
         bad_invite: 'No encontramos a quien te afilió con ese código. Revísalo, o déjalo en blanco si nadie te invitó.',
         email_taken: 'Ya hay una cuenta con ese correo. Entra, o usa “Olvidé mi contraseña”.',
-        bad_token: 'Este enlace ya no sirve. Pide uno nuevo.', server_error: 'Algo salió mal. Intenta de nuevo en un momento.',
+        bad_token: 'Este enlace ya no sirve. Pide uno nuevo.', terms_needed: 'Primero acepta las políticas.', server_error: 'Algo salió mal. Intenta de nuevo en un momento.',
       },
     },
     en: {
@@ -118,6 +139,27 @@
       used: 'People who used your code', bought: 'People who bought', invited: 'People I referred',
       pointsSoon: 'Your Points will start adding up when the Points programme opens. We will let you know by email.',
       pointsSoonTitle: 'Points',
+      navPoints: 'My Points',
+      planTitle: 'How I am doing this month', planSoFar: 'So far this month', planOf: 'of {goal}',
+      planNone: 'You are not earning Points yet this month. At {goal} you start earning {pct}%.',
+      planNow: 'Right now you earn {pct}%', planNowPoints: 'Today your Points for the month would be {pts}.',
+      planGap: 'You need {missing} more to earn {pct}%.', planIf: 'If you get there, your Points for the month would be {pts} ({gain} more).',
+      planTop: 'You reached the top level this month! You earn {pct}%.', planDays: '{n} days left in the month.', planDay: '1 day left in the month.', planLastDay: 'Today is the last day of the month.',
+      planFloor: 'Your {pct}% is secured until {date}.', planFloorHow: 'To keep it, reach {goal} again in one month before that date.',
+      planDisclaimer: 'Calculated with your numbers of today. It is not a promise of income.',
+      planLevels: 'See all levels', planLevel: 'Level {n}', planFrom: 'from {amount} in the month',
+      planWhat: 'Every month starts from zero. Raise your volume by selling to more people.',
+      planLocal: '≈ {amount}',
+      ptsAvailable: 'Points you can use', ptsWaiting: 'Points waiting', ptsWaitingDate: 'Available on {date}', ptsNone: 'You do not have Points yet.',
+      ptsExpire: 'Your Points expire on {date} unless you buy or sell before then.',
+      ptsTitle: 'My Points', ptsSub: 'Points can only be exchanged for products. They are not money. 1 Point is worth MXN 1.',
+      ptsHow: 'Points for a month arrive when the month ends and can be used {n} days later.',
+      ptsSoonUse: 'Very soon you will be able to exchange your Points for products right here.',
+      ptsHistory: 'What you have earned', ptsHistoryEmpty: 'Each time you earn Points it will show up here.',
+      ptsEarn: 'For your purchases and sales in {month}', ptsRef: 'For the purchases of {name} in {month}', ptsAdjust: 'Adjustment by Ascent', ptsRedeem: 'Used in an order', ptsExpired: 'Expired', ptsRelease: 'Returned',
+      ptsWait: 'Waiting until {date}', ptsReady: 'Available',
+      ptsNow: 'See how far you are from the next level on Home.',
+      teamBonus: 'Gave you {n} Points',
       monthTitle: 'This month', monthSales: 'Sold so far: {amount}', monthComm: 'Your commission is {rate}% of your sales: {amount}',
       owed: 'What is due to you', paid: 'What we already paid you', approx: 'Approximate amount. The exact amount is fixed when you are paid.',
       salesTitle: 'My sales', salesSub: 'People who used your code.', salesEmpty: 'Nobody has used your code yet. Share it to get started.',
@@ -182,6 +224,10 @@
     const f = money[key] || (money[key] = new Intl.NumberFormat(LANG === 'en' ? 'en-US' : 'es-CO', { style: 'currency', currency: cur, minimumFractionDigits: cur === 'COP' ? 0 : 2, maximumFractionDigits: cur === 'COP' ? 0 : 2, currencyDisplay: 'code' }));
     return f.format(Number(n) || 0);
   };
+  const mxn = n => fm(n, 'MXN').replace(/[.,]00$/, '');
+  const pts = n => `${Number(n).toLocaleString(LANG === 'en' ? 'en-US' : 'es-CO')} ${LANG === 'en' ? 'Points' : 'Puntos'}`;
+  const monthName = m => { const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo - 1, 15)).toLocaleDateString(LANG === 'en' ? 'en-US' : 'es-CO', { month: 'long', year: 'numeric', timeZone: 'UTC' }); };
+  const ymd = s => { const [y, mo, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, mo - 1, d, 12)).toLocaleDateString(LANG === 'en' ? 'en-US' : 'es-CO', { dateStyle: 'long', timeZone: 'UTC' }); };
   const day = s => new Date(s).toLocaleDateString(LANG === 'en' ? 'en-US' : 'es-CO', { dateStyle: 'medium' });
   const waLink = text => `https://wa.me/?text=${encodeURIComponent(text)}`;
   const waHelp = () => `https://wa.me/${WA}?text=${encodeURIComponent(t('helpWaText'))}`;
@@ -204,7 +250,7 @@
 
   let ME = null;       // who is signed in (from "me"), or null
   let TAB = 'home';
-  let SUM = null, TEAM = null, TERMS = null;
+  let SUM = null, TEAM = null, TERMS = null, POINTS = null;
   let PW_TEMP = '';
   const params = new URLSearchParams(location.search);
   let REF = (params.get('ref') || '').trim().toUpperCase();
@@ -426,11 +472,81 @@
         h('p', {}, t('monthSales', { amount: fm(m.sales_local, cur) })),
         h('p', {}, t('monthComm', { rate: m.rate_pct, amount: fm(m.commission_local, cur) })),
         h('div', { class: 'bar', role: 'img', 'aria-label': `${Math.round(frac * 100)} %` }, h('span', { style: `width:${(frac * 100).toFixed(1)}%` }))));
+    } else if (s.mode === 'plan' && s.plan) {
+      nodes.push(...planCards(s.plan));
     } else {
       nodes.push(h('div', { class: 'card stack' }, h('h3', {}, t('pointsSoonTitle')), h('p', {}, t('pointsSoon'))));
     }
     nodes.push(now(t('todoShare')));
     return nodes;
+  }
+
+  /* "How am I doing this month": the number, the bar, how far the next level is, and what the
+     WHOLE month would pay if they get there. Only the affiliate's own real figures, always with
+     the note that this is not a promise of income. */
+  function planCards(p) {
+    const local = n => (p.local.currency === 'MXN' ? '' : ` (${t('planLocal', { amount: fm(n * p.local.per_mxn, p.local.currency) })})`);
+    const goal = p.next ? p.next.volume : p.volume_mxn;
+    const frac = p.next ? Math.max(0, Math.min(1, p.volume_mxn / p.next.volume)) : 1;
+    const days = p.days_left;
+    const lines = [];
+    if (p.rate_pct > 0) lines.push(h('p', { style: 'font-size:22px;font-weight:800;margin:0' }, t('planNow', { pct: p.rate_pct })));
+    else lines.push(h('p', { style: 'font-weight:700;margin:0' }, t('planNone', { goal: mxn(p.activation_mxn), pct: p.levels[0].pct })));
+    if (p.rate_pct > 0) lines.push(h('p', { class: 'muted' }, t('planNowPoints', { pts: pts(p.points_now) })));
+    if (p.next) {
+      lines.push(h('p', {}, h('strong', {}, t('planGap', { missing: mxn(p.next.missing), pct: p.next.pct })),
+        p.next.gain > 0 ? ` ${t('planIf', { pts: pts(p.next.points_at), gain: pts(p.next.gain) })}` : ''));
+    } else lines.push(h('p', {}, h('strong', {}, t('planTop', { pct: p.rate_pct }))));
+    lines.push(h('p', { class: 'muted small' }, days === 0 ? '' : (days === 1 ? t('planLastDay') : t('planDays', { n: days }))));
+
+    const out = [h('div', { class: 'card stack' },
+      h('h3', {}, t('planTitle')),
+      h('div', {}, h('div', { class: 'k muted small' }, t('planSoFar')), h('div', { class: 'big' }, mxn(p.volume_mxn)),
+        p.local.currency !== 'MXN' ? h('div', { class: 'muted small' }, t('planLocal', { amount: fm(p.volume_mxn * p.local.per_mxn, p.local.currency) })) : null),
+      h('div', { class: 'bar', role: 'img', 'aria-label': `${Math.round(frac * 100)} %` }, h('span', { style: `width:${(frac * 100).toFixed(1)}%` })),
+      p.next ? h('div', { class: 'muted small' }, `${mxn(p.volume_mxn)} ${t('planOf', { goal: mxn(goal) })}`) : null,
+      ...lines,
+      p.floor_until ? h('p', { class: 'msg ok' }, t('planFloor', { pct: p.levels[0].pct, date: ymd(p.floor_until) }), ' ', t('planFloorHow', { goal: mxn(p.activation_mxn) })) : null,
+      h('p', { class: 'hint' }, t('planDisclaimer')),
+      h('details', {}, h('summary', { class: 'btn block', style: 'cursor:pointer' }, t('planLevels')),
+        h('ul', { class: 'list' }, p.levels.map(l => h('li', { class: 'item' },
+          h('div', { class: 'top-row' }, h('strong', {}, t('planLevel', { n: l.level })), h('strong', {}, `${l.pct} %`)),
+          h('div', { class: 'muted' }, t('planFrom', { amount: mxn(l.from_mxn) }) + local(l.from_mxn)))))),
+      h('p', { class: 'hint' }, t('planWhat'))),
+      pointsSummary(p)];
+    return out;
+  }
+
+  function pointsSummary(p) {
+    const b = p.balance;
+    return h('div', { class: 'card stack' },
+      h('div', { class: 'stats' }, stat(t('ptsAvailable'), pts(b.available)), stat(t('ptsWaiting'), pts(b.waiting))),
+      b.waiting > 0 && b.next_available ? h('p', { class: 'hint' }, t('ptsWaitingDate', { date: day(b.next_available) })) : null,
+      b.available + b.waiting === 0 ? h('p', { class: 'muted' }, t('ptsNone')) : null,
+      p.expires_at ? h('p', { class: 'hint' }, t('ptsExpire', { date: day(p.expires_at) })) : null);
+  }
+
+  function pointsView() {
+    const p = SUM.plan;
+    const rows = POINTS.history.map(r => {
+      const text = r.kind === 'earn_purchase' ? t('ptsEarn', { month: monthName(r.month) })
+        : r.kind === 'earn_referral' ? t('ptsRef', { name: r.from || '', month: monthName(r.month) })
+          : r.kind === 'adjust' ? t('ptsAdjust') : r.kind === 'redeem' ? t('ptsRedeem') : r.kind === 'expire' ? t('ptsExpired') : t('ptsRelease');
+      const waiting = new Date(r.available_at) > new Date();
+      return h('li', { class: 'item' },
+        h('div', { class: 'top-row' }, h('strong', {}, `${r.points > 0 ? '+' : ''}${pts(r.points)}`),
+          h('span', { class: `badge ${waiting ? 'warn' : 'ok'}` }, waiting ? t('ptsWait', { date: day(r.available_at) }) : t('ptsReady'))),
+        h('div', { class: 'muted' }, text));
+    });
+    return [
+      h('h2', {}, t('ptsTitle')), h('p', { class: 'muted' }, t('ptsSub')),
+      pointsSummary(p),
+      h('p', { class: 'hint' }, t('ptsHow', { n: p.wait_days })),
+      h('div', { class: 'card' }, t('ptsSoonUse')),
+      h('h2', { style: 'margin-top:26px' }, t('ptsHistory')),
+      rows.length ? h('ul', { class: 'list' }, rows) : h('div', { class: 'card' }, t('ptsHistoryEmpty')),
+      now(t('ptsNow')),
+    ];
   }
 
   function salesView() {
@@ -456,7 +572,8 @@
   function teamView() {
     const people = TEAM.people.map(p => h('li', { class: 'item' },
       h('div', { class: 'top-row' }, h('strong', {}, p.name), h('span', { class: `badge ${p.has_sales ? 'ok' : 'off'}` }, p.has_sales ? t('hasSales') : t('noSales'))),
-      h('div', { class: 'muted' }, [T[LANG][p.country] || '', t('since', { date: day(p.since) })].filter(Boolean).join(' · '))));
+      h('div', { class: 'muted' }, [T[LANG][p.country] || '', t('since', { date: day(p.since) })].filter(Boolean).join(' · ')),
+      p.bonus_points > 0 ? h('div', {}, t('teamBonus', { n: p.bonus_points.toLocaleString(LANG === 'en' ? 'en-US' : 'es-CO') })) : null));
     return [
       h('h2', {}, t('teamTitle')), h('p', { class: 'muted' }, t('teamSub')),
       h('div', { class: 'card stack' },
@@ -501,9 +618,12 @@
   }
 
   function appScreen() {
-    const views = { home: homeView, sales: salesView, team: teamView, help: helpView };
-    const nav = h('nav', { class: 'nav', 'aria-label': 'Menu' },
-      [['home', 'navHome'], ['sales', 'navSales'], ['team', 'navTeam'], ['help', 'navHelp']].map(([id, key]) =>
+    const views = { home: homeView, sales: salesView, team: teamView, points: pointsView, help: helpView };
+    const isPlan = SUM.mode === 'plan' && SUM.plan;
+    if (TAB === 'points' && !isPlan) TAB = 'home';
+    const items = [['home', 'navHome'], ['sales', 'navSales'], ['team', 'navTeam'], ...(isPlan ? [['points', 'navPoints']] : []), ['help', 'navHelp']];
+    const nav = h('nav', { class: 'nav', 'aria-label': 'Menu', style: `grid-template-columns:repeat(${items.length},1fr)` },
+      items.map(([id, key]) =>
         h('button', { type: 'button', 'aria-current': TAB === id ? 'page' : null, onclick: () => { TAB = id; window.scrollTo(0, 0); appScreen(); } }, t(key))));
     root.replaceChildren(
       h('main', { class: 'wrap', tabindex: '-1' }, ...views[TAB](), h('p', { class: 'notice' }, t('notice'))),
@@ -530,9 +650,9 @@
     if (!langAdopted) { langAdopted = true; if (ME.language && ME.language !== LANG) { LANG = ME.language; try { localStorage.setItem('ascent_lang', LANG); } catch (e) { /* ignore */ } paintChrome(); } }
     if (ME.must_change) return changeScreen();
     if (ME.terms_needed) return termsScreen();
-    const [s, tm] = await Promise.all([api('summary'), api('team')]);
+    const [s, tm, pt] = await Promise.all([api('summary'), api('team'), api('points')]);
     if (!s.ok || !tm.ok) { ME = null; return route(); }
-    SUM = s.data; TEAM = tm.data;
+    SUM = s.data; TEAM = tm.data; POINTS = pt.ok ? pt.data : { balance: { available: 0, waiting: 0 }, history: [] };
     await loadTerms();
     appScreen();
   }

@@ -71,6 +71,12 @@
     self_sponsor: 'Una persona no puede ser su propio patrocinador.',
     would_loop: 'Eso crearía un círculo: esa persona ya depende de esta.',
     bad_mode: 'Elige cómo se calcula la comisión.',
+    bad_month: 'Ese mes no es válido.', not_next: 'Primero hay que cerrar el mes anterior.', month_open: 'Ese mes todavía no termina.',
+    already_closed: 'Ese mes ya está cerrado.', bad_points: 'Escribe una cantidad de Puntos distinta de 0 (puede ser negativa).',
+    note_required: 'Escribe el motivo (mínimo 3 letras).', no_plan_account: 'Esa persona no está en el Plan de Puntos.',
+    has_history: 'Esa persona tiene Puntos o meses registrados: desactívala en lugar de borrarla.',
+    over_limit: 'No se puede: descuento + nivel más alto + bono pasan del límite de negocio.',
+    cap_below_floor: 'El nivel más alto no puede ser menor que el primero.',
     bad_currency: 'Elige una moneda válida.',
     bad_email: 'Escribe un correo válido.',
     email_taken: 'Ese correo ya pertenece a otro afiliado.',
@@ -120,7 +126,7 @@
 
   /* ------------------------------------------------------------------ tabs */
 
-  const TABS = { orders: renderOrders, affiliates: renderAffiliates, stock: renderStock, settings: renderSettings };
+  const TABS = { orders: renderOrders, affiliates: renderAffiliates, points: renderPoints, stock: renderStock, settings: renderSettings };
   const currentTab = () => (location.hash.slice(1) in TABS ? location.hash.slice(1) : 'orders');
 
   async function go(tab) {
@@ -392,6 +398,100 @@
             : (!m.open && m.commission_cop > 0) ? h('button', { class: 'btn small primary', onclick: () => pay(m) }, 'Marcar pagado') : null)))))));
   }
 
+  /* ----------------------------------------------------------------- points */
+
+  const ptsFmt = n => Number(n).toLocaleString('es-CO');
+  const mx = n => money(n, 'MXN');
+
+  async function renderPoints(view) {
+    const [st, ov] = await Promise.all([api('close_status'), api('points_overview')]);
+    const { next, current, closes } = st.data;
+    const people = ov.data.people;
+
+    const previewBox = h('div');
+    const showPreview = async () => {
+      previewBox.replaceChildren(h('p', { class: 'muted' }, 'Calculando…'));
+      const r = await api('close_preview', { query: { month: next } });
+      if (!r.ok) { previewBox.replaceChildren(h('p', { class: 'msg err' }, errText(r.data.error))); return; }
+      const { rows, totals } = r.data;
+      const doClose = async () => {
+        if (!confirm(`¿Cerrar ${monthLabel(next)}?\n\nSe entregarán ${ptsFmt(totals.points)} Puntos y ${ptsFmt(totals.referral_points)} Puntos de bono por referidos.\n\nEsto no se puede deshacer. Los Puntos se podrán usar pasados los días de espera.`)) return;
+        const x = await api('close_month', { method: 'POST', body: { month: next } });
+        if (x.ok) { toast(`${monthLabel(next)} cerrado`); go('points'); } else toast(errText(x.data.error), true);
+      };
+      previewBox.replaceChildren(
+        h('div', { class: 'tiles' },
+          tile('Volumen del mes', mx(totals.volume_mxn), `${ptsFmt(totals.orders)} pedidos que cuentan`),
+          tile('Puntos por compras y ventas', ptsFmt(totals.points), 'Se entregan al cerrar'),
+          tile('Puntos de bono por referidos', ptsFmt(totals.referral_points), 'Para los patrocinadores')),
+        rows.length
+          ? h('div', { class: 'table-wrap' }, h('table', {},
+            h('thead', {}, h('tr', {}, h('th', {}, 'Afiliado'), h('th', { class: 'num' }, 'Compras propias'), h('th', { class: 'num' }, 'Ventas'),
+              h('th', { class: 'num' }, 'Volumen del mes'), h('th', {}, 'Optimización'), h('th', { class: 'num' }, 'Puntos'), h('th', { class: 'num' }, 'Bono referidos'))),
+            h('tbody', {}, rows.map(x => h('tr', {},
+              h('td', {}, h('strong', {}, x.name)),
+              h('td', { class: 'num' }, mx(x.own_mxn)), h('td', { class: 'num' }, mx(x.sales_mxn)), h('td', { class: 'num' }, h('strong', {}, mx(x.volume_mxn))),
+              h('td', {}, x.level ? `${x.level} · ${num(x.rate_pct)} %` : 'Sin activar', x.floor_running && !x.qualified ? h('span', { class: 'sub' }, 'por su piso de 12 meses') : null),
+              h('td', { class: 'num' }, ptsFmt(x.points)), h('td', { class: 'num' }, ptsFmt(x.referral_points)))))))
+          : h('div', { class: 'card empty' }, 'Ese mes no tiene compras ni ventas que cuenten.'),
+        h('div', { class: 'row', style: 'margin-top:14px' },
+          h('button', { class: 'btn primary', onclick: doClose }, `Cerrar ${monthLabel(next)}`),
+          h('span', { class: 'muted' }, 'Revisa la tabla. Una vez cerrado, el mes no cambia.')));
+    };
+
+    const closeCard = next
+      ? h('div', { class: 'card', style: 'margin-bottom:16px' },
+        h('h3', {}, `Mes por cerrar: ${monthLabel(next)}`),
+        h('p', { class: 'muted' }, 'Al cerrar un mes se calcula la Optimización de cada afiliado y se entregan los Puntos. Primero mira la vista previa: no guarda nada. Los meses se cierran en orden.'),
+        h('button', { class: 'btn', onclick: showPreview }, 'Ver vista previa'), previewBox)
+      : h('div', { class: 'card', style: 'margin-bottom:16px' }, h('h3', {}, 'No hay meses por cerrar'),
+        h('p', { class: 'muted' }, `El mes en curso (${monthLabel(current)}) se puede cerrar cuando termine.`));
+
+    const closed = closes.length
+      ? h('div', { class: 'table-wrap' }, h('table', {},
+        h('thead', {}, h('tr', {}, h('th', {}, 'Mes'), h('th', { class: 'num' }, 'Pedidos'), h('th', { class: 'num' }, 'Volumen'), h('th', { class: 'num' }, 'Puntos'), h('th', { class: 'num' }, 'Bonos'), h('th', {}, 'Cerrado'))),
+        h('tbody', {}, closes.map(c => h('tr', {}, h('td', {}, monthLabel(c.month)), h('td', { class: 'num' }, ptsFmt(c.orders)), h('td', { class: 'num' }, mx(c.volume_mxn)),
+          h('td', { class: 'num' }, ptsFmt(c.points)), h('td', { class: 'num' }, ptsFmt(c.referral_points)), h('td', {}, c.status === 'closed' ? dt(c.closed_at) : h('span', { class: 'badge warn' }, 'Interrumpido: vuelve a cerrar')))))))
+      : h('div', { class: 'card empty' }, 'Todavía no se ha cerrado ningún mes.');
+
+    const balances = people.length
+      ? h('div', { class: 'table-wrap' }, h('table', {},
+        h('thead', {}, h('tr', {}, h('th', {}, 'Afiliado'), h('th', { class: 'num' }, 'Disponibles'), h('th', { class: 'num' }, 'En espera'), h('th', {}, 'Último nivel'), h('th', {}, ''))),
+        h('tbody', {}, people.map(x => h('tr', {},
+          h('td', {}, h('strong', {}, x.name), h('span', { class: 'sub' }, `${x.code} · ${x.email}`)),
+          h('td', { class: 'num' }, h('strong', {}, ptsFmt(x.available))), h('td', { class: 'num' }, ptsFmt(x.waiting)),
+          h('td', {}, x.last_month ? `${monthLabel(x.last_month)}: nivel ${x.last_level}` : '—'),
+          h('td', {}, h('button', { class: 'btn small', onclick: () => adjustDialog(x) }, 'Ajustar')))))))
+      : h('div', { class: 'card empty' }, 'Todavía no hay afiliados en el Plan de Puntos.');
+
+    view.replaceChildren(
+      h('div', { class: 'section-title' }, h('h2', {}, 'Puntos')),
+      closeCard,
+      h('div', { class: 'section-title' }, h('h3', {}, 'Saldos')), balances,
+      h('div', { class: 'sp' }),
+      h('div', { class: 'section-title' }, h('h3', {}, 'Meses cerrados')), closed,
+      h('p', { class: 'muted' }, '1 Punto = $1 MXN. Los Puntos se cambian solo por productos. Para corregir algo no se edita un movimiento: se agrega un ajuste con su motivo.'));
+  }
+
+  function adjustDialog(x) {
+    const msg = h('p', { class: 'msg err', role: 'alert', hidden: true });
+    const amount = h('input', { type: 'number', step: '1', placeholder: 'Ej. 500 o -200' });
+    const note = h('input', { type: 'text', maxlength: 200, placeholder: 'Motivo (se guarda con el ajuste)' });
+    const dlg = openDialog(`Ajustar Puntos · ${x.name}`, false,
+      h('p', { class: 'muted', style: 'margin:0' }, `Hoy tiene ${ptsFmt(x.available)} disponibles y ${ptsFmt(x.waiting)} en espera.`),
+      h('label', {}, 'Puntos a sumar (o restar con un número negativo)'), amount,
+      h('label', {}, 'Motivo'), note, msg,
+      h('p', { class: 'muted', style: 'font-size:13px;margin:10px 0 0' }, 'Queda como un movimiento nuevo y no se puede borrar. El ajuste está disponible de inmediato.'),
+      h('div', { class: 'actions' },
+        h('button', { type: 'button', class: 'btn ghost', onclick: () => dlg.close() }, 'Cancelar'),
+        h('button', { type: 'button', class: 'btn primary', onclick: async () => {
+          msg.hidden = true;
+          const r = await api('points_adjust', { method: 'POST', body: { code_id: x.code_id, points: Number(amount.value), note: note.value } });
+          if (r.ok) { dlg.close(); toast('Ajuste guardado'); go('points'); } else { msg.textContent = errText(r.data.error); msg.hidden = false; }
+        } }, 'Guardar')));
+    amount.focus();
+  }
+
   /* Who signed this person up. Only the owner can change it; each change is recorded. */
   function sponsorDialog(a) {
     const msg = h('p', { class: 'msg err', role: 'alert', hidden: true });
@@ -586,6 +686,7 @@
 
   async function renderSettings(view) {
     const { trm, trm_override, mxn, mxn_override, tiers, tiers_custom } = (await api('settings')).data;
+    const planCfg = (await api('plan_get')).data.config;
     const SRC = { live: 'oficial, en vivo', pinned: 'fijada por ti', stale: 'último valor conocido', fallback: 'valor de respaldo (la fuente oficial no respondió)' };
     const input = h('input', { type: 'number', min: 1000, max: 20000, step: '0.01', value: trm_override || '', placeholder: 'Ej. 4100' });
     const msg = h('p', { class: 'msg', hidden: true });
@@ -629,8 +730,45 @@
       else { tierMsg.className = 'msg err'; tierMsg.textContent = errText(r.data.error); tierMsg.hidden = false; }
     };
 
+    // ---- the Points plan: every number of it
+    const FIELDS = [
+      ['activation_mxn', 'Volumen del mes que activa al afiliado', 'MXN', 'Desde aquí gana el piso. Ej. 20000'],
+      ['step_mxn', 'Cada escalón de volumen', 'MXN', 'Por cada tanto más, el porcentaje sube. Ej. 5000'],
+      ['step_pct', 'Cuánto sube el porcentaje en cada escalón', 'puntos %', 'Ej. 5'],
+      ['floor_pct', 'Porcentaje del primer nivel (el piso)', '%', 'Ej. 10'],
+      ['cap_pct', 'Porcentaje más alto', '%', 'Ej. 35'],
+      ['referral_pct', 'Bono para quien afilió', '%', 'Sobre el valor de lo que genera cada afiliado suyo. Ej. 5'],
+      ['discount_pct', 'Descuento al cliente con el código', '%', 'Para los afiliados nuevos. Ej. 7'],
+      ['business_limit_pct', 'Límite de negocio', '%', 'Descuento + nivel más alto + bono no pueden pasar de esto. Ej. 48'],
+      ['wait_days', 'Días de espera para usar los Puntos', 'días', 'Después de cerrar el mes. Ej. 15'],
+      ['expiry_months', 'Vencimiento de los Puntos', 'meses', 'Desde su última actividad. Ej. 12'],
+      ['floor_months', 'Cuánto dura el piso', 'meses', 'Desde el último mes que llegó al volumen que activa. Ej. 12'],
+      ['own_cap_mxn', 'Tope de compra propia por mes', 'MXN', 'Déjalo vacío para que cuente completa'],
+      ['vat_pct', 'IVA incluido en los precios', '%', 'Se quita antes de contar el volumen. 0 si los precios no lo traen'],
+    ];
+    const planInputs = {};
+    const planMsg = h('p', { class: 'msg', hidden: true });
+    const planBox = h('div', { class: 'detail-grid' }, FIELDS.map(([k, label, unit, hint]) => {
+      const input = planInputs[k] = h('input', { type: 'number', step: 'any', value: planCfg[k] == null ? '' : planCfg[k], 'aria-label': label });
+      return h('div', {}, h('label', {}, `${label} (${unit})`), input, h('span', { class: 'sub' }, hint));
+    }));
+    const savePlan = async () => {
+      planMsg.hidden = true;
+      const body = {};
+      for (const [k] of FIELDS) body[k] = planInputs[k].value === '' ? null : Number(planInputs[k].value);
+      const r = await api('plan_set', { method: 'POST', body });
+      if (r.ok) { toast('Plan guardado'); go('settings'); }
+      else { planMsg.className = 'msg err'; planMsg.textContent = ERRORS[r.data.error] || 'Revisa los valores: alguno no es válido.'; planMsg.hidden = false; }
+    };
+
     view.replaceChildren(
       h('div', { class: 'section-title' }, h('h2', {}, 'Ajustes')),
+      h('div', { class: 'card', style: 'margin-bottom:16px' },
+        h('h3', {}, 'Plan de Puntos'),
+        h('p', { class: 'muted' }, 'Todos los números del plan. Un cambio vale para los meses que aún no se han cerrado: los meses cerrados no se mueven.'),
+        h('p', { class: 'muted', style: 'font-size:13px' }, `Hoy: descuento ${num(planCfg.discount_pct)} % + nivel más alto ${num(planCfg.cap_pct)} % + bono ${num(planCfg.referral_pct)} % = ${num(planCfg.discount_pct + planCfg.cap_pct + planCfg.referral_pct)} % del precio, con un límite de ${num(planCfg.business_limit_pct)} %.`),
+        planBox, planMsg,
+        h('div', { class: 'row', style: 'margin-top:12px' }, h('button', { class: 'btn primary', onclick: savePlan }, 'Guardar plan'))),
       h('div', { class: 'card', style: 'max-width:640px;margin-bottom:16px' },
         h('h3', {}, 'Escala de comisión de afiliados'),
         h('p', { class: 'muted' }, tiers_custom ? 'Estás usando una escala personalizada.' : 'Estás usando la escala estándar: empieza en 15 % y suma 5 puntos por cada COP 1.000.000 vendido en el mes, hasta 40 %.'),
