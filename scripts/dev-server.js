@@ -20,11 +20,15 @@ process.env.WOMPI_PUBLIC_KEY = process.env.WOMPI_PUBLIC_KEY || 'pub_test_localde
 process.env.WOMPI_INTEGRITY_SECRET = process.env.WOMPI_INTEGRITY_SECRET || 'dev_integrity_secret';
 process.env.WOMPI_EVENTS_SECRET = process.env.WOMPI_EVENTS_SECRET || 'dev_events_secret';
 delete process.env.DATABASE_URL;
+process.env.SITE_URL = process.env.SITE_URL || `http://localhost:${process.env.PORT || 4180}`;
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+
+// No real email in development: the message (with its link) is printed here instead
+require('../api/_lib/mailer').setTransport(async m => console.log(`\n  [mail to ${m.to}] ${m.subject}\n${m.text.split('\n').map(l => '    ' + l).join('\n')}\n`));
 
 const ROOT = path.join(__dirname, '..');
 const PORT = Number(process.env.PORT) || 4180;

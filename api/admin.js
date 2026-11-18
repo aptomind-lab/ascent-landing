@@ -73,6 +73,8 @@ const AFFILIATE_SQL = `
   SELECT c.id, c.code, c.affiliate_name, c.affiliate_contact, c.discount_pct, c.commission_pct,
          c.commission_mode, c.payout_currency, c.active, c.created_at,
          au.id IS NOT NULL AS has_access, au.email AS access_email, au.last_login_at, au.must_change,
+         au.signup_source, sp.name AS sponsor_name,
+         (SELECT t.version FROM terms_acceptances t WHERE t.user_id = au.id ORDER BY t.accepted_at DESC LIMIT 1) AS terms_version,
          count(o.id)::int                                                       AS orders_started,
          count(o.id) FILTER (WHERE o.status = 'APPROVED')::int                  AS orders_paid,
          count(DISTINCT lower(o.customer_email))::int                           AS customers_started,
@@ -81,8 +83,9 @@ const AFFILIATE_SQL = `
          COALESCE(sum(o.discount_cop) FILTER (WHERE o.status = 'APPROVED'), 0)::bigint AS discounts_cop
     FROM codes c
     LEFT JOIN affiliate_users au ON au.code_id = c.id
+    LEFT JOIN affiliate_users sp ON sp.id = au.sponsor_user_id
     LEFT JOIN orders o ON o.code_id = c.id
-   GROUP BY c.id, au.id
+   GROUP BY c.id, au.id, sp.id
    ORDER BY c.active DESC, sales_cop DESC, c.created_at DESC`;
 
 async function listAffiliates() {
@@ -171,7 +174,7 @@ async function saveCode(b) {
   let mode = null;
   if (given(b.commission_mode)) {
     mode = String(b.commission_mode);
-    if (mode !== 'tiers' && mode !== 'fixed') return { error: 'bad_mode' };
+    if (mode !== 'tiers' && mode !== 'fixed' && mode !== 'plan') return { error: 'bad_mode' };
   }
   let cur = null;
   if (given(b.payout_currency)) {
@@ -199,7 +202,7 @@ async function saveCode(b) {
     const rows = await query(
       `INSERT INTO codes (code, affiliate_name, affiliate_contact, discount_pct, commission_pct, active, commission_mode, payout_currency)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
-      [code, name, contact, discount, fixed === null ? 0 : fixed, active, mode || 'tiers', cur || 'COP']
+      [code, name, contact, discount, fixed === null ? 0 : fixed, active, mode || 'plan', cur || 'COP']
     );
     return { ok: true, id: rows[0].id };
   } catch (e) {

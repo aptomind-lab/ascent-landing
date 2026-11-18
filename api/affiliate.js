@@ -1,7 +1,9 @@
 /* ===========================================================================
    Affiliate portal API.   /api/affiliate?a=<action>
 
-     login (POST)  logout (POST)  me (GET)  change_password (POST)  summary (GET)
+     public     terms (GET)  invite (GET)  register (POST)  forgot (POST)  reset (POST)
+     session    login (POST)  logout (POST)  me (GET)  change_password (POST)
+     signed in  summary (GET)  team (GET)  accept_terms (POST)  set_language (POST)
 
    An affiliate sees ONLY their own code's activity, and only what they need to
    follow their results:
@@ -23,7 +25,11 @@ const aff = require('./_lib/affiliate-auth');
 const { verifyPassword, verifyDecoy, hashPassword, MIN_LENGTH } = require('./_lib/password');
 const { statements, totalsOf, commissionOf, TZ } = require('./_lib/commission');
 const currency = require('./_lib/currency');
-const { json, body, guard } = require('./_lib/http');
+const { json, body, guard, siteOrigin } = require('./_lib/http');
+const crypto = require('crypto');
+const plan = require('./_lib/plan');
+const terms = require('./_lib/terms');
+const mailer = require('./_lib/mailer');
 
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
 
@@ -68,7 +74,7 @@ async function ordersOf(codeId) {
 }
 
 async function summary(user) {
-  const mode = user.commission_mode === 'fixed' ? 'fixed' : 'tiers';
+  const mode = user.commission_mode === 'fixed' ? 'fixed' : (user.commission_mode === 'plan' ? 'plan' : 'tiers');
   const { tiers, now, byCode } = await statements(
     [{ id: user.code_id, commission_pct: user.commission_pct, commission_mode: mode }], user.code_id);
   const months = byCode.get(user.code_id) || [];
@@ -89,7 +95,7 @@ async function summary(user) {
   const lvl = c && c.level;
   const next = lvl && lvl.next ? { ...lvl.next, missing_local: conv(lvl.next.missing_cop), min_local: conv(lvl.next.min_cop) } : null;
 
-  return {
+  const out = {
     profile: { name: user.affiliate_name, email: user.email, code: user.code, active: user.active,
       discount_pct: Number(user.discount_pct), fixed_commission_pct: Number(user.commission_pct) },
     mode,
@@ -132,6 +138,131 @@ async function summary(user) {
       };
     }),
   };
+
+  /* Points affiliates do not see cash figures: the old cash ladder does not apply to
+     them, and showing it would promise something the programme does not pay. */
+  if (mode === 'plan') {
+    out.month = null; out.tiers = []; out.months = [];
+    out.owed_cop = out.owed_local = out.paid_cop = out.paid_local = 0;
+    out.fx = { currency: cur, cop_per_unit: perUnit, source: null };
+    out.orders = out.orders.map(o => { const { commission_cop, commission_local, ...rest } = o; return rest; });
+  }
+  return out;
+}
+
+const INVALID_PHONE = /[^0-9+()\s-]/;
+
+function mailBody(lang, first, link) {
+  return lang === 'en'
+    ? { subject: 'Choose a new password for Ascent',
+      text: `Hello ${first},\n\nYou asked to choose a new password. Open this link (it works for 1 hour):\n\n${link}\n\nIf you did not ask for this, you can ignore this message: your password has not changed.\n\nAscent Labs` }
+    : { subject: 'Elige una contraseña nueva para Ascent',
+      text: `Hola ${first},\n\nPediste elegir una contraseña nueva. Abre este enlace (sirve por 1 hora):\n\n${link}\n\nSi no fuiste tú, ignora este mensaje: tu contraseña no ha cambiado.\n\nAscent Labs` };
+}
+
+/* Ascent's own sign-up: the person, their code (7% for their customers) and who invited them. */
+async function register(req, res) {
+  const b = body(req);
+  const ip = auth.clientIp(req);
+  const key = `aff-reg:${ip}`;
+  if (await auth.lockedOut(key)) return json(res, 429, { error: 'too_many_attempts' });
+  await auth.recordFail(key);                         // every attempt counts, so sign-ups cannot be spammed
+
+  const name = String(b.name || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+  const email = String(b.email || '').trim().toLowerCase().slice(0, 254);
+  const password = String(b.password || '');
+  const country = String(b.country || '').toUpperCase();
+  const language = plan.LANGUAGES.includes(b.language) ? b.language : 'es';
+  const phone = String(b.phone || '').trim().slice(0, 25);
+  if (name.length < 2) return json(res, 400, { error: 'bad_name' });
+  if (!EMAIL.test(email)) return json(res, 400, { error: 'bad_email' });
+  if (password.length < MIN_LENGTH || password.length > 200) return json(res, 400, { error: 'weak_password' });
+  if (!plan.COUNTRIES[country]) return json(res, 400, { error: 'bad_country' });
+  if (phone && (INVALID_PHONE.test(phone) || phone.replace(/\D/g, '').length < 7)) return json(res, 400, { error: 'bad_phone' });
+  if (b.accept !== true || b.terms_version !== terms.VERSION) return json(res, 400, { error: 'terms_required' });
+
+  let sponsorId = null;
+  const ref = String(b.ref || '').trim().toUpperCase();
+  if (ref) {
+    const sp = await query('SELECT id FROM affiliate_users WHERE ref_code = $1', [ref]);
+    if (!sp.length) return json(res, 400, { error: 'bad_invite' });
+    sponsorId = sp[0].id;
+  }
+  if ((await query('SELECT 1 FROM affiliate_users WHERE email = $1', [email])).length) return json(res, 409, { error: 'email_taken' });
+
+  // their code, e.g. MARIA47: retried if that one is already taken
+  let codeId = null;
+  for (let i = 0; i < 10 && !codeId; i++) {
+    try {
+      const r = await query(
+        `INSERT INTO codes (code, affiliate_name, discount_pct, commission_pct, active, commission_mode, payout_currency)
+         VALUES ($1, $2, $3, 0, true, 'plan', $4) RETURNING id`,
+        [plan.codeFromName(name), name, plan.PLAN_DISCOUNT_PCT, plan.COUNTRIES[country]]);
+      codeId = r[0].id;
+    } catch (e) { if (!(e && e.code === '23505')) throw e; }
+  }
+  if (!codeId) return json(res, 500, { error: 'server_error' });
+
+  const hash = await hashPassword(password);
+  let user = null;
+  for (let i = 0; i < 10 && !user; i++) {
+    try {
+      const r = await query(
+        `INSERT INTO affiliate_users (code_id, email, password_hash, must_change, name, phone, country, language, ref_code, sponsor_user_id, signup_source)
+         VALUES ($1, $2, $3, false, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+        [codeId, email, hash, name, phone || null, country, language, plan.refCode(), sponsorId, sponsorId ? 'invite' : 'self']);
+      user = { id: r[0].id, password_hash: hash };
+    } catch (e) {
+      if (!(e && e.code === '23505')) { await query('DELETE FROM codes WHERE id = $1', [codeId]); throw e; }
+      if (/email/.test(String(e.constraint || e.detail || e.message))) {           // lost a race for the same email
+        await query('DELETE FROM codes WHERE id = $1', [codeId]);
+        return json(res, 409, { error: 'email_taken' });
+      }                                                                            // otherwise the invite code collided: try another
+    }
+  }
+  if (!user) { await query('DELETE FROM codes WHERE id = $1', [codeId]); return json(res, 500, { error: 'server_error' }); }
+
+  await terms.record(user.id, { language, method: 'registro web', ip });
+  return json(res, 200, { ok: true }, { 'Set-Cookie': aff.sessionCookie(req, user) });
+}
+
+async function forgot(req, res) {
+  const b = body(req);
+  const email = String(b.email || '').trim().toLowerCase().slice(0, 254);
+  const keys = [`aff-forgot-ip:${auth.clientIp(req)}`, `aff-forgot-mail:${email}`];
+  for (const k of keys) if (await auth.lockedOut(k)) return json(res, 429, { error: 'too_many_attempts' });
+  for (const k of keys) await auth.recordFail(k);
+
+  if (EMAIL.test(email)) {
+    const rows = await query('SELECT id, name, language FROM affiliate_users WHERE email = $1', [email]);
+    if (rows.length) {
+      const u = rows[0];
+      const token = crypto.randomBytes(32).toString('hex');
+      const hash = crypto.createHash('sha256').update(token).digest('hex');
+      await query(`INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES ($1, $2, now() + interval '60 minutes')`, [u.id, hash]);
+      const link = `${siteOrigin(req)}/afiliados?reset=${token}`;
+      const first = String(u.name || '').trim().split(/\s+/)[0] || '';
+      const m = mailBody(u.language === 'en' ? 'en' : 'es', first, link);
+      await mailer.send({ to: email, subject: m.subject, text: m.text });
+    }
+  }
+  // the same answer whether or not the address has an account
+  return json(res, 200, { ok: true });
+}
+
+async function reset(req, res) {
+  const b = body(req);
+  const key = `aff-reset:${auth.clientIp(req)}`;
+  if (await auth.lockedOut(key)) return json(res, 429, { error: 'too_many_attempts' });
+  const password = String(b.password || '');
+  if (password.length < MIN_LENGTH || password.length > 200) return json(res, 400, { error: 'weak_password' });
+  const hash = crypto.createHash('sha256').update(String(b.token || '')).digest('hex');
+  const rows = await query(
+    'SELECT id, user_id FROM password_resets WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now()', [hash]);
+  if (!rows.length) { await auth.recordFail(key); return json(res, 400, { error: 'bad_token' }); }
+  await query('UPDATE affiliate_users SET password_hash = $1, must_change = false WHERE id = $2', [await hashPassword(password), rows[0].user_id]);
+  await query('UPDATE password_resets SET used_at = now() WHERE user_id = $1 AND used_at IS NULL', [rows[0].user_id]);
+  return json(res, 200, { ok: true });                 // every session issued before this is dead: it was signed with the old hash
 }
 
 module.exports = guard(async (req, res) => {
@@ -139,6 +270,15 @@ module.exports = guard(async (req, res) => {
   const isPost = req.method === 'POST';
   if (!process.env.ADMIN_PASSWORD) return json(res, 503, { error: 'not_configured' });
   if (isPost && !auth.sameOrigin(req)) return json(res, 403, { error: 'bad_origin' });
+
+  if (a === 'terms' && !isPost) return json(res, 200, terms.current(String(req.query.lang || 'es')));
+  if (a === 'invite' && !isPost) {
+    const rows = await query('SELECT name FROM affiliate_users WHERE ref_code = $1', [String(req.query.ref || '').trim().toUpperCase()]);
+    return json(res, 200, rows.length ? { ok: true, sponsor: String(rows[0].name || '').trim().split(/\s+/)[0] || '' } : { ok: false });
+  }
+  if (a === 'register' && isPost) return register(req, res);
+  if (a === 'forgot' && isPost) return forgot(req, res);
+  if (a === 'reset' && isPost) return reset(req, res);
 
   if (a === 'login' && isPost) {
     const b = body(req);
@@ -167,9 +307,34 @@ module.exports = guard(async (req, res) => {
 
   const user = await aff.currentUser(req);
   if (a === 'me') {
-    return json(res, 200, user ? { authed: true, must_change: user.must_change, name: user.affiliate_name } : { authed: false });
+    if (!user) return json(res, 200, { authed: false });
+    let ref = user.ref_code;
+    if (!ref) {                                   // accounts made by the admin get their invite code the first time it is needed
+      for (let i = 0; i < 10 && !ref; i++) {
+        const cand = plan.refCode();
+        try { await query('UPDATE affiliate_users SET ref_code = $1 WHERE id = $2 AND ref_code IS NULL', [cand, user.id]); ref = cand; }
+        catch (e) { if (!(e && e.code === '23505')) throw e; }
+      }
+    }
+    return json(res, 200, {
+      authed: true, must_change: user.must_change, name: user.name || user.affiliate_name,
+      language: user.language === 'en' ? 'en' : 'es', terms_needed: await terms.needed(user.id),
+      mode: user.commission_mode, code: user.code, ref_code: ref, invite_url: ref ? `${siteOrigin(req)}/afiliados?ref=${ref}` : null,
+    });
   }
   if (!user) return json(res, 401, { error: 'unauthorized' });
+
+  if (a === 'accept_terms' && isPost) {
+    if (body(req).version !== terms.VERSION) return json(res, 400, { error: 'terms_required' });
+    await terms.record(user.id, { language: user.language, method: 'portal', ip: auth.clientIp(req) });
+    return json(res, 200, { ok: true });
+  }
+  if (a === 'set_language' && isPost) {
+    const language = plan.LANGUAGES.includes(body(req).language) ? body(req).language : null;
+    if (!language) return json(res, 400, { error: 'bad_language' });
+    await query('UPDATE affiliate_users SET language = $1 WHERE id = $2', [language, user.id]);
+    return json(res, 200, { ok: true });
+  }
 
   if (a === 'change_password' && isPost) {
     const b = body(req);
@@ -183,9 +348,18 @@ module.exports = guard(async (req, res) => {
     return json(res, 200, { ok: true }, { 'Set-Cookie': aff.sessionCookie(req, { id: user.id, password_hash: hash }) });
   }
 
-  if (a === 'summary' && !isPost) {
+  if ((a === 'summary' || a === 'team') && !isPost) {
     if (user.must_change) return json(res, 403, { error: 'must_change_password' });
-    return json(res, 200, await summary(user));
+    if (await terms.needed(user.id)) return json(res, 403, { error: 'terms_needed' });
+    if (a === 'summary') return json(res, 200, await summary(user));
+
+    // "Afiliados por mí": the people this affiliate invited, one level only, name shortened
+    const rows = await query(
+      `SELECT au.name, au.country, au.created_at,
+              (SELECT count(*) FROM orders o WHERE o.code_id = au.code_id AND o.status = 'APPROVED')::int AS orders_paid
+         FROM affiliate_users au WHERE au.sponsor_user_id = $1 ORDER BY au.created_at DESC LIMIT 500`, [user.id]);
+    return json(res, 200, { people: rows.map(r => ({
+      name: maskName(r.name), country: r.country, since: r.created_at, has_sales: r.orders_paid > 0 })) });
   }
 
   json(res, 404, { error: 'not_found' });

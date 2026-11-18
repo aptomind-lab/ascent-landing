@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS codes (
   affiliate_contact  text,
   discount_pct       numeric(5,2) NOT NULL DEFAULT 0 CHECK (discount_pct >= 0 AND discount_pct <= 100),
   commission_pct     numeric(5,2) NOT NULL DEFAULT 0 CHECK (commission_pct >= 0 AND commission_pct <= 100),
-  commission_mode    text NOT NULL DEFAULT 'tiers' CHECK (commission_mode IN ('tiers', 'fixed')),
+  commission_mode    text NOT NULL DEFAULT 'tiers' CHECK (commission_mode IN ('tiers', 'fixed', 'plan')),
   payout_currency    text NOT NULL DEFAULT 'COP' CHECK (payout_currency IN ('COP', 'MXN', 'USD')),
   active             boolean NOT NULL DEFAULT true,
   created_at         timestamptz NOT NULL DEFAULT now()
@@ -111,6 +111,45 @@ ALTER TABLE codes ADD COLUMN IF NOT EXISTS payout_currency text NOT NULL DEFAULT
 ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS currency text NOT NULL DEFAULT 'COP';
 ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS amount_local numeric(14,2);
 ALTER TABLE commission_payouts ADD COLUMN IF NOT EXISTS fx_rate numeric(16,6) NOT NULL DEFAULT 1;
+
+-- Self-service affiliates (Stage 1 of the Points plan). An affiliate account is
+-- still affiliate_users; these columns say who the person is and who invited them.
+-- sponsor_user_id is set once, at sign-up, and is never updated afterwards.
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS name text;
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS country text;
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'es';
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS ref_code text;
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS sponsor_user_id integer REFERENCES affiliate_users(id);
+ALTER TABLE affiliate_users ADD COLUMN IF NOT EXISTS signup_source text NOT NULL DEFAULT 'admin';
+CREATE UNIQUE INDEX IF NOT EXISTS affiliate_users_ref_idx ON affiliate_users (ref_code) WHERE ref_code IS NOT NULL;
+CREATE INDEX IF NOT EXISTS affiliate_users_sponsor_idx ON affiliate_users (sponsor_user_id);
+
+-- The commission mode 'plan' (Points) joins 'tiers' and 'fixed'.
+ALTER TABLE codes DROP CONSTRAINT IF EXISTS codes_commission_mode_check;
+ALTER TABLE codes DROP CONSTRAINT IF EXISTS codes_mode_chk, ADD CONSTRAINT codes_mode_chk CHECK (commission_mode IN ('tiers', 'fixed', 'plan'));
+
+-- Proof that an affiliate accepted the policies: which version, when, how and from where.
+CREATE TABLE IF NOT EXISTS terms_acceptances (
+  id           serial PRIMARY KEY,
+  user_id      integer NOT NULL REFERENCES affiliate_users(id) ON DELETE CASCADE,
+  version      text NOT NULL,
+  language     text NOT NULL,
+  method       text NOT NULL,
+  ip           text,
+  accepted_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS terms_acceptances_user_idx ON terms_acceptances (user_id, accepted_at DESC);
+
+-- One-time links to choose a new password. Only a hash of the token is stored.
+CREATE TABLE IF NOT EXISTS password_resets (
+  id          serial PRIMARY KEY,
+  user_id     integer NOT NULL REFERENCES affiliate_users(id) ON DELETE CASCADE,
+  token_hash  text NOT NULL UNIQUE,
+  expires_at  timestamptz NOT NULL,
+  used_at     timestamptz,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
 
 CREATE TABLE IF NOT EXISTS login_fail (
   ip  text NOT NULL,

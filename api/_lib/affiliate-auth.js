@@ -57,6 +57,7 @@ async function currentUser(req) {
     if (!/^\d+$/.test(id || '') || !expires || !given || Number(expires) < Date.now()) return null;
     const rows = await query(
       `SELECT au.id, au.code_id, au.email, au.password_hash, au.must_change,
+              au.name, au.language, au.ref_code, au.country, au.sponsor_user_id,
               c.code, c.affiliate_name, c.discount_pct, c.commission_pct, c.commission_mode, c.payout_currency, c.active
          FROM affiliate_users au JOIN codes c ON c.id = au.code_id
         WHERE au.id = $1`, [Number(id)]);

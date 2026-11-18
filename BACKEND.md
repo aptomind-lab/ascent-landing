@@ -112,6 +112,30 @@ Estados de pedido: *Pendiente* (esperando a Wompi), *Pagado*, *Rechazado*,
 *Anulado*, *Error* y **Revisar** (Wompi aprobó un monto distinto al calculado:
 no cuenta como venta, revísalo a mano).
 
+## 3a. Programa de Puntos: Etapa 1 (cuentas y políticas)
+
+Esta etapa deja listas las cuentas de afiliado; los Puntos, los niveles de Optimización y el
+cierre de mes llegan en la Etapa 2.
+
+- **Registro propio:** cualquiera se afilia gratis en `/afiliados` (o con un enlace de
+  invitación `/afiliados?ref=XXXXXXXX`). Se crea su cuenta y su **código de descuento**
+  (7 % para sus clientes, modo "Plan de Puntos").
+- **Políticas:** al registrarse debe marcar que las acepta. Se guardan versión, fecha, medio
+  e IP (`terms_acceptances`). El texto está en `api/_lib/terms.js` y es un **borrador**: el
+  texto final lo define el abogado. Al cambiar `VERSION`, todos deben aceptar de nuevo al
+  entrar.
+- **Afiliados por mí:** cada afiliado ve a quienes invitó (un solo nivel, nombre abreviado, sin
+  datos de contacto). El patrocinador se guarda una vez al registrarse y no se puede cambiar.
+- **Recuperar contraseña por correo** (Resend). Variables en Vercel: `RESEND_API_KEY` y
+  `MAIL_FROM` (por ejemplo `Ascent Labs <no-reply@ascentcompounds.com>`, en un dominio
+  verificado en Resend). Sin ellas no se envía nada y el sitio responde igual.
+- **Idiomas:** el portal está en español e inglés (selector ES/EN).
+- Las cuentas creadas por el administrador (botón **Acceso**) también deben aceptar las
+  políticas la primera vez.
+- En el panel, "Editar" un afiliado permite elegir **Plan de Puntos** o **Porcentaje fijo
+  (efectivo)**. Los afiliados del plan no muestran cifras de comisión en efectivo.
+- `.vercelignore` evita que `*.md`, `tests/` y `scripts/` se publiquen en el sitio.
+
 ## 3b. Portal de afiliados (`/afiliados`)
 
 Cada afiliado entra con **su correo y su contraseña** y ve únicamente lo suyo: quiénes

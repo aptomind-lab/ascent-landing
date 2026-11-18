@@ -286,9 +286,11 @@
 
   async function renderAffiliates(view) {
     const { affiliates, tiers, now } = (await api('affiliates')).data;
-    const owed = affiliates.reduce((s, a) => s + a.owed_cop, 0);
+    // Points affiliates have no cash commission: their figures arrive with the Points engine
+    const cash = affiliates.filter(a => a.commission_mode !== 'plan');
+    const owed = cash.reduce((s, a) => s + a.owed_cop, 0);
     const monthSales = affiliates.reduce((s, a) => s + (a.current ? a.current.sales_cop : 0), 0);
-    const monthCommission = affiliates.reduce((s, a) => s + (a.current ? a.current.commission_cop : 0), 0);
+    const monthCommission = cash.reduce((s, a) => s + (a.current ? a.current.commission_cop : 0), 0);
 
     const rows = affiliates.map(a => {
       const cur = a.current;
@@ -296,18 +298,22 @@
         h('td', {}, h('strong', {}, a.code), h('span', { class: 'sub' }, a.affiliate_name), a.affiliate_contact ? h('span', { class: 'sub' }, a.affiliate_contact) : null),
         h('td', {}, a.active ? h('span', { class: 'badge ok' }, 'Activo') : h('span', { class: 'badge off' }, 'Inactivo')),
         h('td', { class: 'num' }, `${num(a.discount_pct)}%`),
-        h('td', {}, a.commission_mode === 'fixed' ? `Fija ${num(a.commission_pct)} %` : 'Escalonada', h('span', { class: 'sub' }, a.payout_currency)),
+        h('td', {}, a.commission_mode === 'fixed' ? `Fija ${num(a.commission_pct)} %` : (a.commission_mode === 'plan' ? 'Plan de Puntos' : 'Escala en efectivo'), h('span', { class: 'sub' }, a.payout_currency)),
         h('td', {},
           a.has_access ? h('span', { class: 'badge info' }, 'Con acceso') : h('span', { class: 'badge off' }, 'Sin acceso'),
           a.has_access ? h('span', { class: 'sub' }, a.access_email) : null,
-          a.has_access ? h('span', { class: 'sub' }, a.last_login_at ? `Último ingreso ${dt(a.last_login_at)}` : 'Aún no ha ingresado') : null),
+          a.has_access ? h('span', { class: 'sub' }, a.last_login_at ? `Último ingreso ${dt(a.last_login_at)}` : 'Aún no ha ingresado') : null,
+          a.sponsor_name ? h('span', { class: 'sub' }, `Lo invitó: ${a.sponsor_name}`) : null,
+          a.has_access ? h('span', { class: 'sub' }, a.terms_version ? `Políticas aceptadas: ${a.terms_version}` : 'Aún no acepta las políticas') : null),
         h('td', { class: 'num' }, num(a.customers_started, 0), h('span', { class: 'sub' }, 'usaron')),
         h('td', { class: 'num' }, h('strong', {}, num(a.customers_paid, 0)), h('span', { class: 'sub' }, 'compraron')),
-        h('td', { class: 'num' }, cop(cur ? cur.sales_cop : 0), cur ? h('span', { class: 'sub' }, levelText(cur.level, cur.rate_pct)) : null),
-        h('td', { class: 'num' }, cop(cur ? cur.commission_cop : 0),
+        h('td', { class: 'num' }, cop(cur ? cur.sales_cop : 0), cur && a.commission_mode !== 'plan' ? h('span', { class: 'sub' }, levelText(cur.level, cur.rate_pct)) : null),
+        a.commission_mode === 'plan' ? h('td', { class: 'num' }, '—', h('span', { class: 'sub' }, 'Puntos: próxima etapa')) : null,
+        a.commission_mode === 'plan' ? h('td', { class: 'num' }, '—') : null,
+        a.commission_mode === 'plan' ? null : h('td', { class: 'num' }, cop(cur ? cur.commission_cop : 0),
           a.payout_currency !== 'COP' ? h('span', { class: 'sub' }, '≈ ' + money(a.local.month_commission, a.payout_currency)) : null,
           h('span', { class: 'sub' }, 'provisional')),
-        h('td', { class: 'num' }, a.owed_cop > 0 ? h('strong', {}, cop(a.owed_cop)) : cop(0),
+        a.commission_mode === 'plan' ? null : h('td', { class: 'num' }, a.owed_cop > 0 ? h('strong', {}, cop(a.owed_cop)) : cop(0),
           a.payout_currency !== 'COP' && a.owed_cop > 0 ? h('span', { class: 'sub' }, '≈ ' + money(a.local.owed, a.payout_currency)) : null),
         h('td', {},
           h('div', { class: 'row' },
@@ -437,14 +443,15 @@
       contact: h('input', { name: 'affiliate_contact', maxlength: 200, value: a ? a.affiliate_contact || '' : '', placeholder: 'WhatsApp, correo o Instagram (opcional)' }),
       discount: h('input', { name: 'discount_pct', type: 'number', min: 0, max: 100, step: '0.01', required: true, value: a ? a.discount_pct : 10 }),
       mode: h('select', { name: 'commission_mode' },
-        h('option', { value: 'tiers' }, 'Escalonada: 15 % y sube 5 puntos por cada millón del mes (máx. 40 %)'),
-        h('option', { value: 'fixed' }, 'Porcentaje fijo')),
+        h('option', { value: 'plan' }, 'Plan de Puntos (el estándar de Ascent)'),
+        h('option', { value: 'fixed' }, 'Porcentaje fijo, pagado en efectivo'),
+        a && a.commission_mode === 'tiers' ? h('option', { value: 'tiers' }, 'Escala en efectivo (anterior)') : null),
       currency: h('select', { name: 'payout_currency' },
         ...['COP', 'MXN', 'USD'].map(c => h('option', { value: c }, CUR_LABEL[c]))),
       commission: h('input', { name: 'commission_pct', type: 'number', min: 0, max: 100, step: '0.01', value: a ? a.commission_pct : 10 }),
       active: h('input', { type: 'checkbox', checked: a ? a.active : true }),
     };
-    f.mode.value = a ? a.commission_mode : 'tiers';
+    f.mode.value = a ? a.commission_mode : 'plan';
     f.currency.value = a ? a.payout_currency : 'COP';
     const fixedBox = h('div', {}, h('label', {}, 'Porcentaje fijo de comisión (%)'), f.commission);
     const syncMode = () => { fixedBox.hidden = f.mode.value !== 'fixed'; f.commission.required = f.mode.value === 'fixed'; };

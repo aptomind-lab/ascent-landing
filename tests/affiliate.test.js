@@ -108,6 +108,12 @@ test('password change: checks the current one, enforces a minimum, and kills the
   const fresh = cookieOf(ok);
 
   assert.equal((await P('summary', { cookie: mariaCookie })).status, 401, 'the session from before the change no longer works');
+  // the policies come before anything else: until accepted, no figures at all
+  const gated = await P('summary', { cookie: fresh });
+  assert.equal(gated.status, 403);
+  assert.equal(gated.json.error, 'terms_needed');
+  assert.equal((await P('accept_terms', { method: 'POST', cookie: fresh, body: { version: 'an-old-version' } })).status, 400, 'only the version in force can be accepted');
+  assert.equal((await P('accept_terms', { method: 'POST', cookie: fresh, body: { version: require('../api/_lib/terms').VERSION } })).status, 200);
   assert.equal((await P('summary', { cookie: fresh })).status, 200);
   assert.equal((await P('login', { method: 'POST', body: { email: 'maria@example.com', password: mariaPass } })).status, 401, 'the temporary password is dead');
   mariaCookie = cookieOf(await P('login', { method: 'POST', body: { email: 'maria@example.com', password: 'my-own-new-password' } }));
