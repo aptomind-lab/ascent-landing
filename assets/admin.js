@@ -66,6 +66,10 @@
     bad_commission: 'La comisión debe estar entre 0 y 100.',
     has_orders: 'Este código ya tiene pedidos. Desactívalo en lugar de borrarlo.',
     bad_rate: 'La tasa no es válida (TRM entre 1.000 y 20.000; pesos mexicanos por dólar entre 5 y 60).',
+    no_access: 'Esta persona todavía no tiene cuenta en el portal.',
+    bad_sponsor: 'No encontramos ese código. Revisa que esté bien escrito.',
+    self_sponsor: 'Una persona no puede ser su propio patrocinador.',
+    would_loop: 'Eso crearía un círculo: esa persona ya depende de esta.',
     bad_mode: 'Elige cómo se calcula la comisión.',
     bad_currency: 'Elige una moneda válida.',
     bad_email: 'Escribe un correo válido.',
@@ -320,6 +324,7 @@
             h('button', { class: 'btn small', onclick: () => editCode(a) }, 'Editar'),
             h('button', { class: 'btn small', onclick: () => statementDialog(a) }, 'Liquidaciones'),
             h('button', { class: 'btn small', onclick: () => accessDialog(a) }, 'Acceso'),
+            a.has_access ? h('button', { class: 'btn small', onclick: () => sponsorDialog(a) }, 'Patrocinador') : null,
             h('button', { class: 'btn small', onclick: () => { filters.code_id = String(a.id); filters.no_code = ''; location.hash = 'orders'; } }, 'Pedidos'))));
     });
 
@@ -385,6 +390,30 @@
               : m.commission_cop > 0 ? h('span', { class: 'badge info' }, 'Por pagar') : h('span', { class: 'badge off' }, 'Sin comisión')),
           h('td', {}, m.paid ? h('button', { class: 'btn small', onclick: () => undo(m) }, 'Deshacer')
             : (!m.open && m.commission_cop > 0) ? h('button', { class: 'btn small primary', onclick: () => pay(m) }, 'Marcar pagado') : null)))))));
+  }
+
+  /* Who signed this person up. Only the owner can change it; each change is recorded. */
+  function sponsorDialog(a) {
+    const msg = h('p', { class: 'msg err', role: 'alert', hidden: true });
+    const input = h('input', { type: 'text', maxlength: 40, value: a.sponsor_code || '', placeholder: 'MARIA47', style: 'text-transform:uppercase', autocomplete: 'off' });
+    const save = async value => {
+      msg.hidden = true;
+      const r = await api('sponsor_set', { method: 'POST', body: { code_id: a.id, sponsor_code: value } });
+      if (r.ok) { dlg.close(); toast(value ? 'Patrocinador guardado' : 'Patrocinador quitado'); go('affiliates'); }
+      else { msg.textContent = errText(r.data.error); msg.hidden = false; }
+    };
+    const dlg = openDialog(`Patrocinador · ${a.affiliate_name}`, false,
+      h('p', { class: 'muted', style: 'margin:0' }, a.sponsor_name
+        ? `Hoy lo afilió ${a.sponsor_name} (código ${a.sponsor_code}).`
+        : 'Hoy no tiene patrocinador: lo afilió Ascent directamente.'),
+      h('label', {}, 'Código de quien lo afilió'), input, msg,
+      h('p', { class: 'muted', style: 'font-size:13px;margin:10px 0 0' },
+        'El patrocinador es quien recibirá el 5 % de lo que esta persona genere. Cada cambio queda registrado. Las propias personas no pueden cambiarlo.'),
+      h('div', { class: 'actions' },
+        a.sponsor_name ? h('button', { type: 'button', class: 'btn danger', onclick: () => save('') }, 'Quitar patrocinador') : null,
+        h('button', { type: 'button', class: 'btn ghost', onclick: () => dlg.close() }, 'Cancelar'),
+        h('button', { type: 'button', class: 'btn primary', onclick: () => save(input.value.trim()) }, 'Guardar')));
+    input.focus();
   }
 
   /* The affiliate's portal login: create it, or issue a new temporary password. */

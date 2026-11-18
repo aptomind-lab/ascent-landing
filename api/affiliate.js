@@ -150,6 +150,18 @@ async function summary(user) {
   return out;
 }
 
+/* Who is being named as the person that signed you up. Accepts either their discount
+   code (the one they already know and share, e.g. MARIA47) or the code inside their
+   invitation link. Returns { id, name } or null. */
+async function findSponsor(raw) {
+  const code = String(raw || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40);
+  if (!code) return null;
+  const rows = await query(
+    `SELECT au.id, au.name, c.affiliate_name FROM affiliate_users au JOIN codes c ON c.id = au.code_id
+      WHERE au.ref_code = $1 OR c.code = $1 LIMIT 1`, [code]);
+  return rows.length ? { id: rows[0].id, name: rows[0].name || rows[0].affiliate_name || '' } : null;
+}
+
 const INVALID_PHONE = /[^0-9+()\s-]/;
 
 function mailBody(lang, first, link) {
@@ -181,12 +193,13 @@ async function register(req, res) {
   if (phone && (INVALID_PHONE.test(phone) || phone.replace(/\D/g, '').length < 7)) return json(res, 400, { error: 'bad_phone' });
   if (b.accept !== true || b.terms_version !== terms.VERSION) return json(res, 400, { error: 'terms_required' });
 
+  // optional: the code of whoever signed this person up. Left empty, the person was signed up by Ascent itself.
   let sponsorId = null;
-  const ref = String(b.ref || '').trim().toUpperCase();
-  if (ref) {
-    const sp = await query('SELECT id FROM affiliate_users WHERE ref_code = $1', [ref]);
-    if (!sp.length) return json(res, 400, { error: 'bad_invite' });
-    sponsorId = sp[0].id;
+  const given = String(b.sponsor_code || b.ref || '').trim();
+  if (given) {
+    const sp = await findSponsor(given);
+    if (!sp) return json(res, 400, { error: 'bad_invite' });
+    sponsorId = sp.id;
   }
   if ((await query('SELECT 1 FROM affiliate_users WHERE email = $1', [email])).length) return json(res, 409, { error: 'email_taken' });
 
@@ -273,8 +286,12 @@ module.exports = guard(async (req, res) => {
 
   if (a === 'terms' && !isPost) return json(res, 200, terms.current(String(req.query.lang || 'es')));
   if (a === 'invite' && !isPost) {
-    const rows = await query('SELECT name FROM affiliate_users WHERE ref_code = $1', [String(req.query.ref || '').trim().toUpperCase()]);
-    return json(res, 200, rows.length ? { ok: true, sponsor: String(rows[0].name || '').trim().split(/\s+/)[0] || '' } : { ok: false });
+    // lets the sign-up form say "Lucía is signing you up" so a mistyped code is caught; first name only, and limited per address
+    const key = `aff-inv:${auth.clientIp(req)}`;
+    if (await auth.lockedOut(key)) return json(res, 429, { error: 'too_many_attempts' });
+    await auth.recordFail(key);
+    const sp = await findSponsor(req.query.code || req.query.ref);
+    return json(res, 200, sp ? { ok: true, sponsor: String(sp.name).trim().split(/\s+/)[0] || '' } : { ok: false });
   }
   if (a === 'register' && isPost) return register(req, res);
   if (a === 'forgot' && isPost) return forgot(req, res);

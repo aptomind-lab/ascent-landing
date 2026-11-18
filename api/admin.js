@@ -5,7 +5,7 @@
      stock       products (GET)  stock_set (POST)
      affiliates  affiliates (GET)  code_save (POST)  code_delete (POST)
                  statement (GET)  pay_month (POST)  unpay_month (POST)
-                 affiliate_user_save (POST)  affiliate_user_delete (POST)
+                 affiliate_user_save (POST)  affiliate_user_delete (POST)  sponsor_set (POST)
                  tiers_set (POST)  mxn_set (POST)
      orders      orders (GET)  orders_csv (GET)
      settings    settings (GET)  settings_set (POST)
@@ -73,7 +73,7 @@ const AFFILIATE_SQL = `
   SELECT c.id, c.code, c.affiliate_name, c.affiliate_contact, c.discount_pct, c.commission_pct,
          c.commission_mode, c.payout_currency, c.active, c.created_at,
          au.id IS NOT NULL AS has_access, au.email AS access_email, au.last_login_at, au.must_change,
-         au.signup_source, sp.name AS sponsor_name,
+         au.signup_source, COALESCE(sp.name, spc.affiliate_name) AS sponsor_name, spc.code AS sponsor_code,
          (SELECT t.version FROM terms_acceptances t WHERE t.user_id = au.id ORDER BY t.accepted_at DESC LIMIT 1) AS terms_version,
          count(o.id)::int                                                       AS orders_started,
          count(o.id) FILTER (WHERE o.status = 'APPROVED')::int                  AS orders_paid,
@@ -84,8 +84,9 @@ const AFFILIATE_SQL = `
     FROM codes c
     LEFT JOIN affiliate_users au ON au.code_id = c.id
     LEFT JOIN affiliate_users sp ON sp.id = au.sponsor_user_id
+    LEFT JOIN codes spc ON spc.id = sp.code_id
     LEFT JOIN orders o ON o.code_id = c.id
-   GROUP BY c.id, au.id, sp.id
+   GROUP BY c.id, au.id, sp.id, spc.id
    ORDER BY c.active DESC, sales_cop DESC, c.created_at DESC`;
 
 async function listAffiliates() {
@@ -133,6 +134,39 @@ async function saveAffiliateUser(b) {
 
 /* Mark one closed month as paid out. The amount is computed here, from the
    server's own numbers, and frozen: the request names only the month. */
+/* The owner assigns, changes or removes an affiliate's sponsor. (People cannot change it
+   themselves.) It cannot be the person themselves, and it cannot create a loop: nobody may
+   end up above their own sponsor. Every change is written to sponsor_changes. */
+async function setSponsor(b) {
+  const codeId = Number(b.code_id);
+  if (!Number.isInteger(codeId)) return { error: 'bad_id' };
+  const me = await query('SELECT id, sponsor_user_id FROM affiliate_users WHERE code_id = $1', [codeId]);
+  if (!me.length) return { error: 'no_access' };
+  const user = me[0];
+
+  let newId = null, newName = null;
+  const raw = String(b.sponsor_code || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40);
+  if (raw) {
+    const sp = await query(
+      `SELECT au.id, COALESCE(au.name, c.affiliate_name) AS name FROM affiliate_users au JOIN codes c ON c.id = au.code_id
+        WHERE au.ref_code = $1 OR c.code = $1 LIMIT 1`, [raw]);
+    if (!sp.length) return { error: 'bad_sponsor' };
+    newId = sp[0].id; newName = sp[0].name;
+    if (newId === user.id) return { error: 'self_sponsor' };
+    // walk up from the new sponsor: reaching this person would close a circle
+    let at = newId;
+    for (let i = 0; i < 100 && at; i++) {
+      const up = await query('SELECT sponsor_user_id FROM affiliate_users WHERE id = $1', [at]);
+      at = up.length ? up[0].sponsor_user_id : null;
+      if (at === user.id) return { error: 'would_loop' };
+    }
+  }
+  if (newId === user.sponsor_user_id) return { ok: true, sponsor: newName, unchanged: true };
+  await query('UPDATE affiliate_users SET sponsor_user_id = $1 WHERE id = $2', [newId, user.id]);
+  await query('INSERT INTO sponsor_changes (user_id, old_sponsor_id, new_sponsor_id) VALUES ($1, $2, $3)', [user.id, user.sponsor_user_id, newId]);
+  return { ok: true, sponsor: newName };
+}
+
 async function payMonth(b) {
   const codeId = Number(b.code_id);
   const month = text(b.month, 7);
@@ -398,6 +432,10 @@ module.exports = guard(async (req, res) => {
   if (a === 'affiliate_user_save' && isPost) {
     const r = await saveAffiliateUser(body(req));
     return r.error ? json(res, r.error === 'email_taken' ? 409 : 400, { error: r.error }) : json(res, 200, r);
+  }
+  if (a === 'sponsor_set' && isPost) {
+    const r = await setSponsor(body(req));
+    return r.error ? json(res, r.error === 'no_access' ? 404 : 400, { error: r.error }) : json(res, 200, r);
   }
   if (a === 'affiliate_user_delete' && isPost) {
     const gone = await query('DELETE FROM affiliate_users WHERE code_id = $1 RETURNING id', [Number(body(req).code_id)]);

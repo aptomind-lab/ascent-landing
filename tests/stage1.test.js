@@ -296,3 +296,121 @@ test('team: "has sales" turns on once the invited affiliate\'s code is used for 
   const team = (await P('team', { cookie: ana2 })).json;
   assert.equal(team.people[0].has_sales, true);
 });
+
+/* ------------------------------------------------- sponsor by code (optional) */
+
+test('sponsor code: the sign-up form can name whoever signed you up by their discount code', async () => {
+  const [{ code, id }] = await query(`SELECT c.code, au.id FROM affiliate_users au JOIN codes c ON c.id = au.code_id WHERE au.email = 'ana@example.com'`);
+  // typed any way a person would: lower case, stray spaces
+  const r = await register({ email: 'elena@example.com', name: 'Elena Torres', sponsor_code: `  ${code.toLowerCase()} ` });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  const [row] = await query(`SELECT sponsor_user_id, signup_source FROM affiliate_users WHERE email = 'elena@example.com'`);
+  assert.equal(row.sponsor_user_id, id);
+  assert.equal(row.signup_source, 'invite');
+});
+
+test('sponsor code: it is optional, and people signed up by Ascent itself have no sponsor', async () => {
+  for (const blank of [undefined, '', '   ']) {
+    const email = `solo${String(blank).length}@example.com`;
+    assert.equal((await register({ email, name: 'Sin Patrocinador', sponsor_code: blank })).status, 200);
+    const [row] = await query('SELECT sponsor_user_id, signup_source FROM affiliate_users WHERE email = $1', [email]);
+    assert.equal(row.sponsor_user_id, null);
+    assert.equal(row.signup_source, 'self');
+  }
+});
+
+test('sponsor code: a code that does not exist is refused instead of silently ignored', async () => {
+  const r = await register({ email: 'nadie2@example.com', sponsor_code: 'NOEXISTE99' });
+  assert.equal(r.status, 400);
+  assert.equal(r.json.error, 'bad_invite');
+  assert.equal((await query("SELECT 1 FROM affiliate_users WHERE email = 'nadie2@example.com'")).length, 0);
+});
+
+test('sponsor code: the form can check a code first, and only learns a first name', async () => {
+  const [{ code }] = await query(`SELECT c.code FROM affiliate_users au JOIN codes c ON c.id = au.code_id WHERE au.email = 'ana@example.com'`);
+  const ok = (await P('invite', { q: { code: code.toLowerCase() } })).json;
+  assert.deepEqual(ok, { ok: true, sponsor: 'Ana' });
+  assert.deepEqual((await P('invite', { q: { code: 'NOEXISTE99' } })).json, { ok: false });
+});
+
+test('sponsor code: checking codes over and over from one address is limited', async () => {
+  const ip = '198.51.100.99';
+  for (let i = 0; i < 8; i++) await P('invite', { q: { code: `GUESS${i}` }, ip });
+  assert.equal((await P('invite', { q: { code: 'GUESS9' }, ip })).status, 429);
+});
+
+/* ------------------------------------------------ the owner sets the sponsor */
+
+async function adminCookie() {
+  const login = await call(admin, { method: 'POST', query: { a: 'login' }, body: { password: process.env.ADMIN_PASSWORD } });
+  return cookieOf(login);
+}
+const codeOf = async email => (await query('SELECT c.id, c.code, au.id AS uid, au.sponsor_user_id FROM affiliate_users au JOIN codes c ON c.id = au.code_id WHERE au.email = $1', [email]))[0];
+
+test('sponsor_set: only the owner can do it', async () => {
+  const carla = await codeOf('carla@example.com');
+  const anon = await call(admin, { method: 'POST', query: { a: 'sponsor_set' }, body: { code_id: carla.id, sponsor_code: 'X' } });
+  assert.equal(anon.status, 401);
+  // and an affiliate's own session is not an owner session
+  const c = cookieOf(await P('login', { method: 'POST', body: { email: 'elena@example.com', password: GOOD.password } }));
+  const asAffiliate = await call(admin, { method: 'POST', query: { a: 'sponsor_set' }, body: { code_id: carla.id, sponsor_code: 'X' }, headers: { cookie: c } });
+  assert.equal(asAffiliate.status, 401);
+});
+
+test('sponsor_set: assign, change and remove, each written to the record', async () => {
+  const cookie = await adminCookie();
+  const set = body => call(admin, { method: 'POST', query: { a: 'sponsor_set' }, body, headers: { cookie } });
+  const solo = await codeOf('solo0@example.com');        // signed up by Ascent: no sponsor
+  const ana = await codeOf('ana@example.com');
+  const beto = await codeOf('beto@example.com');
+  assert.equal(solo.sponsor_user_id, null);
+  const before = (await query('SELECT count(*)::int AS n FROM sponsor_changes'))[0].n;
+
+  assert.equal((await set({ code_id: solo.id, sponsor_code: ana.code.toLowerCase() })).json.sponsor, 'Ana Lucía Pérez');
+  assert.equal((await codeOf('solo0@example.com')).sponsor_user_id, ana.uid, 'assigned when there was none');
+
+  assert.equal((await set({ code_id: solo.id, sponsor_code: beto.code })).status, 200);
+  assert.equal((await codeOf('solo0@example.com')).sponsor_user_id, beto.uid, 'and changed afterwards: the owner decides');
+
+  assert.equal((await set({ code_id: solo.id, sponsor_code: '' })).status, 200);
+  assert.equal((await codeOf('solo0@example.com')).sponsor_user_id, null, 'and removed');
+
+  const log = await query('SELECT old_sponsor_id, new_sponsor_id FROM sponsor_changes WHERE user_id = $1 ORDER BY id', [solo.uid]);
+  assert.deepEqual(log.map(r => [r.old_sponsor_id, r.new_sponsor_id]), [[null, ana.uid], [ana.uid, beto.uid], [beto.uid, null]]);
+  assert.equal((await query('SELECT count(*)::int AS n FROM sponsor_changes'))[0].n, before + 3);
+
+  // setting the same one again changes nothing and logs nothing
+  await set({ code_id: solo.id, sponsor_code: ana.code });
+  const n = (await query('SELECT count(*)::int AS n FROM sponsor_changes'))[0].n;
+  assert.equal((await set({ code_id: solo.id, sponsor_code: ana.code })).json.unchanged, true);
+  assert.equal((await query('SELECT count(*)::int AS n FROM sponsor_changes'))[0].n, n);
+});
+
+test('sponsor_set: not oneself, no circles, and the code must exist', async () => {
+  const cookie = await adminCookie();
+  const set = body => call(admin, { method: 'POST', query: { a: 'sponsor_set' }, body, headers: { cookie } });
+  const ana = await codeOf('ana@example.com');
+  const beto = await codeOf('beto@example.com');      // Beto is under Ana
+  assert.equal((await set({ code_id: ana.id, sponsor_code: ana.code })).json.error, 'self_sponsor');
+  assert.equal((await set({ code_id: ana.id, sponsor_code: beto.code })).json.error, 'would_loop', 'Ana cannot go under her own referral');
+  const carla = await codeOf('carla@example.com');   // Carla is under Beto, who is under Ana
+  assert.equal((await set({ code_id: ana.id, sponsor_code: carla.code })).json.error, 'would_loop', 'nor under anyone further down');
+  assert.equal((await set({ code_id: beto.id, sponsor_code: 'NOEXISTE99' })).json.error, 'bad_sponsor');
+  assert.equal((await set({ code_id: 99999, sponsor_code: ana.code })).status, 404);
+  assert.equal((await codeOf('ana@example.com')).sponsor_user_id, null, 'nothing changed');
+});
+
+test('sponsor_set: the owner\'s list shows who invited whom, and the sponsor\'s code', async () => {
+  const cookie = await adminCookie();
+  const list = (await call(admin, { query: { a: 'affiliates' }, headers: { cookie } })).json.affiliates;
+  const beto = list.find(a => a.access_email === 'beto@example.com');
+  assert.equal(beto.sponsor_name, 'Ana Lucía Pérez');
+  assert.match(beto.sponsor_code, /^ANA/);
+
+  // a sponsor whose account was made by the owner has no separate "name": the code's own name is used
+  const diego = await codeOf('diego@example.com');
+  const carla = await codeOf('carla@example.com');
+  await call(admin, { method: 'POST', query: { a: 'sponsor_set' }, body: { code_id: carla.id, sponsor_code: diego.code }, headers: { cookie } });
+  const again = (await call(admin, { query: { a: 'affiliates' }, headers: { cookie } })).json.affiliates.find(a => a.access_email === 'carla@example.com');
+  assert.equal(again.sponsor_name, 'Diego Hernández');
+});

@@ -41,6 +41,8 @@
       forgotLink: 'Olvidé mi contraseña', createLink: 'Crear mi cuenta gratis', haveAccount: '¿Ya tienes cuenta? Entrar',
       regTitle: 'Crea tu cuenta gratis', invitedBy: 'Te invitó {name}.', fullName: 'Tu nombre completo', phoneOpt: 'Tu teléfono (opcional)',
       country: 'País', pickCountry: 'Elige tu país', create: 'Crear mi cuenta',
+      sponsorLabel: 'Código de quien te afilió (opcional)', sponsorHint: 'Si alguien te invitó, escribe su código. Si te afilió Ascent directamente, déjalo en blanco.',
+      sponsorOk: '✓ Te afilia {name}.', sponsorNo: 'No encontramos ese código. Revísalo, o déjalo en blanco si nadie te invitó.',
       CO: 'Colombia', MX: 'México', US: 'Estados Unidos',
       termsAccept: 'He leído y acepto', termsContinue: 'Continuar',
       forgotTitle: 'Recupera tu contraseña', forgotSub: 'Escribe tu correo y te enviamos un enlace para elegir una nueva.', forgotSend: 'Enviar enlace',
@@ -85,7 +87,7 @@
         same_password: 'La nueva contraseña debe ser distinta de la de ahora.', not_configured: 'Este portal aún no está disponible.',
         bad_name: 'Escribe tu nombre.', bad_email: 'Escribe un correo válido, por ejemplo nombre@correo.com.', bad_country: 'Elige tu país.',
         bad_phone: 'El teléfono solo puede tener números.', terms_required: 'Para seguir, marca la casilla de aceptar.',
-        bad_invite: 'Este enlace de invitación no es válido. Pídele uno nuevo a quien te invitó.',
+        bad_invite: 'No encontramos a quien te afilió con ese código. Revísalo, o déjalo en blanco si nadie te invitó.',
         email_taken: 'Ya hay una cuenta con ese correo. Entra, o usa “Olvidé mi contraseña”.',
         bad_token: 'Este enlace ya no sirve. Pide uno nuevo.', server_error: 'Algo salió mal. Intenta de nuevo en un momento.',
       },
@@ -97,6 +99,8 @@
       forgotLink: 'I forgot my password', createLink: 'Create my free account', haveAccount: 'Already have an account? Sign in',
       regTitle: 'Create your free account', invitedBy: '{name} invited you.', fullName: 'Your full name', phoneOpt: 'Your phone (optional)',
       country: 'Country', pickCountry: 'Choose your country', create: 'Create my account',
+      sponsorLabel: 'Code of the person who signed you up (optional)', sponsorHint: 'If someone invited you, type their code. If Ascent signed you up directly, leave it blank.',
+      sponsorOk: '✓ {name} is signing you up.', sponsorNo: 'We could not find that code. Check it, or leave it blank if nobody invited you.',
       CO: 'Colombia', MX: 'Mexico', US: 'United States',
       termsAccept: 'I have read and I accept', termsContinue: 'Continue',
       forgotTitle: 'Get your password back', forgotSub: 'Type your email and we will send you a link to choose a new one.', forgotSend: 'Send link',
@@ -141,7 +145,7 @@
         same_password: 'The new password must be different from the current one.', not_configured: 'This portal is not available yet.',
         bad_name: 'Type your name.', bad_email: 'Type a valid email, for example name@mail.com.', bad_country: 'Choose your country.',
         bad_phone: 'The phone can only have numbers.', terms_required: 'To continue, tick the box to accept.',
-        bad_invite: 'This invitation link is not valid. Ask the person who invited you for a new one.',
+        bad_invite: 'We could not find the person who signed you up with that code. Check it, or leave it blank if nobody invited you.',
         email_taken: 'There is already an account with that email. Sign in, or use “I forgot my password”.',
         bad_token: 'This link no longer works. Ask for a new one.', server_error: 'Something went wrong. Please try again in a moment.',
       },
@@ -266,26 +270,35 @@
   async function registerScreen() {
     await loadTerms();
     let sponsor = '';
-    if (REF) { const r = await api('invite', { query: { ref: REF } }); if (r.data.ok) sponsor = r.data.sponsor; else REF = ''; }
+    if (REF) { const r = await api('invite', { query: { code: REF } }); if (r.data.ok) sponsor = r.data.sponsor; else REF = ''; }
     const f = {
       name: h('input', { id: 'name', type: 'text', autocomplete: 'name', required: true, maxlength: 80 }),
       email: h('input', { id: 'remail', type: 'email', autocomplete: 'email', required: true, autocapitalize: 'none' }),
       phone: h('input', { id: 'phone', type: 'tel', autocomplete: 'tel', maxlength: 25 }),
       country: h('select', { id: 'country', required: true },
         h('option', { value: '' }, t('pickCountry')), ...['CO', 'MX', 'US'].map(c => h('option', { value: c }, t(c)))),
+      sponsor: h('input', { id: 'sponsor', type: 'text', autocomplete: 'off', autocapitalize: 'characters', maxlength: 40, value: REF }),
       accept: h('input', { type: 'checkbox', id: 'accept' }),
     };
+    const sponsorMsg = h('p', { class: 'hint' });
+    const showSponsor = text => { sponsorMsg.textContent = text; };
+    if (sponsor) showSponsor(t('sponsorOk', { name: sponsor }));
+    f.sponsor.addEventListener('change', async () => {          // checked when the person leaves the box, so a typo shows at once
+      const v = f.sponsor.value.trim();
+      if (!v) return showSponsor('');
+      const r = await api('invite', { query: { code: v } });
+      showSponsor(r.ok && r.data.ok ? t('sponsorOk', { name: r.data.sponsor }) : (r.status === 429 ? errText('too_many_attempts') : t('sponsorNo')));
+    });
     const pw = pwField('rpw', t('password'), { autocomplete: 'new-password', hint: t('hint10') });
     const msg = message();
     shell(
       h('h1', {}, t('regTitle')),
-      sponsor ? h('p', { class: 'msg ok', role: 'status' }, t('invitedBy', { name: sponsor })) : null,
       h('form', { class: 'stack', onsubmit: async e => {
         e.preventDefault(); msg.hidden = true;
         if (!f.accept.checked) return fail(msg, 'terms_required');
         const r = await api('register', { method: 'POST', body: {
           name: f.name.value, email: f.email.value, phone: f.phone.value, country: f.country.value, password: pw.input.value,
-          language: LANG, accept: true, terms_version: TERMS.version, ref: REF || undefined } });
+          language: LANG, accept: true, terms_version: TERMS.version, sponsor_code: f.sponsor.value.trim() } });
         if (!r.ok) return fail(msg, r.data.error);
         REF = ''; history.replaceState(null, '', '/afiliados');
         boot();
@@ -295,6 +308,7 @@
       h('div', {}, h('label', { for: 'phone' }, t('phoneOpt')), f.phone),
       h('div', {}, h('label', { for: 'country' }, t('country')), f.country),
       pw.node,
+      h('div', {}, h('label', { for: 'sponsor' }, t('sponsorLabel')), f.sponsor, h('p', { class: 'hint' }, t('sponsorHint')), sponsorMsg),
       h('h2', { style: 'margin-top:24px' }, TERMS.title),
       h('ol', { class: 'terms-list' }, TERMS.points.map(p => h('li', {}, p))),
       h('label', { class: 'check', for: 'accept' }, f.accept, t('termsAccept')),

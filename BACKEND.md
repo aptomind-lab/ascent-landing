@@ -120,6 +120,17 @@ cierre de mes llegan en la Etapa 2.
 - **Registro propio:** cualquiera se afilia gratis en `/afiliados` (o con un enlace de
   invitación `/afiliados?ref=XXXXXXXX`). Se crea su cuenta y su **código de descuento**
   (7 % para sus clientes, modo "Plan de Puntos").
+- **Quién te afilió (opcional):** el formulario tiene un campo "Código de quien te afilió".
+  Acepta el **código de descuento** de esa persona (por ejemplo `MARIA47`) o el que viene en su
+  enlace de invitación, y al salir del campo confirma el nombre ("✓ Te afilia María") para
+  detectar errores. Si se deja en blanco, la persona fue afiliada por Ascent directamente y no
+  tiene patrocinador. Un código que no existe se rechaza. Cuando llegue la Etapa 2, el
+  patrocinador recibe el 5 % del valor de lo que genere cada persona que afilió.
+- **Cambiar el patrocinador (solo tú):** en Afiliados, el botón **Patrocinador** de cada
+  persona con cuenta permite asignarlo, cambiarlo o quitarlo escribiendo el código de quien la
+  afilió. No puede ser ella misma ni crear un círculo (nadie puede quedar por encima de su
+  propio patrocinador). Cada cambio queda guardado en `sponsor_changes`. Las propias personas
+  no pueden cambiarlo.
 - **Políticas:** al registrarse debe marcar que las acepta. Se guardan versión, fecha, medio
   e IP (`terms_acceptances`). El texto está en `api/_lib/terms.js` y es un **borrador**: el
   texto final lo define el abogado. Al cambiar `VERSION`, todos deben aceptar de nuevo al

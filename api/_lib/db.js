@@ -129,6 +129,16 @@ CREATE INDEX IF NOT EXISTS affiliate_users_sponsor_idx ON affiliate_users (spons
 ALTER TABLE codes DROP CONSTRAINT IF EXISTS codes_commission_mode_check;
 ALTER TABLE codes DROP CONSTRAINT IF EXISTS codes_mode_chk, ADD CONSTRAINT codes_mode_chk CHECK (commission_mode IN ('tiers', 'fixed', 'plan'));
 
+-- Every time the owner changes who an affiliate's sponsor is, for the record.
+CREATE TABLE IF NOT EXISTS sponsor_changes (
+  id              serial PRIMARY KEY,
+  user_id         integer NOT NULL REFERENCES affiliate_users(id) ON DELETE CASCADE,
+  old_sponsor_id  integer,
+  new_sponsor_id  integer,
+  source          text NOT NULL DEFAULT 'admin',
+  changed_at      timestamptz NOT NULL DEFAULT now()
+);
+
 -- Proof that an affiliate accepted the policies: which version, when, how and from where.
 CREATE TABLE IF NOT EXISTS terms_acceptances (
   id           serial PRIMARY KEY,
